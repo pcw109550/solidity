@@ -290,6 +290,14 @@ unsigned GasMeter::runGas(Instruction _instruction, langutil::EVMVersion _evmVer
 	util::unreachable();
 }
 
+unsigned GasMeter::pushGas(u256 _value, langutil::EVMVersion _evmVersion)
+{
+	return runGas(
+		(_evmVersion.hasPush0() && _value == u256(0)) ? Instruction::PUSH0 : Instruction::PUSH1,
+		_evmVersion
+	);
+}
+
 u256 GasMeter::dataGas(bytes const& _data, bool _inCreation, langutil::EVMVersion _evmVersion)
 {
 	bigint gas = 0;
