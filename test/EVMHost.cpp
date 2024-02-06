@@ -162,6 +162,7 @@ void EVMHost::reset()
 	recorded_calls.clear();
 	// Clear EIP-2929 account access indicator
 	recorded_account_accesses.clear();
+	m_newlyCreatedAccounts.clear();
 
 	// Mark all precompiled contracts as existing. Existing here means to have a balance (as per EIP-161).
 	// NOTE: keep this in sync with `EVMHost::call` below.
