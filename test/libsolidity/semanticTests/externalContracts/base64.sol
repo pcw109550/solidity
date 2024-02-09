@@ -33,9 +33,12 @@ contract test {
 // EVMVersion: >=constantinople
 // ----
 // constructor()
-// gas irOptimized: 405832
-// gas legacy: 735054
-// gas legacyOptimized: 522722
+// gas irOptimized: 79432
+// gas irOptimized code: 326400
+// gas legacy: 102454
+// gas legacy code: 632600
+// gas legacyOptimized: 88322
+// gas legacyOptimized code: 434400
 // encode_inline_asm(bytes): 0x20, 0 -> 0x20, 0
 // encode_inline_asm(bytes): 0x20, 1, "f" -> 0x20, 4, "Zg=="
 // encode_inline_asm(bytes): 0x20, 2, "fo" -> 0x20, 4, "Zm8="
