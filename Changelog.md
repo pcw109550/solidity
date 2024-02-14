@@ -7,6 +7,7 @@ Compiler Features:
 
 
 Bugfixes:
+ * Optimizer: Fix optimizer executing each repeating part of the step sequence at least twice, even if the code size already became stable after the first iteration.
 
 
 ### 0.8.24 (2024-01-25)
