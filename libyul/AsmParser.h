@@ -117,6 +117,13 @@ protected:
 		langutil::SourceLocation const& _commentLocation
 	);
 
+	std::optional<std::pair<std::string_view, std::optional<Json::Value>>> parseDebugDataAttributeOperationComment(
+		std::string_view _arguments,
+		langutil::SourceLocation const& _commentLocation
+	);
+
+	void applyDebugDataAttributeOperation(Json::Value& _attributes, Json::Value const& _attributeOperation);
+
 	/// Creates a DebugData object with the correct source location set.
 	langutil::DebugData::ConstPtr createDebugData() const;
 
@@ -160,9 +167,11 @@ private:
 	langutil::SourceLocation m_locationOverride;
 	langutil::SourceLocation m_locationFromComment;
 	std::optional<int64_t> m_astIDFromComment;
+	std::optional<Json::Value> m_debugDataOperationFromComment;
 	UseSourceLocationFrom m_useSourceLocationFrom = UseSourceLocationFrom::Scanner;
 	ForLoopComponent m_currentForLoopComponent = ForLoopComponent::None;
 	bool m_insideFunction = false;
+	Json::Value m_currentDebugDataAttributes;
 };
 
 }

@@ -64,11 +64,11 @@ langutil::DebugData::ConstPtr Parser::createDebugData() const
 	switch (m_useSourceLocationFrom)
 	{
 		case UseSourceLocationFrom::Scanner:
-			return DebugData::create(ParserBase::currentLocation(), ParserBase::currentLocation());
+			return DebugData::create(ParserBase::currentLocation(), ParserBase::currentLocation(), {}, m_currentDebugDataAttributes);
 		case UseSourceLocationFrom::LocationOverride:
-			return DebugData::create(m_locationOverride, m_locationOverride);
+			return DebugData::create(m_locationOverride, m_locationOverride, {}, m_currentDebugDataAttributes);
 		case UseSourceLocationFrom::Comments:
-			return DebugData::create(ParserBase::currentLocation(), m_locationFromComment, m_astIDFromComment);
+			return DebugData::create(ParserBase::currentLocation(), m_locationFromComment, m_astIDFromComment, m_currentDebugDataAttributes);
 	}
 	solAssert(false, "");
 }
@@ -122,8 +122,7 @@ std::unique_ptr<Block> Parser::parseInline(std::shared_ptr<Scanner> const& _scan
 	try
 	{
 		m_scanner = _scanner;
-		if (m_useSourceLocationFrom == UseSourceLocationFrom::Comments)
-			fetchDebugDataFromComment();
+		fetchDebugDataFromComment();
 		return std::make_unique<Block>(parseBlock());
 	}
 	catch (FatalError const&)
@@ -137,15 +136,12 @@ std::unique_ptr<Block> Parser::parseInline(std::shared_ptr<Scanner> const& _scan
 langutil::Token Parser::advance()
 {
 	auto const token = ParserBase::advance();
-	if (m_useSourceLocationFrom == UseSourceLocationFrom::Comments)
-		fetchDebugDataFromComment();
+	fetchDebugDataFromComment();
 	return token;
 }
 
 void Parser::fetchDebugDataFromComment()
 {
-	solAssert(m_sourceNames.has_value(), "");
-
 	static std::regex const tagRegex = std::regex(
 		R"~~((?:^|\s+)(@[a-zA-Z0-9\-_]+)(?:\s+|$))~~", // tag, e.g: @src
 		std::regex_constants::ECMAScript | std::regex_constants::optimize
@@ -154,9 +150,9 @@ void Parser::fetchDebugDataFromComment()
 	std::string_view commentLiteral = m_scanner->currentCommentLiteral();
 	std::match_results<std::string_view::const_iterator> match;
 
-	langutil::SourceLocation originLocation = m_locationFromComment;
 	// Empty for each new node.
 	std::optional<int> astID;
+	std::optional<Json::Value> json;
 
 	while (regex_search(commentLiteral.cbegin(), commentLiteral.cend(), match, tagRegex))
 	{
@@ -165,10 +161,14 @@ void Parser::fetchDebugDataFromComment()
 
 		if (match[1] == "@src")
 		{
-			if (auto parseResult = parseSrcComment(commentLiteral, m_scanner->currentCommentLocation()))
-				tie(commentLiteral, originLocation) = *parseResult;
-			else
-				break;
+			if (m_useSourceLocationFrom == UseSourceLocationFrom::Comments)
+			{
+				solAssert(m_sourceNames.has_value(), "");
+				if (auto parseResult = parseSrcComment(commentLiteral, m_scanner->currentCommentLocation()))
+					tie(commentLiteral, m_locationFromComment) = *parseResult;
+				else
+					break;
+			}
 		}
 		else if (match[1] == "@ast-id")
 		{
@@ -177,13 +177,43 @@ void Parser::fetchDebugDataFromComment()
 			else
 				break;
 		}
+		else if (match[1] == "@attribute")
+		{
+			if (auto parseResult = parseDebugDataAttributeOperationComment(commentLiteral, m_scanner->currentCommentLocation()))
+			{
+				tie(commentLiteral, json) = *parseResult;
+			}
+			else
+				break;
+		}
 		else
 			// Ignore unrecognized tags.
 			continue;
 	}
 
-	m_locationFromComment = originLocation;
 	m_astIDFromComment = astID;
+	m_debugDataOperationFromComment = json;
+
+	if (m_debugDataOperationFromComment.has_value())
+		applyDebugDataAttributeOperation(m_currentDebugDataAttributes, m_debugDataOperationFromComment.value());
+}
+
+std::optional<std::pair<std::string_view, std::optional<Json::Value>>> Parser::parseDebugDataAttributeOperationComment(
+	std::string_view _arguments,
+	langutil::SourceLocation const& _commentLocation
+)
+{
+	(void)_arguments;
+	(void)_commentLocation;
+//	std::cout << "'" << _arguments << "' @ " << _commentLocation << std::endl;
+	std::optional<Json::Value> jsonData;
+	return {{_arguments, jsonData}};
+}
+
+void Parser::applyDebugDataAttributeOperation(Json::Value& _attributes, Json::Value const& _attributeOperation)
+{
+	(void)_attributes;
+	(void)_attributeOperation;
 }
 
 std::optional<std::pair<std::string_view, SourceLocation>> Parser::parseSrcComment(
