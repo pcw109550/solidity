@@ -112,7 +112,7 @@ void checkLinkReferencesSchema(Json const& _contractResult)
 		BOOST_TEST_REQUIRE(linkReferenceResult[fileName].is_object());
 		for (std::string const& libraryName: linkReferenceResult[fileName].getMemberNames())
 		{
-			BOOST_TEST_REQUIRE(linkReferenceResult[fileName][libraryName].isArray());
+			BOOST_TEST_REQUIRE(linkReferenceResult[fileName][libraryName].is_array());
 			BOOST_TEST_REQUIRE(!linkReferenceResult[fileName][libraryName].empty());
 			for (int i = 0; i < static_cast<int>(linkReferenceResult.size()); ++i)
 			{
@@ -371,7 +371,7 @@ BOOST_AUTO_TEST_CASE(basic_compilation)
 	BOOST_CHECK(containsAtMostWarnings(result));
 	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.is_object());
-	BOOST_CHECK(contract["abi"].isArray());
+	BOOST_CHECK(contract["abi"].is_array());
 	BOOST_CHECK_EQUAL(util::jsonCompactPrint(contract["abi"]), "[]");
 	BOOST_CHECK(contract["devdoc"].is_object());
 	BOOST_CHECK_EQUAL(util::jsonCompactPrint(contract["devdoc"]), R"({"kind":"dev","methods":{},"version":1})");
@@ -415,7 +415,7 @@ BOOST_AUTO_TEST_CASE(basic_compilation)
 	// Lets take the top level `.code` section (the "deployer code"), that should expose most of the features of
 	// the assembly JSON. What we want to check here is Operation, Push, PushTag, PushSub, PushSubSize and Tag.
 	BOOST_CHECK(contract["evm"]["legacyAssembly"].is_object());
-	BOOST_CHECK(contract["evm"]["legacyAssembly"][".code"].isArray());
+	BOOST_CHECK(contract["evm"]["legacyAssembly"][".code"].is_array());
 	BOOST_CHECK_EQUAL(
 		util::jsonCompactPrint(contract["evm"]["legacyAssembly"][".code"]),
 		"[{\"begin\":0,\"end\":14,\"name\":\"PUSH\",\"source\":0,\"value\":\"80\"},"
@@ -520,7 +520,7 @@ BOOST_AUTO_TEST_CASE(output_selection_explicit)
 	BOOST_CHECK(containsAtMostWarnings(result));
 	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.is_object());
-	BOOST_CHECK(contract["abi"].isArray());
+	BOOST_CHECK(contract["abi"].is_array());
 	BOOST_CHECK_EQUAL(util::jsonCompactPrint(contract["abi"]), "[]");
 }
 
@@ -549,7 +549,7 @@ BOOST_AUTO_TEST_CASE(output_selection_all_contracts)
 	BOOST_CHECK(containsAtMostWarnings(result));
 	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.is_object());
-	BOOST_CHECK(contract["abi"].isArray());
+	BOOST_CHECK(contract["abi"].is_array());
 	BOOST_CHECK_EQUAL(util::jsonCompactPrint(contract["abi"]), "[]");
 }
 
@@ -578,7 +578,7 @@ BOOST_AUTO_TEST_CASE(output_selection_all_files_single_contract)
 	BOOST_CHECK(containsAtMostWarnings(result));
 	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.is_object());
-	BOOST_CHECK(contract["abi"].isArray());
+	BOOST_CHECK(contract["abi"].is_array());
 	BOOST_CHECK_EQUAL(util::jsonCompactPrint(contract["abi"]), "[]");
 }
 
@@ -607,7 +607,7 @@ BOOST_AUTO_TEST_CASE(output_selection_all_files_all_contracts)
 	BOOST_CHECK(containsAtMostWarnings(result));
 	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.is_object());
-	BOOST_CHECK(contract["abi"].isArray());
+	BOOST_CHECK(contract["abi"].is_array());
 	BOOST_CHECK_EQUAL(util::jsonCompactPrint(contract["abi"]), "[]");
 }
 
@@ -636,7 +636,7 @@ BOOST_AUTO_TEST_CASE(output_selection_dependent_contract)
 	BOOST_CHECK(containsAtMostWarnings(result));
 	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.is_object());
-	BOOST_CHECK(contract["abi"].isArray());
+	BOOST_CHECK(contract["abi"].is_array());
 	BOOST_CHECK_EQUAL(util::jsonCompactPrint(contract["abi"]), "[{\"inputs\":[],\"name\":\"f\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]");
 }
 
@@ -668,7 +668,7 @@ BOOST_AUTO_TEST_CASE(output_selection_dependent_contract_with_import)
 	BOOST_CHECK(containsAtMostWarnings(result));
 	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.is_object());
-	BOOST_CHECK(contract["abi"].isArray());
+	BOOST_CHECK(contract["abi"].is_array());
 	BOOST_CHECK_EQUAL(util::jsonCompactPrint(contract["abi"]), "[{\"inputs\":[],\"name\":\"f\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]");
 }
 
@@ -697,7 +697,7 @@ BOOST_AUTO_TEST_CASE(filename_with_colon)
 	BOOST_CHECK(containsAtMostWarnings(result));
 	Json contract = getContractResult(result, "http://github.com/ethereum/solidity/std/StandardToken.sol", "A");
 	BOOST_CHECK(contract.is_object());
-	BOOST_CHECK(contract["abi"].isArray());
+	BOOST_CHECK(contract["abi"].is_array());
 	BOOST_CHECK_EQUAL(util::jsonCompactPrint(contract["abi"]), "[]");
 }
 
@@ -1396,7 +1396,7 @@ BOOST_AUTO_TEST_CASE(use_stack_optimization)
 	parsedInput["settings"]["optimizer"]["details"]["yulDetails"]["optimizerSteps"] = optimiserSteps;
 
 	result = compiler.compile(parsedInput);
-	BOOST_REQUIRE(result["errors"].isArray());
+	BOOST_REQUIRE(result["errors"].is_array());
 	BOOST_CHECK(result["errors"][0]["severity"] == "error");
 	BOOST_REQUIRE(result["errors"][0]["message"].is_string());
 	BOOST_CHECK(result["errors"][0]["message"].get<std::string>().find("When compiling inline assembly") != std::string::npos);

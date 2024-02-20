@@ -71,7 +71,7 @@ Json formatError(
 	error["formattedMessage"] = (_formattedMessage.length() > 0) ? _formattedMessage : _message;
 	if (_sourceLocation.is_object())
 		error["sourceLocation"] = _sourceLocation;
-	if (_secondarySourceLocation.isArray())
+	if (_secondarySourceLocation.is_array())
 		error["secondarySourceLocations"] = _secondarySourceLocation;
 	return error;
 }
@@ -227,7 +227,7 @@ bool isArtifactRequested(Json const& _outputSelection, std::string const& _file,
 			for (auto const& contract: contracts)
 				if (
 					_outputSelection[file].contains(contract) &&
-					_outputSelection[file][contract].isArray() &&
+					_outputSelection[file][contract].is_array() &&
 					isArtifactRequested(_outputSelection[file][contract], _artifact, _wildcardMatchesExperimental)
 				)
 					return true;
@@ -530,7 +530,7 @@ std::optional<Json> checkOutputSelection(Json const& _outputSelection)
 		{
 			auto const& contractVal = sourceVal[contractName];
 
-			if (!contractVal.isArray())
+			if (!contractVal.is_array())
 				return formatFatalError(
 					Error::Type::JSONError,
 					"\"settings.outputSelection." +
@@ -676,7 +676,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 				else
 					ret.sources[sourceName] = content;
 			}
-			else if (sources[sourceName]["urls"].isArray())
+			else if (sources[sourceName]["urls"].is_array())
 			{
 				if (!m_readFile)
 					return formatFatalError(
@@ -861,7 +861,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 
 		if (settings["debug"].contains("debugInfo"))
 		{
-			if (!settings["debug"]["debugInfo"].isArray())
+			if (!settings["debug"]["debugInfo"].is_array())
 				return formatFatalError(Error::Type::JSONError, "settings.debug.debugInfo must be an array.");
 
 			std::vector<std::string> components;
@@ -885,7 +885,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 		}
 	}
 
-	if (settings.contains("remappings") && !settings["remappings"].isArray())
+	if (settings.contains("remappings") && !settings["remappings"].is_array())
 		return formatFatalError(Error::Type::JSONError, "\"settings.remappings\" must be an array of strings.");
 
 	for (auto const& remapping: settings.get("remappings", Json()))
@@ -1008,7 +1008,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 				return formatFatalError(Error::Type::JSONError, "Source name cannot be empty.");
 
 			auto const& contracts = sources[source];
-			if (!contracts.isArray())
+			if (!contracts.is_array())
 				return formatFatalError(Error::Type::JSONError, "Source contracts must be an array.");
 
 			for (auto const& contract: contracts)
@@ -1067,7 +1067,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 	if (modelCheckerSettings.contains("invariants"))
 	{
 		auto const& invariantsArray = modelCheckerSettings["invariants"];
-		if (!invariantsArray.isArray())
+		if (!invariantsArray.is_array())
 			return formatFatalError(Error::Type::JSONError, "settings.modelChecker.invariants must be an array.");
 
 		ModelCheckerInvariants invariants;
@@ -1112,7 +1112,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 	if (modelCheckerSettings.contains("solvers"))
 	{
 		auto const& solversArray = modelCheckerSettings["solvers"];
-		if (!solversArray.isArray())
+		if (!solversArray.is_array())
 			return formatFatalError(Error::Type::JSONError, "settings.modelChecker.solvers must be an array.");
 
 		smtutil::SMTSolverChoice solvers;
@@ -1142,7 +1142,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 	if (modelCheckerSettings.contains("targets"))
 	{
 		auto const& targetsArray = modelCheckerSettings["targets"];
-		if (!targetsArray.isArray())
+		if (!targetsArray.is_array())
 			return formatFatalError(Error::Type::JSONError, "settings.modelChecker.targets must be an array.");
 
 		ModelCheckerTargets targets;

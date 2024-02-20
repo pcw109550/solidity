@@ -83,7 +83,7 @@ unsigned Assembly::codeSize(unsigned subTagSize) const
 void Assembly::importAssemblyItemsFromJSON(Json const& _code, std::vector<std::string> const& _sourceList)
 {
 	solAssert(m_items.empty());
-	solRequire(_code.isArray(), AssemblyImportException, "Supplied JSON is not an array.");
+	solRequire(_code.is_array(), AssemblyImportException, "Supplied JSON is not an array.");
 	for (auto jsonItemIter = std::begin(_code); jsonItemIter != std::end(_code); ++jsonItemIter)
 	{
 		AssemblyItem const& newItem = m_items.emplace_back(createAssemblyItemFromJSON(*jsonItemIter, _sourceList));
@@ -518,7 +518,7 @@ std::pair<std::shared_ptr<Assembly>, std::vector<std::string>> Assembly::fromJSO
 	{
 		if (_json.contains("sourceList"))
 		{
-			solRequire(_json["sourceList"].isArray(), AssemblyImportException, "Optional member 'sourceList' is not an array.");
+			solRequire(_json["sourceList"].is_array(), AssemblyImportException, "Optional member 'sourceList' is not an array.");
 			for (Json const& sourceName: _json["sourceList"])
 				solRequire(sourceName.is_string(), AssemblyImportException, "The 'sourceList' array contains an item that is not a string.");
 		}
@@ -548,7 +548,7 @@ std::pair<std::shared_ptr<Assembly>, std::vector<std::string>> Assembly::fromJSO
 	}
 
 	solRequire(_json.contains(".code"), AssemblyImportException, "Member '.code' is missing.");
-	solRequire(_json[".code"].isArray(), AssemblyImportException, "Member '.code' is not an array.");
+	solRequire(_json[".code"].is_array(), AssemblyImportException, "Member '.code' is not an array.");
 	for (Json const& codeItem: _json[".code"])
 		solRequire(codeItem.is_object(), AssemblyImportException, "The '.code' array contains an item that is not an object.");
 

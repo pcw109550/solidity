@@ -193,7 +193,7 @@ void LanguageServer::changeConfiguration(Json const& _settings)
 	if (jsonIncludePaths)
 	{
 		int typeFailureCount = 0;
-		if (jsonIncludePaths.isArray())
+		if (jsonIncludePaths.is_array())
 		{
 			std::vector<boost::filesystem::path> includePaths;
 			for (Json const& jsonPath: jsonIncludePaths)

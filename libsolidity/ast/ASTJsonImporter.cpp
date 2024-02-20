@@ -99,7 +99,7 @@ std::optional<std::vector<SourceLocation>> ASTJsonImporter::createSourceLocation
 {
 	std::vector<SourceLocation> locations;
 
-	if (_node.contains("nameLocations") && _node["nameLocations"].isArray())
+	if (_node.contains("nameLocations") && _node["nameLocations"].is_array())
 	{
 		for (auto const& val: _node["nameLocations"])
 			locations.emplace_back(langutil::parseSourceLocation(val.get<std::string>(), m_sourceNames));
@@ -368,7 +368,7 @@ ASTPointer<IdentifierPath> ASTJsonImporter::createIdentifierPath(Json const& _no
 		namePath.emplace_back(s);
 	}
 
-	if (_node.contains("nameLocations") && _node["nameLocations"].isArray())
+	if (_node.contains("nameLocations") && _node["nameLocations"].is_array())
 		for (auto const& val: _node["nameLocations"])
 			namePathLocations.emplace_back(langutil::parseSourceLocation(val.get<std::string>(), m_sourceNames));
 	else
@@ -404,7 +404,7 @@ ASTPointer<UsingForDirective> ASTJsonImporter::createUsingForDirective(Json cons
 	std::vector<std::optional<Token>> operators;
 	if (_node.contains("libraryName"))
 	{
-		astAssert(!_node["libraryName"].isArray());
+		astAssert(!_node["libraryName"].is_array());
 		astAssert(!_node["libraryName"]["operator"]);
 		functions.emplace_back(createIdentifierPath(_node["libraryName"]));
 		operators.emplace_back(std::nullopt);
@@ -725,7 +725,7 @@ ASTPointer<InlineAssembly> ASTJsonImporter::createInlineAssembly(Json const& _no
 	{
 		flags = std::make_shared<std::vector<ASTPointer<ASTString>>>();
 		Json const& flagsNode = _node["flags"];
-		astAssert(flagsNode.isArray(), "Assembly flags must be an array.");
+		astAssert(flagsNode.is_array(), "Assembly flags must be an array.");
 		for (Json::ArrayIndex i = 0; i < flagsNode.size(); ++i)
 		{
 			astAssert(flagsNode[i].is_string(), "Assembly flag must be a string.");

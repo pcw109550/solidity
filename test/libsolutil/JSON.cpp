@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE(parse_json_strict)
 	// According to ECMA-404 object, array, number, string, true, false, null are allowed
 	// ... but JSONCPP disallows value types
 	BOOST_CHECK(jsonParseStrict("[]", json, &errors));
-	BOOST_CHECK(json.isArray());
+	BOOST_CHECK(json.is_array());
 	BOOST_CHECK(jsonParseStrict("{}", json, &errors));
 	BOOST_CHECK(json.is_object());
 	BOOST_CHECK(!jsonParseStrict("1", json, &errors));
@@ -174,12 +174,12 @@ BOOST_AUTO_TEST_CASE(parse_json_strict)
 	//
 	// ... but JSONCPP allows any hex escapes
 	BOOST_CHECK(jsonParseStrict("[ \"\x80\xec\x80\" ]", json, &errors));
-	BOOST_CHECK(json.isArray());
+	BOOST_CHECK(json.is_array());
 	BOOST_CHECK(json[0] == "\x80\xec\x80");
 
 	// This would be valid more lenient parsers.
 	BOOST_CHECK(jsonParseStrict("[ \"\xF0\x9F\x98\x8A\" ]", json, &errors));
-	BOOST_CHECK(json.isArray());
+	BOOST_CHECK(json.is_array());
 	BOOST_CHECK(json[0] == "😊");
 }
 

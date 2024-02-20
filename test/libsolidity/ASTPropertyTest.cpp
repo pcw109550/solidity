@@ -117,7 +117,7 @@ void ASTPropertyTest::extractTestsFromAST(Json const& _astJson)
 	{
 		Json& node = nodesToVisit.front();
 
-		if (node.isArray())
+		if (node.is_array())
 			for (auto&& member: node)
 				nodesToVisit.push(member);
 		else if (node.is_object())
@@ -157,7 +157,7 @@ void ASTPropertyTest::extractTestsFromAST(Json const& _astJson)
 						node["nodeType"].get<std::string>() + " node does not have a property named \""s + testedProperty + "\""
 					);
 					soltestAssert(
-						!propertyNode->is_object() && !propertyNode->isArray(),
+						!propertyNode->is_object() && !propertyNode->is_array(),
 						"Property \"" + testedProperty + "\" is an object or an array."
 					);
 					m_tests[testId].obtainedValue = propertyNode->get<std::string>();

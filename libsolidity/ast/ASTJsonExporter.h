@@ -192,7 +192,7 @@ private:
 	);
 	static void appendMove(Json& _array, Json&& _value)
 	{
-		solAssert(_array.isArray(), "");
+		solAssert(_array.is_array(), "");
 		_array.push_back(std::move(_value));
 	}
 
