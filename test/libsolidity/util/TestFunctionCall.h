@@ -23,8 +23,6 @@
 #include <libsolutil/CommonData.h>
 #include <libsolutil/JSON.h>
 
-#include <json/json.h>
-
 #include <iosfwd>
 #include <numeric>
 #include <stdexcept>

@@ -19,8 +19,7 @@
 #include <test/libsolidity/util/SoltestErrors.h>
 
 #include <libsolutil/CommonData.h>
-
-#include <json/json.h>
+#include <libsolutil/JSON.h>
 
 namespace solidity::frontend::test
 {

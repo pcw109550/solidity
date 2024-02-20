@@ -24,8 +24,8 @@
 #pragma once
 
 #include <vector>
+#include <libsolutil/JSON.h>
 #include <libsolidity/ast/AST.h>
-#include <json/json.h>
 #include <libsolidity/ast/ASTAnnotations.h>
 #include <liblangutil/EVMVersion.h>
 #include <liblangutil/Exceptions.h>

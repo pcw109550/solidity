@@ -25,6 +25,7 @@
 #include <liblangutil/DebugInfoSelection.h>
 #include <liblangutil/ErrorReporter.h>
 #include <liblangutil/EVMVersion.h>
+#include <libsolutil/JSON.h>
 
 #include <libyul/Object.h>
 #include <libyul/ObjectParser.h>
@@ -32,8 +33,6 @@
 #include <libsolidity/interface/OptimiserSettings.h>
 
 #include <libevmasm/LinkerObject.h>
-
-#include <json/json.h>
 
 #include <memory>
 #include <string>

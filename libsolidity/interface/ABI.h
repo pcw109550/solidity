@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include <json/json.h>
+#include <libsolutil/JSON.h>
 #include <memory>
 #include <string>
 

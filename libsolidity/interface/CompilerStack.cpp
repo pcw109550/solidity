@@ -84,8 +84,6 @@
 #include <libsolutil/Algorithms.h>
 #include <libsolutil/FunctionSelector.h>
 
-#include <json/json.h>
-
 #include <boost/algorithm/string/replace.hpp>
 
 #include <range/v3/algorithm/all_of.hpp>

@@ -28,11 +28,11 @@
 #include <liblangutil/DebugInfoSelection.h>
 
 #include <libsolutil/Common.h>
+#include <libsolutil/JSON.h>
 
 #include <memory>
 #include <set>
 #include <limits>
-#include <json/json.h>
 
 namespace solidity::yul
 {

@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include <json/json.h>
+#include <libsolutil/JSON.h>
 #include <liblangutil/SourceLocation.h>
 #include <libyul/ASTForward.h>
 

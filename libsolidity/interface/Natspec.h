@@ -26,10 +26,10 @@
 
 #pragma once
 
-#include <json/json.h>
+#include <libsolutil/JSON.h>
+#include <libsolidity/ast/AST.h>
 #include <memory>
 #include <string>
-#include <libsolidity/ast/AST.h>
 
 namespace solidity::frontend
 {

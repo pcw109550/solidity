@@ -21,10 +21,9 @@
 
 #pragma once
 
+#include <libsolutil/JSON.h>
 #include <libsolidity/ast/AST.h>
 #include <libsolidity/ast/Types.h>
-
-#include <json/json.h>
 
 namespace solidity::frontend
 {

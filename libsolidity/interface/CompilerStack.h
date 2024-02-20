@@ -47,8 +47,7 @@
 #include <libsolutil/Common.h>
 #include <libsolutil/FixedHash.h>
 #include <libsolutil/LazyInit.h>
-
-#include <json/json.h>
+#include <libsolutil/JSON.h>
 
 #include <functional>
 #include <memory>

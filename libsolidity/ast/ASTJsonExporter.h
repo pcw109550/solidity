@@ -28,7 +28,6 @@
 #include <libsolidity/interface/CompilerStack.h>
 #include <liblangutil/Exceptions.h>
 
-#include <json/json.h>
 #include <libsolutil/JSON.h>
 
 #include <algorithm>
