@@ -68,7 +68,7 @@ public:
 			if (n)
 				appendMove(ret, toJson(*n));
 			else
-				ret.append(Json::nullValue);
+				ret.append(Json{});
 		return ret;
 	}
 	bool visit(SourceUnit const& _node) override;
@@ -148,11 +148,11 @@ private:
 	static std::string namePathToString(std::vector<ASTString> const& _namePath);
 	static Json idOrNull(ASTNode const* _pt)
 	{
-		return _pt ? Json(nodeId(*_pt)) : Json::nullValue;
+		return _pt ? Json(nodeId(*_pt)) : Json{};
 	}
 	Json toJsonOrNull(ASTNode const* _node)
 	{
-		return _node ? toJson(*_node) : Json::nullValue;
+		return _node ? toJson(*_node) : Json{};
 	}
 	Json inlineAssemblyIdentifierToJson(std::pair<yul::Identifier const* , InlineAssemblyAnnotation::ExternalIdentifierInfo> _info) const;
 	static std::string location(VariableDeclaration::Location _location);

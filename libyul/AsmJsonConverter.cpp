@@ -84,8 +84,8 @@ Json AsmJsonConverter::operator()(Assignment const& _node) const
 	yulAssert(_node.variableNames.size() >= 1, "Invalid assignment syntax");
 	Json ret = createAstNode(originLocationOf(_node), nativeLocationOf(_node), "YulAssignment");
 	for (auto const& var: _node.variableNames)
-		ret["variableNames"].append((*this)(var));
-	ret["value"] = _node.value ? std::visit(*this, *_node.value) : Json::nullValue;
+		ret["variableNames"].emplace((*this)(var));
+	ret["value"] = _node.value ? std::visit(*this, *_node.value) : Json{};
 	return ret;
 }
 
@@ -110,7 +110,7 @@ Json AsmJsonConverter::operator()(VariableDeclaration const& _node) const
 	for (auto const& var: _node.variables)
 		ret["variables"].append((*this)(var));
 
-	ret["value"] = _node.value ? std::visit(*this, *_node.value) : Json::nullValue;
+	ret["value"] = _node.value ? std::visit(*this, *_node.value) : Json{};
 
 	return ret;
 }

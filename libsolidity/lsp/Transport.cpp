@@ -130,7 +130,7 @@ void Transport::send(Json _json, MessageID _id)
 {
 	solAssert(_json.isObject());
 	_json["jsonrpc"] = "2.0";
-	if (_id != Json::nullValue)
+	if (_id != Json{})
 		_json["id"] = _id;
 
 	// Trailing CRLF only for easier readability.

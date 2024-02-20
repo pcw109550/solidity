@@ -105,7 +105,7 @@ public:
 
 	virtual bool closed() const noexcept = 0;
 
-	void trace(std::string _message, Json _extra = Json::nullValue);
+	void trace(std::string _message, Json _extra = Json{});
 
 	TraceValue traceValue() const noexcept { return m_logTrace; }
 	void setTrace(TraceValue _value) noexcept { m_logTrace = _value; }
@@ -135,7 +135,7 @@ protected:
 	/// Sends an arbitrary raw message to the client.
 	///
 	/// Used by the notify/reply/error function family.
-	virtual void send(Json _message, MessageID _id = Json::nullValue);
+	virtual void send(Json _message, MessageID _id = Json{});
 };
 
 /**

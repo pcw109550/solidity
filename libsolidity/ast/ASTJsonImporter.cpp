@@ -1081,7 +1081,7 @@ ASTPointer<StructuredDocumentation> ASTJsonImporter::createDocumentation(Json co
 Json ASTJsonImporter::member(Json const& _node, std::string const& _name)
 {
 	if (!_node.contains(_name))
-		return Json::nullValue;
+		return Json{};
 	return _node[_name];
 }
 

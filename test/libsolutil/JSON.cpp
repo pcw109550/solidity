@@ -44,13 +44,13 @@ BOOST_AUTO_TEST_CASE(json_types)
 	BOOST_CHECK(value.empty());
 	value = Json();
 	BOOST_CHECK(value.empty());
-	value = Json::nullValue;
+	value = Json{};
 	BOOST_CHECK(value.empty());
 
 	check(value, "null");
 	check({}, "null");
 	check(Json(), "null");
-	check(Json::nullValue, "null");
+	check(Json{}, "null");
 	check(Json::objectValue, "{}");
 	check(Json::arrayValue, "[]");
 	check(Json::UInt(1), "1");
