@@ -45,7 +45,7 @@ namespace
 class StreamWriterBuilder: public Json::StreamWriterBuilder
 {
 public:
-	explicit StreamWriterBuilder(std::map<std::string, Json::Value> const& _settings)
+	explicit StreamWriterBuilder(std::map<std::string, Json> const& _settings)
 	{
 		for (auto const& iter: _settings)
 			this->settings_[iter.first] = iter.second;
@@ -66,7 +66,7 @@ public:
 /// \param _input JSON input string
 /// \param _builder StreamWriterBuilder that is used to create new Json::StreamWriter
 /// \return serialized json object
-std::string print(Json::Value const& _input, Json::StreamWriterBuilder const& _builder)
+std::string print(Json const& _input, Json::StreamWriterBuilder const& _builder)
 {
 	std::stringstream stream;
 	std::unique_ptr<Json::StreamWriter> writer(_builder.newStreamWriter());
@@ -80,22 +80,22 @@ std::string print(Json::Value const& _input, Json::StreamWriterBuilder const& _b
 /// \param _json [out] resulting JSON object
 /// \param _errs [out] Formatted error messages
 /// \return \c true if the document was successfully parsed, \c false if an error occurred.
-bool parse(Json::CharReaderBuilder& _builder, std::string const& _input, Json::Value& _json, std::string* _errs)
+bool parse(Json::CharReaderBuilder& _builder, std::string const& _input, Json& _json, std::string* _errs)
 {
 	std::unique_ptr<Json::CharReader> reader(_builder.newCharReader());
 	return reader->parse(_input.c_str(), _input.c_str() + _input.length(), &_json, _errs);
 }
 
 /// Takes a JSON value (@ _json) and removes all its members with value 'null' recursively.
-void removeNullMembersHelper(Json::Value& _json)
+void removeNullMembersHelper(Json& _json)
 {
-	if (_json.type() == Json::ValueType::arrayValue)
+	if (_json.type() == JsonType::arrayValue)
 		for (auto& child: _json)
 			removeNullMembersHelper(child);
-	else if (_json.type() == Json::ValueType::objectValue)
+	else if (_json.type() == JsonType::objectValue)
 		for (auto const& key: _json.getMemberNames())
 		{
-			Json::Value& value = _json[key];
+			Json& value = _json[key];
 			if (value.isNull())
 				_json.removeMember(key);
 			else
@@ -105,25 +105,25 @@ void removeNullMembersHelper(Json::Value& _json)
 
 } // end anonymous namespace
 
-Json::Value removeNullMembers(Json::Value _json)
+Json removeNullMembers(Json _json)
 {
 	removeNullMembersHelper(_json);
 	return _json;
 }
 
-std::string jsonPrettyPrint(Json::Value const& _input)
+std::string jsonPrettyPrint(Json const& _input)
 {
 	return jsonPrint(_input, JsonFormat{ JsonFormat::Pretty });
 }
 
-std::string jsonCompactPrint(Json::Value const& _input)
+std::string jsonCompactPrint(Json const& _input)
 {
 	return jsonPrint(_input, JsonFormat{ JsonFormat::Compact });
 }
 
-std::string jsonPrint(Json::Value const& _input, JsonFormat const& _format)
+std::string jsonPrint(Json const& _input, JsonFormat const& _format)
 {
-	std::map<std::string, Json::Value> settings;
+	std::map<std::string, Json> settings;
 	if (_format.format == JsonFormat::Pretty)
 	{
 		settings["indentation"] = std::string(_format.indent, ' ');
@@ -138,13 +138,13 @@ std::string jsonPrint(Json::Value const& _input, JsonFormat const& _format)
 	return result;
 }
 
-bool jsonParseStrict(std::string const& _input, Json::Value& _json, std::string* _errs /* = nullptr */)
+bool jsonParseStrict(std::string const& _input, Json& _json, std::string* _errs /* = nullptr */)
 {
 	static StrictModeCharReaderBuilder readerBuilder;
 	return parse(readerBuilder, _input, _json, _errs);
 }
 
-std::optional<Json::Value> jsonValueByPath(Json::Value const& _node, std::string_view _jsonPath)
+std::optional<Json> jsonValueByPath(Json const& _node, std::string_view _jsonPath)
 {
 	if (!_node.isObject() || _jsonPath.empty())
 		return {};

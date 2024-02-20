@@ -55,7 +55,7 @@ langutil::Error::Severity str2Severity(std::string const& _cat)
 }
 
 /// Helper to match a specific error type and message
-bool containsError(Json::Value const& _compilerResult, std::string const& _type, std::string const& _message)
+bool containsError(Json const& _compilerResult, std::string const& _type, std::string const& _message)
 {
 	if (!_compilerResult.isMember("errors"))
 		return false;
@@ -72,7 +72,7 @@ bool containsError(Json::Value const& _compilerResult, std::string const& _type,
 	return false;
 }
 
-bool containsAtMostWarnings(Json::Value const& _compilerResult)
+bool containsAtMostWarnings(Json const& _compilerResult)
 {
 	if (!_compilerResult.isMember("errors"))
 		return true;
@@ -88,23 +88,23 @@ bool containsAtMostWarnings(Json::Value const& _compilerResult)
 	return true;
 }
 
-Json::Value getContractResult(Json::Value const& _compilerResult, std::string const& _file, std::string const& _name)
+Json getContractResult(Json const& _compilerResult, std::string const& _file, std::string const& _name)
 {
 	if (
 		!_compilerResult["contracts"].isObject() ||
 		!_compilerResult["contracts"][_file].isObject() ||
 		!_compilerResult["contracts"][_file][_name].isObject()
 	)
-		return Json::Value();
+		return Json();
 	return _compilerResult["contracts"][_file][_name];
 }
 
-void checkLinkReferencesSchema(Json::Value const& _contractResult)
+void checkLinkReferencesSchema(Json const& _contractResult)
 {
 	BOOST_TEST_REQUIRE(_contractResult.isObject());
 	BOOST_TEST_REQUIRE(_contractResult["evm"]["bytecode"].isObject());
 
-	Json::Value const& linkReferenceResult = _contractResult["evm"]["bytecode"]["linkReferences"];
+	Json const& linkReferenceResult = _contractResult["evm"]["bytecode"]["linkReferences"];
 	BOOST_TEST_REQUIRE(linkReferenceResult.isObject());
 
 	for (std::string const& fileName: linkReferenceResult.getMemberNames())
@@ -125,11 +125,11 @@ void checkLinkReferencesSchema(Json::Value const& _contractResult)
 	}
 }
 
-void expectLinkReferences(Json::Value const& _contractResult, std::map<std::string, std::set<std::string>> const& _expectedLinkReferences)
+void expectLinkReferences(Json const& _contractResult, std::map<std::string, std::set<std::string>> const& _expectedLinkReferences)
 {
 	checkLinkReferencesSchema(_contractResult);
 
-	Json::Value const& linkReferenceResult = _contractResult["evm"]["bytecode"]["linkReferences"];
+	Json const& linkReferenceResult = _contractResult["evm"]["bytecode"]["linkReferences"];
 	BOOST_TEST(linkReferenceResult.size() == _expectedLinkReferences.size());
 
 	for (auto const& [fileName, libraries]: _expectedLinkReferences)
@@ -141,11 +141,11 @@ void expectLinkReferences(Json::Value const& _contractResult, std::map<std::stri
 	}
 }
 
-Json::Value compile(std::string _input)
+Json compile(std::string _input)
 {
 	StandardCompiler compiler;
 	std::string output = compiler.compile(std::move(_input));
-	Json::Value ret;
+	Json ret;
 	BOOST_REQUIRE(util::jsonParseStrict(output, ret));
 	return ret;
 }
@@ -156,13 +156,13 @@ BOOST_AUTO_TEST_SUITE(StandardCompiler)
 
 BOOST_AUTO_TEST_CASE(assume_object_input)
 {
-	Json::Value result;
+	Json result;
 
 	/// Use the native JSON interface of StandardCompiler to trigger these
 	frontend::StandardCompiler compiler;
-	result = compiler.compile(Json::Value());
+	result = compiler.compile(Json());
 	BOOST_CHECK(containsError(result, "JSONError", "Input is not a JSON object."));
-	result = compiler.compile(Json::Value("INVALID"));
+	result = compiler.compile(Json("INVALID"));
 	BOOST_CHECK(containsError(result, "JSONError", "Input is not a JSON object."));
 
 	/// Use the string interface of StandardCompiler to trigger these
@@ -186,7 +186,7 @@ BOOST_AUTO_TEST_CASE(invalid_language)
 		"sources": { "name": { "content": "abc" } }
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsError(result, "JSONError", "Only \"Solidity\", \"Yul\", \"SolidityAST\" or \"EVMAssembly\" is supported as a language."));
 }
 
@@ -197,7 +197,7 @@ BOOST_AUTO_TEST_CASE(valid_language)
 		"language": "Solidity"
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(!containsError(result, "JSONError", "Only \"Solidity\" or \"Yul\" is supported as a language."));
 }
 
@@ -208,7 +208,7 @@ BOOST_AUTO_TEST_CASE(no_sources)
 		"language": "Solidity"
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsError(result, "JSONError", "No input sources specified."));
 }
 
@@ -220,7 +220,7 @@ BOOST_AUTO_TEST_CASE(no_sources_empty_object)
 		"sources": {}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsError(result, "JSONError", "No input sources specified."));
 }
 
@@ -232,7 +232,7 @@ BOOST_AUTO_TEST_CASE(no_sources_empty_array)
 		"sources": []
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsError(result, "JSONError", "\"sources\" is not a JSON object."));
 }
 
@@ -244,7 +244,7 @@ BOOST_AUTO_TEST_CASE(sources_is_array)
 		"sources": ["aa", "bb"]
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsError(result, "JSONError", "\"sources\" is not a JSON object."));
 }
 
@@ -262,7 +262,7 @@ BOOST_AUTO_TEST_CASE(unexpected_trailing_test)
 	}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsError(result, "JSONError", "* Line 10, Column 2\n  Extra non-whitespace after JSON value.\n"));
 }
 
@@ -278,7 +278,7 @@ BOOST_AUTO_TEST_CASE(smoke_test)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsAtMostWarnings(result));
 }
 
@@ -299,7 +299,7 @@ BOOST_AUTO_TEST_CASE(optimizer_enabled_not_boolean)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsError(result, "JSONError", "The \"enabled\" setting must be a Boolean."));
 }
 
@@ -321,7 +321,7 @@ BOOST_AUTO_TEST_CASE(optimizer_runs_not_a_number)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsError(result, "JSONError", "The \"runs\" setting must be an unsigned number."));
 }
 
@@ -343,7 +343,7 @@ BOOST_AUTO_TEST_CASE(optimizer_runs_not_an_unsigned_number)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsError(result, "JSONError", "The \"runs\" setting must be an unsigned number."));
 }
 
@@ -367,9 +367,9 @@ BOOST_AUTO_TEST_CASE(basic_compilation)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsAtMostWarnings(result));
-	Json::Value contract = getContractResult(result, "fileA", "A");
+	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.isObject());
 	BOOST_CHECK(contract["abi"].isArray());
 	BOOST_CHECK_EQUAL(util::jsonCompactPrint(contract["abi"]), "[]");
@@ -476,7 +476,7 @@ BOOST_AUTO_TEST_CASE(compilation_error)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(result.isMember("errors"));
 	BOOST_CHECK(result["errors"].size() >= 1);
 	for (auto const& error: result["errors"])
@@ -516,9 +516,9 @@ BOOST_AUTO_TEST_CASE(output_selection_explicit)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsAtMostWarnings(result));
-	Json::Value contract = getContractResult(result, "fileA", "A");
+	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.isObject());
 	BOOST_CHECK(contract["abi"].isArray());
 	BOOST_CHECK_EQUAL(util::jsonCompactPrint(contract["abi"]), "[]");
@@ -545,9 +545,9 @@ BOOST_AUTO_TEST_CASE(output_selection_all_contracts)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsAtMostWarnings(result));
-	Json::Value contract = getContractResult(result, "fileA", "A");
+	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.isObject());
 	BOOST_CHECK(contract["abi"].isArray());
 	BOOST_CHECK_EQUAL(util::jsonCompactPrint(contract["abi"]), "[]");
@@ -574,9 +574,9 @@ BOOST_AUTO_TEST_CASE(output_selection_all_files_single_contract)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsAtMostWarnings(result));
-	Json::Value contract = getContractResult(result, "fileA", "A");
+	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.isObject());
 	BOOST_CHECK(contract["abi"].isArray());
 	BOOST_CHECK_EQUAL(util::jsonCompactPrint(contract["abi"]), "[]");
@@ -603,9 +603,9 @@ BOOST_AUTO_TEST_CASE(output_selection_all_files_all_contracts)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsAtMostWarnings(result));
-	Json::Value contract = getContractResult(result, "fileA", "A");
+	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.isObject());
 	BOOST_CHECK(contract["abi"].isArray());
 	BOOST_CHECK_EQUAL(util::jsonCompactPrint(contract["abi"]), "[]");
@@ -632,9 +632,9 @@ BOOST_AUTO_TEST_CASE(output_selection_dependent_contract)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsAtMostWarnings(result));
-	Json::Value contract = getContractResult(result, "fileA", "A");
+	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.isObject());
 	BOOST_CHECK(contract["abi"].isArray());
 	BOOST_CHECK_EQUAL(util::jsonCompactPrint(contract["abi"]), "[{\"inputs\":[],\"name\":\"f\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]");
@@ -664,9 +664,9 @@ BOOST_AUTO_TEST_CASE(output_selection_dependent_contract_with_import)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsAtMostWarnings(result));
-	Json::Value contract = getContractResult(result, "fileA", "A");
+	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.isObject());
 	BOOST_CHECK(contract["abi"].isArray());
 	BOOST_CHECK_EQUAL(util::jsonCompactPrint(contract["abi"]), "[{\"inputs\":[],\"name\":\"f\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]");
@@ -693,9 +693,9 @@ BOOST_AUTO_TEST_CASE(filename_with_colon)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsAtMostWarnings(result));
-	Json::Value contract = getContractResult(result, "http://github.com/ethereum/solidity/std/StandardToken.sol", "A");
+	Json contract = getContractResult(result, "http://github.com/ethereum/solidity/std/StandardToken.sol", "A");
 	BOOST_CHECK(contract.isObject());
 	BOOST_CHECK(contract["abi"].isArray());
 	BOOST_CHECK_EQUAL(util::jsonCompactPrint(contract["abi"]), "[]");
@@ -725,9 +725,9 @@ BOOST_AUTO_TEST_CASE(library_filename_with_colon)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsAtMostWarnings(result));
-	Json::Value contract = getContractResult(result, "fileA", "A");
+	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.isObject());
 	expectLinkReferences(contract, {{"git:library.sol", {"L"}}});
 }
@@ -747,7 +747,7 @@ BOOST_AUTO_TEST_CASE(libraries_invalid_top_level)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsError(result, "JSONError", "\"libraries\" is not a JSON object."));
 }
 
@@ -768,7 +768,7 @@ BOOST_AUTO_TEST_CASE(libraries_invalid_entry)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsError(result, "JSONError", "Library entry is not a JSON object."));
 }
 
@@ -791,7 +791,7 @@ BOOST_AUTO_TEST_CASE(libraries_invalid_hex)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsError(result, "JSONError", "Invalid library address (\"0x4200000000000000000000000000000000000xx1\") supplied."));
 }
 
@@ -815,7 +815,7 @@ BOOST_AUTO_TEST_CASE(libraries_invalid_length)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsError(result, "JSONError", "Library address is of invalid length."));
 }
 
@@ -838,7 +838,7 @@ BOOST_AUTO_TEST_CASE(libraries_missing_hex_prefix)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsError(result, "JSONError", "Library address is not prefixed with \"0x\"."));
 }
 
@@ -874,9 +874,9 @@ BOOST_AUTO_TEST_CASE(library_linking)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_TEST(containsAtMostWarnings(result));
-	Json::Value contractResult = getContractResult(result, "fileA", "A");
+	Json contractResult = getContractResult(result, "fileA", "A");
 	expectLinkReferences(contractResult, {{"library2.sol", {"L2"}}});
 }
 
@@ -906,9 +906,9 @@ BOOST_AUTO_TEST_CASE(linking_yul)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_TEST(containsAtMostWarnings(result));
-	Json::Value contractResult = getContractResult(result, "fileA", "a");
+	Json contractResult = getContractResult(result, "fileA", "a");
 	expectLinkReferences(contractResult, {});
 }
 
@@ -938,9 +938,9 @@ BOOST_AUTO_TEST_CASE(linking_yul_empty_link_reference)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_TEST(containsAtMostWarnings(result));
-	Json::Value contractResult = getContractResult(result, "fileA", "a");
+	Json contractResult = getContractResult(result, "fileA", "a");
 	expectLinkReferences(contractResult, {{"", {""}}});
 }
 
@@ -970,9 +970,9 @@ BOOST_AUTO_TEST_CASE(linking_yul_no_filename_in_link_reference)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_TEST(containsAtMostWarnings(result));
-	Json::Value contractResult = getContractResult(result, "fileA", "a");
+	Json contractResult = getContractResult(result, "fileA", "a");
 	expectLinkReferences(contractResult, {{"", {"L"}}});
 }
 
@@ -1002,9 +1002,9 @@ BOOST_AUTO_TEST_CASE(linking_yul_same_library_name_different_files)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_TEST(containsAtMostWarnings(result));
-	Json::Value contractResult = getContractResult(result, "fileA", "a");
+	Json contractResult = getContractResult(result, "fileA", "a");
 	expectLinkReferences(contractResult, {{"fileC", {"L"}}});
 }
 
@@ -1027,7 +1027,7 @@ BOOST_AUTO_TEST_CASE(evm_version)
 			}
 		)";
 	};
-	Json::Value result;
+	Json result;
 	result = compile(inputForVersion("\"evmVersion\": \"homestead\","));
 	BOOST_CHECK(result["contracts"]["fileA"]["A"]["metadata"].asString().find("\"evmVersion\":\"homestead\"") != std::string::npos);
 	result = compile(inputForVersion("\"evmVersion\": \"tangerineWhistle\","));
@@ -1075,15 +1075,15 @@ BOOST_AUTO_TEST_CASE(optimizer_settings_default_disabled)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsAtMostWarnings(result));
-	Json::Value contract = getContractResult(result, "fileA", "A");
+	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.isObject());
 	BOOST_CHECK(contract["metadata"].isString());
-	Json::Value metadata;
+	Json metadata;
 	BOOST_CHECK(util::jsonParseStrict(contract["metadata"].asString(), metadata));
 
-	Json::Value const& optimizer = metadata["settings"]["optimizer"];
+	Json const& optimizer = metadata["settings"]["optimizer"];
 	BOOST_CHECK(optimizer.isMember("enabled"));
 	BOOST_CHECK(optimizer["enabled"].asBool() == false);
 	BOOST_CHECK(!optimizer.isMember("details"));
@@ -1108,15 +1108,15 @@ BOOST_AUTO_TEST_CASE(optimizer_settings_default_enabled)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsAtMostWarnings(result));
-	Json::Value contract = getContractResult(result, "fileA", "A");
+	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.isObject());
 	BOOST_CHECK(contract["metadata"].isString());
-	Json::Value metadata;
+	Json metadata;
 	BOOST_CHECK(util::jsonParseStrict(contract["metadata"].asString(), metadata));
 
-	Json::Value const& optimizer = metadata["settings"]["optimizer"];
+	Json const& optimizer = metadata["settings"]["optimizer"];
 	BOOST_CHECK(optimizer.isMember("enabled"));
 	BOOST_CHECK(optimizer["enabled"].asBool() == true);
 	BOOST_CHECK(!optimizer.isMember("details"));
@@ -1148,15 +1148,15 @@ BOOST_AUTO_TEST_CASE(optimizer_settings_details_exactly_as_default_disabled)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsAtMostWarnings(result));
-	Json::Value contract = getContractResult(result, "fileA", "A");
+	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.isObject());
 	BOOST_CHECK(contract["metadata"].isString());
-	Json::Value metadata;
+	Json metadata;
 	BOOST_CHECK(util::jsonParseStrict(contract["metadata"].asString(), metadata));
 
-	Json::Value const& optimizer = metadata["settings"]["optimizer"];
+	Json const& optimizer = metadata["settings"]["optimizer"];
 	BOOST_CHECK(optimizer.isMember("enabled"));
 	// enabled is switched to false instead!
 	BOOST_CHECK(optimizer["enabled"].asBool() == false);
@@ -1191,15 +1191,15 @@ BOOST_AUTO_TEST_CASE(optimizer_settings_details_different)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsAtMostWarnings(result));
-	Json::Value contract = getContractResult(result, "fileA", "A");
+	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.isObject());
 	BOOST_CHECK(contract["metadata"].isString());
-	Json::Value metadata;
+	Json metadata;
 	BOOST_CHECK(util::jsonParseStrict(contract["metadata"].asString(), metadata));
 
-	Json::Value const& optimizer = metadata["settings"]["optimizer"];
+	Json const& optimizer = metadata["settings"]["optimizer"];
 	BOOST_CHECK(!optimizer.isMember("enabled"));
 	BOOST_CHECK(optimizer.isMember("details"));
 	BOOST_CHECK(optimizer["details"]["constantOptimizer"].asBool() == true);
@@ -1248,9 +1248,9 @@ BOOST_AUTO_TEST_CASE(metadata_without_compilation)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsAtMostWarnings(result));
-	Json::Value contract = getContractResult(result, "fileA", "A");
+	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.isObject());
 	BOOST_CHECK(contract["metadata"].isString());
 	BOOST_CHECK(solidity::test::isValidMetadata(contract["metadata"].asString()));
@@ -1279,12 +1279,12 @@ BOOST_AUTO_TEST_CASE(license_in_metadata)
 				}
 			}
 		)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsAtMostWarnings(result));
-	Json::Value contract = getContractResult(result, "fileA", "A");
+	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.isObject());
 	BOOST_CHECK(contract["metadata"].isString());
-	Json::Value metadata;
+	Json metadata;
 	BOOST_REQUIRE(util::jsonParseStrict(contract["metadata"].asString(), metadata));
 	BOOST_CHECK_EQUAL(metadata["sources"]["fileA"]["license"], "GPL-3.0");
 	BOOST_CHECK_EQUAL(metadata["sources"]["fileB"]["license"], "MIT");
@@ -1315,9 +1315,9 @@ BOOST_AUTO_TEST_CASE(common_pattern)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsAtMostWarnings(result));
-	Json::Value contract = getContractResult(result, "fileA", "A");
+	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_CHECK(contract.isObject());
 	BOOST_CHECK(contract["metadata"].isString());
 	BOOST_CHECK(solidity::test::isValidMetadata(contract["metadata"].asString()));
@@ -1373,14 +1373,14 @@ BOOST_AUTO_TEST_CASE(use_stack_optimization)
 	}
 	)";
 
-	Json::Value parsedInput;
+	Json parsedInput;
 	BOOST_REQUIRE(util::jsonParseStrict(input, parsedInput));
 
 	solidity::frontend::StandardCompiler compiler;
-	Json::Value result = compiler.compile(parsedInput);
+	Json result = compiler.compile(parsedInput);
 
 	BOOST_CHECK(containsAtMostWarnings(result));
-	Json::Value contract = getContractResult(result, "fileA", "A");
+	Json contract = getContractResult(result, "fileA", "A");
 	BOOST_REQUIRE(contract.isObject());
 	BOOST_REQUIRE(contract["evm"]["bytecode"]["object"].isString());
 	BOOST_CHECK(contract["evm"]["bytecode"]["object"].asString().length() > 20);
@@ -1425,11 +1425,11 @@ BOOST_AUTO_TEST_CASE(standard_output_selection_wildcard)
 	}
 	)";
 
-	Json::Value parsedInput;
+	Json parsedInput;
 	BOOST_REQUIRE(util::jsonParseStrict(input, parsedInput));
 
 	solidity::frontend::StandardCompiler compiler;
-	Json::Value result = compiler.compile(parsedInput);
+	Json result = compiler.compile(parsedInput);
 
 	BOOST_REQUIRE(result["contracts"].isObject());
 	BOOST_REQUIRE(result["contracts"].size() == 1);
@@ -1466,11 +1466,11 @@ BOOST_AUTO_TEST_CASE(standard_output_selection_wildcard_colon_source)
 	}
 	)";
 
-	Json::Value parsedInput;
+	Json parsedInput;
 	BOOST_REQUIRE(util::jsonParseStrict(input, parsedInput));
 
 	solidity::frontend::StandardCompiler compiler;
-	Json::Value result = compiler.compile(parsedInput);
+	Json result = compiler.compile(parsedInput);
 
 	BOOST_REQUIRE(result["contracts"].isObject());
 	BOOST_REQUIRE(result["contracts"].size() == 1);
@@ -1506,11 +1506,11 @@ BOOST_AUTO_TEST_CASE(standard_output_selection_wildcard_empty_source)
 	}
 	)";
 
-	Json::Value parsedInput;
+	Json parsedInput;
 	BOOST_REQUIRE(util::jsonParseStrict(input, parsedInput));
 
 	solidity::frontend::StandardCompiler compiler;
-	Json::Value result = compiler.compile(parsedInput);
+	Json result = compiler.compile(parsedInput);
 
 	BOOST_REQUIRE(result["contracts"].isObject());
 	BOOST_REQUIRE(result["contracts"].size() == 1);
@@ -1550,11 +1550,11 @@ BOOST_AUTO_TEST_CASE(standard_output_selection_wildcard_multiple_sources)
 	}
 	)";
 
-	Json::Value parsedInput;
+	Json parsedInput;
 	BOOST_REQUIRE(util::jsonParseStrict(input, parsedInput));
 
 	solidity::frontend::StandardCompiler compiler;
-	Json::Value result = compiler.compile(parsedInput);
+	Json result = compiler.compile(parsedInput);
 
 	BOOST_REQUIRE(result["contracts"].isObject());
 	BOOST_REQUIRE(result["contracts"].size() == 1);
@@ -1586,7 +1586,7 @@ BOOST_AUTO_TEST_CASE(stopAfter_invalid_value)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsError(result, "JSONError", "Invalid value for \"settings.stopAfter\". Only valid value is \"parsing\"."));
 }
 
@@ -1607,7 +1607,7 @@ BOOST_AUTO_TEST_CASE(stopAfter_invalid_type)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsError(result, "JSONError", "\"settings.stopAfter\" must be a string."));
 }
 
@@ -1628,7 +1628,7 @@ BOOST_AUTO_TEST_CASE(stopAfter_bin_conflict)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(containsError(result, "JSONError", "Requested output selection conflicts with \"settings.stopAfter\"."));
 }
 
@@ -1648,7 +1648,7 @@ BOOST_AUTO_TEST_CASE(stopAfter_ast_output)
 		}
 	}
 	)";
-	Json::Value result = compile(input);
+	Json result = compile(input);
 	BOOST_CHECK(result["sources"].isObject());
 	BOOST_CHECK(result["sources"]["a.sol"].isObject());
 	BOOST_CHECK(result["sources"]["a.sol"]["ast"].isObject());
@@ -1677,11 +1677,11 @@ BOOST_AUTO_TEST_CASE(dependency_tracking_of_abstract_contract)
 	}
 	)";
 
-	Json::Value parsedInput;
+	Json parsedInput;
 	BOOST_REQUIRE(util::jsonParseStrict(input, parsedInput));
 
 	solidity::frontend::StandardCompiler compiler;
-	Json::Value result = compiler.compile(parsedInput);
+	Json result = compiler.compile(parsedInput);
 
 	BOOST_REQUIRE(result["contracts"].isObject());
 	BOOST_REQUIRE(result["contracts"].size() == 1);
@@ -1715,11 +1715,11 @@ BOOST_AUTO_TEST_CASE(dependency_tracking_of_abstract_contract_yul)
 	}
 	)";
 
-	Json::Value parsedInput;
+	Json parsedInput;
 	BOOST_REQUIRE(util::jsonParseStrict(input, parsedInput));
 
 	solidity::frontend::StandardCompiler compiler;
-	Json::Value result = compiler.compile(parsedInput);
+	Json result = compiler.compile(parsedInput);
 
 	BOOST_REQUIRE(result["contracts"].isObject());
 	BOOST_REQUIRE(result["contracts"].size() == 1);
@@ -1764,11 +1764,11 @@ BOOST_AUTO_TEST_CASE(source_location_of_bare_block)
 	}
 	)";
 
-	Json::Value parsedInput;
+	Json parsedInput;
 	BOOST_REQUIRE(util::jsonParseStrict(input, parsedInput));
 
 	solidity::frontend::StandardCompiler compiler;
-	Json::Value result = compiler.compile(parsedInput);
+	Json result = compiler.compile(parsedInput);
 
 	std::string sourceMap = result["contracts"]["A.sol"]["A"]["evm"]["bytecode"]["sourceMap"].asString();
 

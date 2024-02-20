@@ -70,7 +70,7 @@ SemanticTokenType semanticTokenTypeForExpression(frontend::Type const* _type)
 
 } // end namespace
 
-Json::Value SemanticTokensBuilder::build(SourceUnit const& _sourceUnit, CharStream const& _charStream)
+Json SemanticTokensBuilder::build(SourceUnit const& _sourceUnit, CharStream const& _charStream)
 {
 	reset(&_charStream);
 	_sourceUnit.accept(*this);

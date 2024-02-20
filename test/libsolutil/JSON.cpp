@@ -34,22 +34,22 @@ BOOST_AUTO_TEST_SUITE(JsonTest, *boost::unit_test::label("nooptions"))
 
 BOOST_AUTO_TEST_CASE(json_types)
 {
-	auto check = [](Json::Value value, std::string const& expectation) {
+	auto check = [](Json value, std::string const& expectation) {
 		BOOST_CHECK(jsonCompactPrint(value) == expectation);
 	};
 
-	Json::Value value;
+	Json value;
 	BOOST_CHECK(value.empty());
 	value = {};
 	BOOST_CHECK(value.empty());
-	value = Json::Value();
+	value = Json();
 	BOOST_CHECK(value.empty());
 	value = Json::nullValue;
 	BOOST_CHECK(value.empty());
 
 	check(value, "null");
 	check({}, "null");
-	check(Json::Value(), "null");
+	check(Json(), "null");
 	check(Json::nullValue, "null");
 	check(Json::objectValue, "{}");
 	check(Json::arrayValue, "[]");
@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(json_types)
 	check(Json::LargestUInt(1), "1");
 	check(Json::LargestUInt(-1), "18446744073709551615");
 	check(Json::LargestUInt(0xffffffff), "4294967295");
-	check(Json::Value("test"), "\"test\"");
+	check(Json("test"), "\"test\"");
 	check("test", "\"test\"");
 	check(true, "true");
 
@@ -76,8 +76,8 @@ BOOST_AUTO_TEST_CASE(json_types)
 
 BOOST_AUTO_TEST_CASE(json_pretty_print)
 {
-	Json::Value json;
-	Json::Value jsonChild;
+	Json json;
+	Json jsonChild;
 
 	jsonChild["3.1"] = "3.1";
 	jsonChild["3.2"] = 2;
@@ -103,8 +103,8 @@ BOOST_AUTO_TEST_CASE(json_pretty_print)
 
 BOOST_AUTO_TEST_CASE(json_compact_print)
 {
-	Json::Value json;
-	Json::Value jsonChild;
+	Json json;
+	Json jsonChild;
 
 	jsonChild["3.1"] = "3.1";
 	jsonChild["3.2"] = 2;
@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_CASE(parse_json_strict)
 	// In this test we check conformance against JSON.parse (https://tc39.es/ecma262/multipage/structured-data.html#sec-json.parse)
 	// and ECMA-404 (https://www.ecma-international.org/publications-and-standards/standards/ecma-404/)
 
-	Json::Value json;
+	Json json;
 	std::string errors;
 
 	// Just parse a valid json input
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE(parse_json_strict)
 
 BOOST_AUTO_TEST_CASE(json_isOfType)
 {
-	Json::Value json;
+	Json json;
 
 	json["float"] = 3.1f;
 	json["double"] = 3.1;
@@ -214,7 +214,7 @@ BOOST_AUTO_TEST_CASE(json_isOfType)
 
 BOOST_AUTO_TEST_CASE(json_isisOfTypeIfExists)
 {
-	Json::Value json;
+	Json json;
 
 	json["float"] = 3.1f;
 	json["double"] = 3.1;
@@ -244,7 +244,7 @@ BOOST_AUTO_TEST_CASE(json_isisOfTypeIfExists)
 
 BOOST_AUTO_TEST_CASE(json_getOrDefault)
 {
-	Json::Value json;
+	Json json;
 
 	json["float"] = 3.1f;
 	json["double"] = 3.1;
@@ -287,7 +287,7 @@ BOOST_AUTO_TEST_CASE(json_getOrDefault)
 
 BOOST_AUTO_TEST_CASE(json_get)
 {
-	Json::Value json;
+	Json json;
 
 	json["float"] = 3.1f;
 	json["double"] = 3.1;

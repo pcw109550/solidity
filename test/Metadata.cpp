@@ -172,14 +172,14 @@ std::optional<std::map<std::string, std::string>> parseCBORMetadata(bytes const&
 
 bool isValidMetadata(std::string const& _serialisedMetadata)
 {
-	Json::Value metadata;
+	Json metadata;
 	if (!util::jsonParseStrict(_serialisedMetadata, metadata))
 		return false;
 
 	return isValidMetadata(metadata);
 }
 
-bool isValidMetadata(Json::Value const& _metadata)
+bool isValidMetadata(Json const& _metadata)
 {
 	if (
 		!_metadata.isObject() ||

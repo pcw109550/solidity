@@ -47,7 +47,7 @@ CallableDeclaration const* extractCallableDeclaration(FunctionCall const& _funct
 
 }
 
-void RenameSymbol::operator()(MessageID _id, Json::Value const& _args)
+void RenameSymbol::operator()(MessageID _id, Json const& _args)
 {
 	auto const&& [sourceUnitName, lineColumn] = extractSourceUnitNameAndLineColumn(_args);
 	std::string const newName = _args["newName"].asString();
@@ -90,10 +90,10 @@ void RenameSymbol::operator()(MessageID _id, Json::Value const& _args)
 	// Apply changes in reverse order (will iterate in reverse)
 	sort(m_locations.begin(), m_locations.end());
 
-	Json::Value reply = Json::objectValue;
+	Json reply = Json::objectValue;
 	reply["changes"] = Json::objectValue;
 
-	Json::Value edits = Json::arrayValue;
+	Json edits = Json::arrayValue;
 
 	for (auto i = m_locations.rbegin(); i != m_locations.rend(); i++)
 	{
@@ -105,7 +105,7 @@ void RenameSymbol::operator()(MessageID _id, Json::Value const& _args)
 		buffer.replace((size_t)i->start, (size_t)(i->end - i->start), newName);
 		fileRepository().setSourceByUri(uri, std::move(buffer));
 
-		Json::Value edit = Json::objectValue;
+		Json edit = Json::objectValue;
 		edit["range"] = toRange(*i);
 		edit["newText"] = newName;
 

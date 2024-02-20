@@ -80,7 +80,7 @@ unsigned Assembly::codeSize(unsigned subTagSize) const
 	}
 }
 
-void Assembly::importAssemblyItemsFromJSON(Json::Value const& _code, std::vector<std::string> const& _sourceList)
+void Assembly::importAssemblyItemsFromJSON(Json const& _code, std::vector<std::string> const& _sourceList)
 {
 	solAssert(m_items.empty());
 	solRequire(_code.isArray(), AssemblyImportException, "Supplied JSON is not an array.");
@@ -98,7 +98,7 @@ void Assembly::importAssemblyItemsFromJSON(Json::Value const& _code, std::vector
 	}
 }
 
-AssemblyItem Assembly::createAssemblyItemFromJSON(Json::Value const& _json, std::vector<std::string> const& _sourceList)
+AssemblyItem Assembly::createAssemblyItemFromJSON(Json const& _json, std::vector<std::string> const& _sourceList)
 {
 	solRequire(_json.isObject(), AssemblyImportException, "Supplied JSON is not an object.");
 	static std::set<std::string> const validMembers{"name", "begin", "end", "source", "value", "modifierDepth", "jumpType"};
@@ -427,11 +427,11 @@ std::string Assembly::assemblyString(
 	return tmp.str();
 }
 
-Json::Value Assembly::assemblyJSON(std::map<std::string, unsigned> const& _sourceIndices, bool _includeSourceList) const
+Json Assembly::assemblyJSON(std::map<std::string, unsigned> const& _sourceIndices, bool _includeSourceList) const
 {
-	Json::Value root;
+	Json root;
 	root[".code"] = Json::arrayValue;
-	Json::Value& code = root[".code"];
+	Json& code = root[".code"];
 	for (AssemblyItem const& item: m_items)
 	{
 		int sourceIndex = -1;
@@ -443,7 +443,7 @@ Json::Value Assembly::assemblyJSON(std::map<std::string, unsigned> const& _sourc
 		}
 
 		auto [name, data] = item.nameAndData(m_evmVersion);
-		Json::Value jsonItem;
+		Json jsonItem;
 		jsonItem["name"] = name;
 		jsonItem["begin"] = item.location().start;
 		jsonItem["end"] = item.location().end;
@@ -463,7 +463,7 @@ Json::Value Assembly::assemblyJSON(std::map<std::string, unsigned> const& _sourc
 
 		if (item.type() == AssemblyItemType::Tag)
 		{
-			Json::Value jumpdest;
+			Json jumpdest;
 			jumpdest["name"] = "JUMPDEST";
 			jumpdest["begin"] = item.location().start;
 			jumpdest["end"] = item.location().end;
@@ -476,7 +476,7 @@ Json::Value Assembly::assemblyJSON(std::map<std::string, unsigned> const& _sourc
 	if (_includeSourceList)
 	{
 		root["sourceList"] = Json::arrayValue;
-		Json::Value& jsonSourceList = root["sourceList"];
+		Json& jsonSourceList = root["sourceList"];
 		for (auto const& [name, index]: _sourceIndices)
 			jsonSourceList[index] = name;
 	}
@@ -484,7 +484,7 @@ Json::Value Assembly::assemblyJSON(std::map<std::string, unsigned> const& _sourc
 	if (!m_data.empty() || !m_subs.empty())
 	{
 		root[".data"] = Json::objectValue;
-		Json::Value& data = root[".data"];
+		Json& data = root[".data"];
 		for (auto const& i: m_data)
 			if (u256(i.first) >= m_subs.size())
 				data[util::toHex(toBigEndian((u256)i.first), util::HexPrefix::DontAdd, util::HexCase::Upper)] = util::toHex(i.second);
@@ -504,7 +504,7 @@ Json::Value Assembly::assemblyJSON(std::map<std::string, unsigned> const& _sourc
 }
 
 std::pair<std::shared_ptr<Assembly>, std::vector<std::string>> Assembly::fromJSON(
-	Json::Value const& _json,
+	Json const& _json,
 	std::vector<std::string> const& _sourceList,
 	size_t _level
 )
@@ -519,7 +519,7 @@ std::pair<std::shared_ptr<Assembly>, std::vector<std::string>> Assembly::fromJSO
 		if (_json.isMember("sourceList"))
 		{
 			solRequire(_json["sourceList"].isArray(), AssemblyImportException, "Optional member 'sourceList' is not an array.");
-			for (Json::Value const& sourceName: _json["sourceList"])
+			for (Json const& sourceName: _json["sourceList"])
 				solRequire(sourceName.isString(), AssemblyImportException, "The 'sourceList' array contains an item that is not a string.");
 		}
 	}
@@ -536,7 +536,7 @@ std::pair<std::shared_ptr<Assembly>, std::vector<std::string>> Assembly::fromJSO
 	{
 		solAssert(_level == 0);
 		solAssert(_sourceList.empty());
-		for (Json::Value const& sourceName: _json["sourceList"])
+		for (Json const& sourceName: _json["sourceList"])
 		{
 			solRequire(
 				std::find(parsedSourceList.begin(), parsedSourceList.end(), sourceName.asString()) == parsedSourceList.end(),
@@ -549,7 +549,7 @@ std::pair<std::shared_ptr<Assembly>, std::vector<std::string>> Assembly::fromJSO
 
 	solRequire(_json.isMember(".code"), AssemblyImportException, "Member '.code' is missing.");
 	solRequire(_json[".code"].isArray(), AssemblyImportException, "Member '.code' is not an array.");
-	for (Json::Value const& codeItem: _json[".code"])
+	for (Json const& codeItem: _json[".code"])
 		solRequire(codeItem.isObject(), AssemblyImportException, "The '.code' array contains an item that is not an object.");
 
 	result->importAssemblyItemsFromJSON(_json[".code"], _level == 0 ? parsedSourceList : _sourceList);
@@ -564,13 +564,13 @@ std::pair<std::shared_ptr<Assembly>, std::vector<std::string>> Assembly::fromJSO
 	if (_json.isMember(".data"))
 	{
 		solRequire(_json[".data"].isObject(), AssemblyImportException, "Optional member '.data' is not an object.");
-		Json::Value const& data = _json[".data"];
+		Json const& data = _json[".data"];
 		std::map<size_t, std::shared_ptr<Assembly>> subAssemblies;
-		for (Json::ValueConstIterator dataIter = data.begin(); dataIter != data.end(); dataIter++)
+		for (JsonConstIterator dataIter = data.begin(); dataIter != data.end(); dataIter++)
 		{
 			solAssert(dataIter.key().isString());
 			std::string dataItemID = dataIter.key().asString();
-			Json::Value const& dataItem = data[dataItemID];
+			Json const& dataItem = data[dataItemID];
 			if (dataItem.isString())
 			{
 				solRequire(

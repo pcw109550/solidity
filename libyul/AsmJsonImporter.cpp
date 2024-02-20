@@ -41,7 +41,7 @@ namespace solidity::yul
 
 using SourceLocation = langutil::SourceLocation;
 
-SourceLocation const AsmJsonImporter::createSourceLocation(Json::Value const& _node)
+SourceLocation const AsmJsonImporter::createSourceLocation(Json const& _node)
 {
 	yulAssert(member(_node, "src").isString(), "'src' must be a string");
 
@@ -49,7 +49,7 @@ SourceLocation const AsmJsonImporter::createSourceLocation(Json::Value const& _n
 }
 
 template <class T>
-T AsmJsonImporter::createAsmNode(Json::Value const& _node)
+T AsmJsonImporter::createAsmNode(Json const& _node)
 {
 	T r;
 	SourceLocation nativeLocation = createSourceLocation(_node);
@@ -61,14 +61,14 @@ T AsmJsonImporter::createAsmNode(Json::Value const& _node)
 	return r;
 }
 
-Json::Value AsmJsonImporter::member(Json::Value const& _node, std::string const& _name)
+Json AsmJsonImporter::member(Json const& _node, std::string const& _name)
 {
 	if (!_node.isMember(_name))
 		return Json::nullValue;
 	return _node[_name];
 }
 
-TypedName AsmJsonImporter::createTypedName(Json::Value const& _node)
+TypedName AsmJsonImporter::createTypedName(Json const& _node)
 {
 	auto typedName = createAsmNode<TypedName>(_node);
 	typedName.type = YulString{member(_node, "type").asString()};
@@ -76,9 +76,9 @@ TypedName AsmJsonImporter::createTypedName(Json::Value const& _node)
 	return typedName;
 }
 
-Statement AsmJsonImporter::createStatement(Json::Value const& _node)
+Statement AsmJsonImporter::createStatement(Json const& _node)
 {
-	Json::Value jsonNodeType = member(_node, "nodeType");
+	Json jsonNodeType = member(_node, "nodeType");
 	yulAssert(jsonNodeType.isString(), "Expected \"nodeType\" to be of type string!");
 	std::string nodeType = jsonNodeType.asString();
 
@@ -114,9 +114,9 @@ Statement AsmJsonImporter::createStatement(Json::Value const& _node)
 	util::unreachable();
 }
 
-Expression AsmJsonImporter::createExpression(Json::Value const& _node)
+Expression AsmJsonImporter::createExpression(Json const& _node)
 {
-	Json::Value jsonNodeType = member(_node, "nodeType");
+	Json jsonNodeType = member(_node, "nodeType");
 	yulAssert(jsonNodeType.isString(), "Expected \"nodeType\" to be of type string!");
 	std::string nodeType = jsonNodeType.asString();
 
@@ -136,7 +136,7 @@ Expression AsmJsonImporter::createExpression(Json::Value const& _node)
 	util::unreachable();
 }
 
-std::vector<Expression> AsmJsonImporter::createExpressionVector(Json::Value const& _array)
+std::vector<Expression> AsmJsonImporter::createExpressionVector(Json const& _array)
 {
 	std::vector<Expression> ret;
 	for (auto& var: _array)
@@ -144,7 +144,7 @@ std::vector<Expression> AsmJsonImporter::createExpressionVector(Json::Value cons
 	return ret;
 }
 
-std::vector<Statement> AsmJsonImporter::createStatementVector(Json::Value const& _array)
+std::vector<Statement> AsmJsonImporter::createStatementVector(Json const& _array)
 {
 	std::vector<Statement> ret;
 	for (auto& var: _array)
@@ -152,14 +152,14 @@ std::vector<Statement> AsmJsonImporter::createStatementVector(Json::Value const&
 	return ret;
 }
 
-Block AsmJsonImporter::createBlock(Json::Value const& _node)
+Block AsmJsonImporter::createBlock(Json const& _node)
 {
 	auto block = createAsmNode<Block>(_node);
 	block.statements = createStatementVector(_node["statements"]);
 	return block;
 }
 
-Literal AsmJsonImporter::createLiteral(Json::Value const& _node)
+Literal AsmJsonImporter::createLiteral(Json const& _node)
 {
 	auto lit = createAsmNode<Literal>(_node);
 	std::string kind = member(_node, "kind").asString();
@@ -207,19 +207,19 @@ Literal AsmJsonImporter::createLiteral(Json::Value const& _node)
 	return lit;
 }
 
-Leave AsmJsonImporter::createLeave(Json::Value const& _node)
+Leave AsmJsonImporter::createLeave(Json const& _node)
 {
 	return createAsmNode<Leave>(_node);
 }
 
-Identifier AsmJsonImporter::createIdentifier(Json::Value const& _node)
+Identifier AsmJsonImporter::createIdentifier(Json const& _node)
 {
 	auto identifier = createAsmNode<Identifier>(_node);
 	identifier.name = YulString(member(_node, "name").asString());
 	return identifier;
 }
 
-Assignment AsmJsonImporter::createAssignment(Json::Value const& _node)
+Assignment AsmJsonImporter::createAssignment(Json const& _node)
 {
 	auto assignment = createAsmNode<Assignment>(_node);
 
@@ -231,7 +231,7 @@ Assignment AsmJsonImporter::createAssignment(Json::Value const& _node)
 	return assignment;
 }
 
-FunctionCall AsmJsonImporter::createFunctionCall(Json::Value const& _node)
+FunctionCall AsmJsonImporter::createFunctionCall(Json const& _node)
 {
 	auto functionCall = createAsmNode<FunctionCall>(_node);
 
@@ -243,14 +243,14 @@ FunctionCall AsmJsonImporter::createFunctionCall(Json::Value const& _node)
 	return functionCall;
 }
 
-ExpressionStatement AsmJsonImporter::createExpressionStatement(Json::Value const& _node)
+ExpressionStatement AsmJsonImporter::createExpressionStatement(Json const& _node)
 {
 	auto statement = createAsmNode<ExpressionStatement>(_node);
 	statement.expression = createExpression(member(_node, "expression"));
 	return statement;
 }
 
-VariableDeclaration AsmJsonImporter::createVariableDeclaration(Json::Value const& _node)
+VariableDeclaration AsmJsonImporter::createVariableDeclaration(Json const& _node)
 {
 	auto varDec = createAsmNode<VariableDeclaration>(_node);
 	for (auto const& var: member(_node, "variables"))
@@ -262,7 +262,7 @@ VariableDeclaration AsmJsonImporter::createVariableDeclaration(Json::Value const
 	return varDec;
 }
 
-FunctionDefinition AsmJsonImporter::createFunctionDefinition(Json::Value const& _node)
+FunctionDefinition AsmJsonImporter::createFunctionDefinition(Json const& _node)
 {
 	auto funcDef = createAsmNode<FunctionDefinition>(_node);
 	funcDef.name = YulString{member(_node, "name").asString()};
@@ -279,7 +279,7 @@ FunctionDefinition AsmJsonImporter::createFunctionDefinition(Json::Value const& 
 	return funcDef;
 }
 
-If AsmJsonImporter::createIf(Json::Value const& _node)
+If AsmJsonImporter::createIf(Json const& _node)
 {
 	auto ifStatement = createAsmNode<If>(_node);
 	ifStatement.condition = std::make_unique<Expression>(createExpression(member(_node, "condition")));
@@ -287,7 +287,7 @@ If AsmJsonImporter::createIf(Json::Value const& _node)
 	return ifStatement;
 }
 
-Case AsmJsonImporter::createCase(Json::Value const& _node)
+Case AsmJsonImporter::createCase(Json const& _node)
 {
 	auto caseStatement = createAsmNode<Case>(_node);
 	auto const& value = member(_node, "value");
@@ -299,7 +299,7 @@ Case AsmJsonImporter::createCase(Json::Value const& _node)
 	return caseStatement;
 }
 
-Switch AsmJsonImporter::createSwitch(Json::Value const& _node)
+Switch AsmJsonImporter::createSwitch(Json const& _node)
 {
 	auto switchStatement = createAsmNode<Switch>(_node);
 	switchStatement.expression = std::make_unique<Expression>(createExpression(member(_node, "expression")));
@@ -308,7 +308,7 @@ Switch AsmJsonImporter::createSwitch(Json::Value const& _node)
 	return switchStatement;
 }
 
-ForLoop AsmJsonImporter::createForLoop(Json::Value const& _node)
+ForLoop AsmJsonImporter::createForLoop(Json const& _node)
 {
 	auto forLoop = createAsmNode<ForLoop>(_node);
 	forLoop.pre = createBlock(member(_node, "pre"));
@@ -318,12 +318,12 @@ ForLoop AsmJsonImporter::createForLoop(Json::Value const& _node)
 	return forLoop;
 }
 
-Break AsmJsonImporter::createBreak(Json::Value const& _node)
+Break AsmJsonImporter::createBreak(Json const& _node)
 {
 	return createAsmNode<Break>(_node);
 }
 
-Continue AsmJsonImporter::createContinue(Json::Value const& _node)
+Continue AsmJsonImporter::createContinue(Json const& _node)
 {
 	return createAsmNode<Continue>(_node);
 }

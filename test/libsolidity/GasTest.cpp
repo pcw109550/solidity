@@ -82,7 +82,7 @@ void GasTest::parseExpectations(std::istream& _stream)
 
 void GasTest::printUpdatedExpectations(std::ostream& _stream, std::string const& _linePrefix) const
 {
-	Json::Value estimates = compiler().gasEstimates(compiler().lastContractName());
+	Json estimates = compiler().gasEstimates(compiler().lastContractName());
 	for (auto groupIt = estimates.begin(); groupIt != estimates.end(); ++groupIt)
 	{
 		_stream << _linePrefix << groupIt.key().asString() << ":" << std::endl;
@@ -128,7 +128,7 @@ TestCase::TestResult GasTest::run(std::ostream& _stream, std::string const& _lin
 		return TestResult::FatalError;
 	}
 
-	Json::Value estimateGroups = compiler().gasEstimates(compiler().lastContractName());
+	Json estimateGroups = compiler().gasEstimates(compiler().lastContractName());
 	if (
 		m_expectations.size() == estimateGroups.size() &&
 		boost::all(m_expectations, [&](auto const& expectations) {

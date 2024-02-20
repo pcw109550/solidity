@@ -140,7 +140,7 @@ std::optional<ABIType> isFixedPoint(std::string const& type)
 	return fixedPointType;
 }
 
-std::string functionSignatureFromABI(Json::Value const& _functionABI)
+std::string functionSignatureFromABI(Json const& _functionABI)
 {
 	auto inputs = _functionABI["inputs"];
 	std::string signature = {_functionABI["name"].asString() + "("};
@@ -161,7 +161,7 @@ std::string functionSignatureFromABI(Json::Value const& _functionABI)
 
 std::optional<solidity::frontend::test::ParameterList> ContractABIUtils::parametersFromJsonOutputs(
 	ErrorReporter& _errorReporter,
-	Json::Value const& _contractABI,
+	Json const& _contractABI,
 	std::string const& _functionSignature
 )
 {
@@ -209,7 +209,7 @@ std::optional<solidity::frontend::test::ParameterList> ContractABIUtils::paramet
 }
 
 bool ContractABIUtils::appendTypesFromName(
-	Json::Value const& _functionOutput,
+	Json const& _functionOutput,
 	ABITypes& _inplaceTypes,
 	ABITypes& _dynamicTypes,
 	bool _isCompoundType

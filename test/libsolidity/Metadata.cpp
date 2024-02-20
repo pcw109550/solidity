@@ -57,7 +57,7 @@ std::optional<std::string> compileAndCheckLicenseMetadata(std::string const& _co
 	BOOST_REQUIRE_MESSAGE(compilerStack.compile(), "Compiling contract failed");
 
 	std::string const& serialisedMetadata = compilerStack.metadata(_contractName);
-	Json::Value metadata;
+	Json metadata;
 	BOOST_REQUIRE(util::jsonParseStrict(serialisedMetadata, metadata));
 	BOOST_CHECK(solidity::test::isValidMetadata(metadata));
 
@@ -288,7 +288,7 @@ BOOST_AUTO_TEST_CASE(metadata_relevant_sources)
 	BOOST_REQUIRE_MESSAGE(compilerStack.compile(), "Compiling contract failed");
 
 	std::string const& serialisedMetadata = compilerStack.metadata("A");
-	Json::Value metadata;
+	Json metadata;
 	BOOST_REQUIRE(util::jsonParseStrict(serialisedMetadata, metadata));
 	BOOST_CHECK(solidity::test::isValidMetadata(metadata));
 
@@ -329,7 +329,7 @@ BOOST_AUTO_TEST_CASE(metadata_relevant_sources_imports)
 	BOOST_REQUIRE_MESSAGE(compilerStack.compile(), "Compiling contract failed");
 
 	std::string const& serialisedMetadata = compilerStack.metadata("C");
-	Json::Value metadata;
+	Json metadata;
 	BOOST_REQUIRE(util::jsonParseStrict(serialisedMetadata, metadata));
 	BOOST_CHECK(solidity::test::isValidMetadata(metadata));
 
@@ -357,7 +357,7 @@ BOOST_AUTO_TEST_CASE(metadata_useLiteralContent)
 		compilerStack.useMetadataLiteralSources(_literal);
 		BOOST_REQUIRE_MESSAGE(compilerStack.compile(), "Compiling contract failed");
 		std::string metadata_str = compilerStack.metadata("test");
-		Json::Value metadata;
+		Json metadata;
 		BOOST_REQUIRE(util::jsonParseStrict(metadata_str, metadata));
 		BOOST_CHECK(solidity::test::isValidMetadata(metadata));
 		BOOST_CHECK(metadata.isMember("settings"));
@@ -391,7 +391,7 @@ BOOST_AUTO_TEST_CASE(metadata_viair)
 		compilerStack.setViaIR(_viaIR);
 		BOOST_REQUIRE_MESSAGE(compilerStack.compile(), "Compiling contract failed");
 
-		Json::Value metadata;
+		Json metadata;
 		BOOST_REQUIRE(util::jsonParseStrict(compilerStack.metadata("test"), metadata));
 		BOOST_CHECK(solidity::test::isValidMetadata(metadata));
 		BOOST_CHECK(metadata.isMember("settings"));
@@ -431,7 +431,7 @@ BOOST_AUTO_TEST_CASE(metadata_revert_strings)
 	BOOST_REQUIRE_MESSAGE(compilerStack.compile(), "Compiling contract failed");
 
 	std::string const& serialisedMetadata = compilerStack.metadata("A");
-	Json::Value metadata;
+	Json metadata;
 	BOOST_REQUIRE(util::jsonParseStrict(serialisedMetadata, metadata));
 	BOOST_CHECK(solidity::test::isValidMetadata(metadata));
 
@@ -469,7 +469,7 @@ BOOST_AUTO_TEST_CASE(metadata_optimiser_sequence)
 		BOOST_REQUIRE_MESSAGE(compilerStack.compile(), "Compiling contract failed");
 
 		std::string const& serialisedMetadata = compilerStack.metadata("C");
-		Json::Value metadata;
+		Json metadata;
 		BOOST_REQUIRE(util::jsonParseStrict(serialisedMetadata, metadata));
 		BOOST_CHECK(solidity::test::isValidMetadata(metadata));
 		BOOST_CHECK(metadata["settings"]["optimizer"].isMember("details"));

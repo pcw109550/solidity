@@ -353,7 +353,7 @@ void CommandLineInterface::handleSignatureHashes(std::string const& _contract)
 	if (!m_options.compiler.outputs.signatureHashes)
 		return;
 
-	Json::Value interfaceSymbols = m_compiler->interfaceSymbols(_contract);
+	Json interfaceSymbols = m_compiler->interfaceSymbols(_contract);
 	std::string out = "Function signatures:\n";
 	for (auto const& name: interfaceSymbols["methods"].getMemberNames())
 		out += interfaceSymbols["methods"][name].asString() + ": " + name + "\n";
@@ -467,12 +467,12 @@ void CommandLineInterface::handleGasEstimation(std::string const& _contract)
 {
 	solAssert(CompilerInputModes.count(m_options.input.mode) == 1);
 
-	Json::Value estimates = m_compiler->gasEstimates(_contract);
+	Json estimates = m_compiler->gasEstimates(_contract);
 	sout() << "Gas estimation:" << std::endl;
 
 	if (estimates["creation"].isObject())
 	{
-		Json::Value creation = estimates["creation"];
+		Json creation = estimates["creation"];
 		sout() << "construction:" << std::endl;
 		sout() << "   " << creation["executionCost"].asString();
 		sout() << " + " << creation["codeDepositCost"].asString();
@@ -481,7 +481,7 @@ void CommandLineInterface::handleGasEstimation(std::string const& _contract)
 
 	if (estimates["external"].isObject())
 	{
-		Json::Value externalFunctions = estimates["external"];
+		Json externalFunctions = estimates["external"];
 		sout() << "external:" << std::endl;
 		for (auto const& name: externalFunctions.getMemberNames())
 		{
@@ -495,7 +495,7 @@ void CommandLineInterface::handleGasEstimation(std::string const& _contract)
 
 	if (estimates["internal"].isObject())
 	{
-		Json::Value internalFunctions = estimates["internal"];
+		Json internalFunctions = estimates["internal"];
 		sout() << "internal:" << std::endl;
 		for (auto const& name: internalFunctions.getMemberNames())
 		{
@@ -613,16 +613,16 @@ void CommandLineInterface::readInputFiles()
 		solThrow(CommandLineValidationError, "All specified input files either do not exist or are not regular files.");
 }
 
-std::map<std::string, Json::Value> CommandLineInterface::parseAstFromInput()
+std::map<std::string, Json> CommandLineInterface::parseAstFromInput()
 {
 	solAssert(m_options.input.mode == InputMode::CompilerWithASTImport);
 
-	std::map<std::string, Json::Value> sourceJsons;
+	std::map<std::string, Json> sourceJsons;
 	std::map<std::string, std::string> tmpSources;
 
 	for (SourceCode const& sourceCode: m_fileReader.sourceUnits() | ranges::views::values)
 	{
-		Json::Value ast;
+		Json ast;
 		astAssert(jsonParseStrict(sourceCode, ast), "Input file could not be parsed to JSON");
 		astAssert(ast.isMember("sources"), "Invalid Format for import-JSON: Must have 'sources'-object");
 
@@ -942,16 +942,16 @@ void CommandLineInterface::handleCombinedJSON()
 	if (!m_options.compiler.combinedJsonRequests.has_value())
 		return;
 
-	Json::Value output(Json::objectValue);
+	Json output(Json::objectValue);
 
 	output[g_strVersion] = frontend::VersionString;
 	std::vector<std::string> contracts = m_assemblyStack->contractNames();
 
 	if (!contracts.empty())
-		output[g_strContracts] = Json::Value(Json::objectValue);
+		output[g_strContracts] = Json(Json::objectValue);
 	for (std::string const& contractName: contracts)
 	{
-		Json::Value& contractData = output[g_strContracts][contractName] = Json::objectValue;
+		Json& contractData = output[g_strContracts][contractName] = Json::objectValue;
 
 		// NOTE: The state checks here are more strict that in Standard JSON. There we allow
 		// requesting certain outputs even if compilation fails as long as analysis went ok.
@@ -1013,7 +1013,7 @@ void CommandLineInterface::handleCombinedJSON()
 	if (needsSourceList)
 	{
 		// Indices into this array are used to abbreviate source names in source locations.
-		output[g_strSourceList] = Json::Value(Json::arrayValue);
+		output[g_strSourceList] = Json(Json::arrayValue);
 
 		for (auto const& source: m_assemblyStack->sourceNames())
 			output[g_strSourceList].append(source);
@@ -1022,10 +1022,10 @@ void CommandLineInterface::handleCombinedJSON()
 	if (m_options.compiler.combinedJsonRequests->ast)
 	{
 		solAssert(m_compiler);
-		output[g_strSources] = Json::Value(Json::objectValue);
+		output[g_strSources] = Json(Json::objectValue);
 		for (auto const& sourceCode: m_fileReader.sourceUnits())
 		{
-			output[g_strSources][sourceCode.first] = Json::Value(Json::objectValue);
+			output[g_strSources][sourceCode.first] = Json(Json::objectValue);
 			output[g_strSources][sourceCode.first]["AST"] = ASTJsonExporter(
 				m_compiler->state(),
 				m_compiler->sourceIndices()

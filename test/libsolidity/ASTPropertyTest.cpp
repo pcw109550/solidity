@@ -108,14 +108,14 @@ void ASTPropertyTest::readExpectations()
 	m_expectation = formatExpectations(false /* _obtainedResult */);
 }
 
-void ASTPropertyTest::extractTestsFromAST(Json::Value const& _astJson)
+void ASTPropertyTest::extractTestsFromAST(Json const& _astJson)
 {
-	std::queue<Json::Value> nodesToVisit;
+	std::queue<Json> nodesToVisit;
 	nodesToVisit.push(_astJson);
 
 	while (!nodesToVisit.empty())
 	{
-		Json::Value& node = nodesToVisit.front();
+		Json& node = nodesToVisit.front();
 
 		if (node.isArray())
 			for (auto&& member: node)
@@ -151,7 +151,7 @@ void ASTPropertyTest::extractTestsFromAST(Json::Value const& _astJson)
 					m_tests[testId].property = testedProperty;
 
 					soltestAssert(node.isMember("nodeType"));
-					std::optional<Json::Value> propertyNode = jsonValueByPath(node, testedProperty);
+					std::optional<Json> propertyNode = jsonValueByPath(node, testedProperty);
 					soltestAssert(
 						propertyNode.has_value(),
 						node["nodeType"].asString() + " node does not have a property named \""s + testedProperty + "\""
@@ -195,7 +195,7 @@ TestCase::TestResult ASTPropertyTest::run(std::ostream& _stream, std::string con
 			SourceReferenceFormatter::formatErrorInformation(compiler.errors(), compiler, _formatted)
 		));
 
-	Json::Value astJson = ASTJsonExporter(compiler.state()).toJson(compiler.ast("A"));
+	Json astJson = ASTJsonExporter(compiler.state()).toJson(compiler.ast("A"));
 	soltestAssert(astJson);
 
 	extractTestsFromAST(astJson);

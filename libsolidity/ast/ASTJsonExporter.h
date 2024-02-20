@@ -59,11 +59,11 @@ public:
 	);
 	/// Output the json representation of the AST to _stream.
 	void print(std::ostream& _stream, ASTNode const& _node, util::JsonFormat const& _format);
-	Json::Value toJson(ASTNode const& _node);
+	Json toJson(ASTNode const& _node);
 	template <class T>
-	Json::Value toJson(std::vector<ASTPointer<T>> const& _nodes)
+	Json toJson(std::vector<ASTPointer<T>> const& _nodes)
 	{
-		Json::Value ret(Json::arrayValue);
+		Json ret(Json::arrayValue);
 		for (auto const& n: _nodes)
 			if (n)
 				appendMove(ret, toJson(*n));
@@ -134,27 +134,27 @@ private:
 	void setJsonNode(
 		ASTNode const& _node,
 		std::string const& _nodeName,
-		std::initializer_list<std::pair<std::string, Json::Value>>&& _attributes
+		std::initializer_list<std::pair<std::string, Json>>&& _attributes
 	);
 	void setJsonNode(
 		ASTNode const& _node,
 		std::string const& _nodeName,
-		std::vector<std::pair<std::string, Json::Value>>&& _attributes
+		std::vector<std::pair<std::string, Json>>&& _attributes
 	);
 	/// Maps source location to an index, if source is valid and a mapping does exist, otherwise returns std::nullopt.
 	std::optional<size_t> sourceIndexFromLocation(langutil::SourceLocation const& _location) const;
 	std::string sourceLocationToString(langutil::SourceLocation const& _location) const;
-	Json::Value sourceLocationsToJson(std::vector<langutil::SourceLocation> const& _sourceLocations) const;
+	Json sourceLocationsToJson(std::vector<langutil::SourceLocation> const& _sourceLocations) const;
 	static std::string namePathToString(std::vector<ASTString> const& _namePath);
-	static Json::Value idOrNull(ASTNode const* _pt)
+	static Json idOrNull(ASTNode const* _pt)
 	{
-		return _pt ? Json::Value(nodeId(*_pt)) : Json::nullValue;
+		return _pt ? Json(nodeId(*_pt)) : Json::nullValue;
 	}
-	Json::Value toJsonOrNull(ASTNode const* _node)
+	Json toJsonOrNull(ASTNode const* _node)
 	{
 		return _node ? toJson(*_node) : Json::nullValue;
 	}
-	Json::Value inlineAssemblyIdentifierToJson(std::pair<yul::Identifier const* , InlineAssemblyAnnotation::ExternalIdentifierInfo> _info) const;
+	Json inlineAssemblyIdentifierToJson(std::pair<yul::Identifier const* , InlineAssemblyAnnotation::ExternalIdentifierInfo> _info) const;
 	static std::string location(VariableDeclaration::Location _location);
 	static std::string contractKind(ContractKind _kind);
 	static std::string functionCallKind(FunctionCallKind _kind);
@@ -166,7 +166,7 @@ private:
 		return _node.id();
 	}
 	template<class Container>
-	static Json::Value getContainerIds(Container const& _container, bool _order = false)
+	static Json getContainerIds(Container const& _container, bool _order = false)
 	{
 		std::vector<int64_t> tmp;
 
@@ -177,20 +177,20 @@ private:
 		}
 		if (_order)
 			std::sort(tmp.begin(), tmp.end());
-		Json::Value json(Json::arrayValue);
+		Json json(Json::arrayValue);
 
 		for (int64_t val: tmp)
 			json.append(val);
 
 		return json;
 	}
-	static Json::Value typePointerToJson(Type const* _tp, bool _withoutDataLocation = false);
-	static Json::Value typePointerToJson(std::optional<FuncCallArguments> const& _tps);
+	static Json typePointerToJson(Type const* _tp, bool _withoutDataLocation = false);
+	static Json typePointerToJson(std::optional<FuncCallArguments> const& _tps);
 	void appendExpressionAttributes(
-		std::vector<std::pair<std::string, Json::Value>> &_attributes,
+		std::vector<std::pair<std::string, Json>> &_attributes,
 		ExpressionAnnotation const& _annotation
 	);
-	static void appendMove(Json::Value& _array, Json::Value&& _value)
+	static void appendMove(Json& _array, Json&& _value)
 	{
 		solAssert(_array.isArray(), "");
 		_array.append(std::move(_value));
@@ -198,7 +198,7 @@ private:
 
 	CompilerStack::State m_stackState = CompilerStack::State::Empty; ///< Used to only access information that already exists
 	bool m_inEvent = false; ///< whether we are currently inside an event or not
-	Json::Value m_currentValue;
+	Json m_currentValue;
 	std::map<std::string, unsigned> m_sourceIndices;
 };
 

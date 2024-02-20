@@ -23,7 +23,7 @@
 using namespace solidity;
 using namespace solidity::frontend;
 
-Json::Value StorageLayout::generate(ContractDefinition const& _contractDef)
+Json StorageLayout::generate(ContractDefinition const& _contractDef)
 {
 	solAssert(!m_contract, "");
 	m_contract = &_contractDef;
@@ -34,19 +34,19 @@ Json::Value StorageLayout::generate(ContractDefinition const& _contractDef)
 	auto contractType = dynamic_cast<ContractType const*>(typeType->actualType());
 	solAssert(contractType, "");
 
-	Json::Value variables(Json::arrayValue);
+	Json variables(Json::arrayValue);
 	for (auto [var, slot, offset]: contractType->stateVariables())
 		variables.append(generate(*var, slot, offset));
 
-	Json::Value layout;
+	Json layout;
 	layout["storage"] = std::move(variables);
 	layout["types"] = std::move(m_types);
 	return layout;
 }
 
-Json::Value StorageLayout::generate(VariableDeclaration const& _var, u256 const& _slot, unsigned _offset)
+Json StorageLayout::generate(VariableDeclaration const& _var, u256 const& _slot, unsigned _offset)
 {
-	Json::Value varEntry;
+	Json varEntry;
 	Type const* varType = _var.type();
 
 	varEntry["label"] = _var.name();
@@ -67,13 +67,13 @@ void StorageLayout::generate(Type const* _type)
 		return;
 
 	// Register it now to cut recursive visits.
-	Json::Value& typeInfo = m_types[typeKeyName(_type)];
+	Json& typeInfo = m_types[typeKeyName(_type)];
 	typeInfo["label"] = _type->toString(true);
 	typeInfo["numberOfBytes"] = u256(_type->storageBytes() * _type->storageSize()).str();
 
 	if (auto structType = dynamic_cast<StructType const*>(_type))
 	{
-		Json::Value members(Json::arrayValue);
+		Json members(Json::arrayValue);
 		auto const& structDef = structType->structDefinition();
 		for (auto const& member: structDef.members())
 		{

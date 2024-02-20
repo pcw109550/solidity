@@ -58,7 +58,7 @@ void FuzzerUtil::testCompilerJsonInterface(string const& _input, bool _optimize,
 	if (!_quiet)
 		cout << "Testing compiler " << (_optimize ? "with" : "without") << " optimizer." << endl;
 
-	Json::Value config = Json::objectValue;
+	Json config = Json::objectValue;
 	config["language"] = "Solidity";
 	config["sources"] = Json::objectValue;
 	config["sources"][""] = Json::objectValue;
@@ -155,7 +155,7 @@ void FuzzerUtil::runCompiler(string const& _input, bool _quiet)
 	// This should be safe given the above copies the output.
 	solidity_reset();
 
-	Json::Value output;
+	Json output;
 	if (!jsonParseStrict(outputString, output))
 	{
 		string msg{"Compiler produced invalid JSON output."};
