@@ -397,7 +397,7 @@ std::optional<Json> checkKeys(Json const& _input, std::set<std::string> const& _
 	if (!!_input && !_input.is_object())
 		return formatFatalError(Error::Type::JSONError, "\"" + _name + "\" must be an object");
 
-	for (auto const& member: _input.getMemberNames())
+	for (auto const& [member, _]: _input.items())
 		if (!_keys.count(member))
 			return formatFatalError(Error::Type::JSONError, "Unknown key \"" + member + "\"");
 
