@@ -152,10 +152,10 @@ Json formatErrorWithException(
 std::map<std::string, std::set<std::string>> requestedContractNames(Json const& _outputSelection)
 {
 	std::map<std::string, std::set<std::string>> contracts;
-	for (auto const& sourceName: _outputSelection.getMemberNames())
+	for (auto const& [sourceName, _]: _outputSelection.items())
 	{
 		std::string key = (sourceName == "*") ? "" : sourceName;
-		for (auto const& contractName: _outputSelection[sourceName].getMemberNames())
+		for (auto const& [contractName, _]: _outputSelection[sourceName].items())
 		{
 			std::string value = (contractName == "*") ? "" : contractName;
 			contracts[key].insert(value);
