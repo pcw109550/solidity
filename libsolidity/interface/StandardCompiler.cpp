@@ -516,7 +516,7 @@ std::optional<Json> checkOutputSelection(Json const& _outputSelection)
 	if (!!_outputSelection && !_outputSelection.is_object())
 		return formatFatalError(Error::Type::JSONError, "\"settings.outputSelection\" must be an object");
 
-	for (auto const& sourceName: _outputSelection.getMemberNames())
+	for (auto const& [sourceName, _]: _outputSelection.items())
 	{
 		auto const& sourceVal = _outputSelection[sourceName];
 
@@ -526,7 +526,7 @@ std::optional<Json> checkOutputSelection(Json const& _outputSelection)
 				"\"settings.outputSelection." + sourceName + "\" must be an object"
 			);
 
-		for (auto const& contractName: sourceVal.getMemberNames())
+		for (auto const& [contractName, _]: sourceVal.items())
 		{
 			auto const& contractVal = sourceVal[contractName];
 
