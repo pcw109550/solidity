@@ -67,7 +67,7 @@ std::optional<std::string> compileAndCheckLicenseMetadata(std::string const& _co
 	if (metadata["sources"]["A.sol"].contains("license"))
 	{
 		BOOST_REQUIRE(metadata["sources"]["A.sol"]["license"].is_string());
-		return metadata["sources"]["A.sol"]["license"].asString();
+		return metadata["sources"]["A.sol"]["license"].get<std::string>();
 	}
 	else
 		return std::nullopt;
@@ -476,7 +476,7 @@ BOOST_AUTO_TEST_CASE(metadata_optimiser_sequence)
 		BOOST_CHECK(metadata["settings"]["optimizer"]["details"].contains("yulDetails"));
 		BOOST_CHECK(metadata["settings"]["optimizer"]["details"]["yulDetails"].contains("optimizerSteps"));
 
-		std::string const metadataOptimizerSteps = metadata["settings"]["optimizer"]["details"]["yulDetails"]["optimizerSteps"].asString();
+		std::string const metadataOptimizerSteps = metadata["settings"]["optimizer"]["details"]["yulDetails"]["optimizerSteps"].get<std::string>();
 		std::string const expectedMetadataOptimiserSteps = _optimizerSequence + ":" + _optimizerCleanupSequence;
 		BOOST_CHECK_EQUAL(metadataOptimizerSteps, expectedMetadataOptimiserSteps);
 	};

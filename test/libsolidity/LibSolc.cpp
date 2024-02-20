@@ -46,7 +46,7 @@ bool containsError(Json const& _compilerResult, std::string const& _type, std::s
 		BOOST_REQUIRE(error.isObject());
 		BOOST_REQUIRE(error["type"].is_string());
 		BOOST_REQUIRE(error["message"].is_string());
-		if ((error["type"].asString() == _type) && (error["message"].asString() == _message))
+		if ((error["type"].get<std::string>() == _type) && (error["message"].get<std::string>() == _message))
 			return true;
 	}
 

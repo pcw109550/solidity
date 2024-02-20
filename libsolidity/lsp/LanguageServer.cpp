@@ -178,7 +178,7 @@ void LanguageServer::changeConfiguration(Json const& _settings)
 	// those files being imported directly or indirectly will be included in operations.
 	if (_settings["file-load-strategy"])
 	{
-		auto const text = _settings["file-load-strategy"].asString();
+		auto const text = _settings["file-load-strategy"].get<std::string>();
 		if (text == "project-directory")
 			m_fileLoadStrategy = FileLoadStrategy::ProjectDirectory;
 		else if (text == "directly-opened-and-on-import")
@@ -199,7 +199,7 @@ void LanguageServer::changeConfiguration(Json const& _settings)
 			for (Json const& jsonPath: jsonIncludePaths)
 			{
 				if (jsonPath.is_string())
-					includePaths.emplace_back(boost::filesystem::path(jsonPath.asString()));
+					includePaths.emplace_back(boost::filesystem::path(jsonPath.get<std::string>()));
 				else
 					typeFailureCount++;
 			}
@@ -341,7 +341,7 @@ bool LanguageServer::run()
 
 			if ((*jsonMessage)["method"].is_string())
 			{
-				std::string const methodName = (*jsonMessage)["method"].asString();
+				std::string const methodName = (*jsonMessage)["method"].get<std::string>();
 				id = (*jsonMessage)["id"];
 				lspDebug(fmt::format("received method call: {}", methodName));
 
@@ -393,7 +393,7 @@ void LanguageServer::handleInitialize(MessageID _id, Json const& _args)
 	std::string rootPath("/");
 	if (Json uri = _args["rootUri"])
 	{
-		rootPath = uri.asString();
+		rootPath = uri.get<std::string>();
 		lspRequire(
 			boost::starts_with(rootPath, "file://"),
 			ErrorCode::InvalidParams,
@@ -402,7 +402,7 @@ void LanguageServer::handleInitialize(MessageID _id, Json const& _args)
 		rootPath = stripFileUriSchemePrefix(rootPath);
 	}
 	else if (Json rootPath = _args["rootPath"])
-		rootPath = rootPath.asString();
+		rootPath = rootPath.get<std::string>();
 
 	if (_args["trace"])
 		setTrace(_args["trace"]);
@@ -464,7 +464,7 @@ void LanguageServer::setTrace(Json const& _args)
 		// Simply ignore invalid parameter.
 		return;
 
-	std::string const stringValue = _args.asString();
+	std::string const stringValue = _args.get<std::string>();
 	if (stringValue == "off")
 		m_client.setTrace(TraceValue::Off);
 	else if (stringValue == "messages")
@@ -483,8 +483,8 @@ void LanguageServer::handleTextDocumentDidOpen(Json const& _args)
 		"Text document parameter missing."
 	);
 
-	std::string text = _args["textDocument"]["text"].asString();
-	std::string uri = _args["textDocument"]["uri"].asString();
+	std::string text = _args["textDocument"]["text"].get<std::string>();
+	std::string uri = _args["textDocument"]["uri"].get<std::string>();
 	m_openFiles.insert(uri);
 	m_fileRepository.setSourceByUri(uri, std::move(text));
 	compileAndUpdateDiagnostics();
@@ -494,7 +494,7 @@ void LanguageServer::handleTextDocumentDidChange(Json const& _args)
 {
 	requireServerInitialized();
 
-	std::string const uri = _args["textDocument"]["uri"].asString();
+	std::string const uri = _args["textDocument"]["uri"].get<std::string>();
 
 	for (Json jsonContentChange: _args["contentChanges"])
 	{
@@ -511,7 +511,7 @@ void LanguageServer::handleTextDocumentDidChange(Json const& _args)
 			"Unknown file: " + uri
 		);
 
-		std::string text = jsonContentChange["text"].asString();
+		std::string text = jsonContentChange["text"].get<std::string>();
 		if (jsonContentChange["range"].isObject()) // otherwise full content update
 		{
 			std::optional<SourceLocation> change = parseRange(m_fileRepository, sourceUnitName, jsonContentChange["range"]);
@@ -541,7 +541,7 @@ void LanguageServer::handleTextDocumentDidClose(Json const& _args)
 		"Text document parameter missing."
 	);
 
-	std::string uri = _args["textDocument"]["uri"].asString();
+	std::string uri = _args["textDocument"]["uri"].get<std::string>();
 	m_openFiles.erase(uri);
 
 	compileAndUpdateDiagnostics();

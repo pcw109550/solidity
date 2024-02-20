@@ -233,7 +233,7 @@ bool AssemblyItem::canBeFunctional() const
 	return false;
 }
 
-std::string AssemblyItem::getJumpTypeAsString() const
+std::string AssemblyItem::getJumpTypeget<std::string>() const
 {
 	switch (m_jumpType)
 	{
@@ -347,7 +347,7 @@ std::ostream& solidity::evmasm::operator<<(std::ostream& _out, AssemblyItem cons
 	case Operation:
 		_out << " " << instructionInfo(_item.instruction(), EVMVersion()).name;
 		if (_item.instruction() == Instruction::JUMP || _item.instruction() == Instruction::JUMPI)
-			_out << "\t" << _item.getJumpTypeAsString();
+			_out << "\t" << _item.getJumpTypeget<std::string>();
 		break;
 	case Push:
 		_out << " PUSH " << std::hex << _item.data() <<  std::dec;

@@ -182,7 +182,7 @@ bool isArtifactRequested(Json const& _outputSelection, std::string const& _artif
 	static std::set<std::string> experimental{"ir", "irAst", "irOptimized", "irOptimizedAst"};
 	for (auto const& selectedArtifactJson: _outputSelection)
 	{
-		std::string const& selectedArtifact = selectedArtifactJson.asString();
+		std::string const& selectedArtifact = selectedArtifactJson.get<std::string>();
 		if (
 			_artifact == selectedArtifact ||
 			boost::algorithm::starts_with(_artifact, selectedArtifact + ".")
@@ -463,13 +463,13 @@ std::optional<Json> checkOptimizerDetailSteps(Json const& _details, std::string 
 	{
 		if (_details[_name].is_string())
 		{
-			std::string const fullSequence = _details[_name].asString();
+			std::string const fullSequence = _details[_name].get<std::string>();
 			if (!_runYulOptimizer && !OptimiserSuite::isEmptyOptimizerSequence(fullSequence))
 				return formatFatalError(Error::Type::JSONError, "If Yul optimizer is disabled, only an empty optimizerSteps sequence is accepted.");
 
 			try
 			{
-				yul::OptimiserSuite::validateSequence(_details[_name].asString());
+				yul::OptimiserSuite::validateSequence(_details[_name].get<std::string>());
 			}
 			catch (yul::OptimizerException const& _exception)
 			{
@@ -504,7 +504,7 @@ std::optional<Json> checkMetadataKeys(Json const& _input)
 			return formatFatalError(Error::Type::JSONError, "\"settings.metadata.useLiteralContent\" must be Boolean");
 
 		static std::set<std::string> hashes{"ipfs", "bzzr1", "none"};
-		if (_input.contains("bytecodeHash") && !hashes.count(_input["bytecodeHash"].asString()))
+		if (_input.contains("bytecodeHash") && !hashes.count(_input["bytecodeHash"].get<std::string>()))
 			return formatFatalError(Error::Type::JSONError, "\"settings.metadata.bytecodeHash\" must be \"ipfs\", \"bzzr1\" or \"none\"");
 	}
 	static std::set<std::string> keys{"appendCBOR", "useLiteralContent", "bytecodeHash"};
@@ -640,7 +640,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 	if (auto result = checkRootKeys(_input))
 		return *result;
 
-	ret.language = _input["language"].asString();
+	ret.language = _input["language"].get<std::string>();
 
 	Json const& sources = _input["sources"];
 
@@ -662,11 +662,11 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 				return *result;
 
 			if (sources[sourceName]["keccak256"].is_string())
-				hash = sources[sourceName]["keccak256"].asString();
+				hash = sources[sourceName]["keccak256"].get<std::string>();
 
 			if (sources[sourceName]["content"].is_string())
 			{
-				std::string content = sources[sourceName]["content"].asString();
+				std::string content = sources[sourceName]["content"].get<std::string>();
 				if (!hash.empty() && !hashMatchesContent(hash, content))
 					ret.errors.push_back(formatError(
 						Error::Type::IOError,
@@ -690,14 +690,14 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 				{
 					if (!url.is_string())
 						return formatFatalError(Error::Type::JSONError, "URL must be a string.");
-					ReadCallback::Result result = m_readFile(ReadCallback::kindString(ReadCallback::Kind::ReadFile), url.asString());
+					ReadCallback::Result result = m_readFile(ReadCallback::kindString(ReadCallback::Kind::ReadFile), url.get<std::string>());
 					if (result.success)
 					{
 						if (!hash.empty() && !hashMatchesContent(hash, result.responseOrErrorMessage))
 							ret.errors.push_back(formatError(
 								Error::Type::IOError,
 								"general",
-								"Mismatch between content and supplied hash for \"" + sourceName + "\" at \"" + url.asString() + "\""
+								"Mismatch between content and supplied hash for \"" + sourceName + "\" at \"" + url.get<std::string>() + "\""
 							));
 						else
 						{
@@ -708,7 +708,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 					}
 					else
 						failures.push_back(
-							"Cannot import url (\"" + url.asString() + "\"): " + result.responseOrErrorMessage
+							"Cannot import url (\"" + url.get<std::string>() + "\"): " + result.responseOrErrorMessage
 						);
 				}
 
@@ -785,7 +785,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 						"\"smtlib2Responses." + hashString + "\" must be a string."
 					);
 
-				ret.smtLib2Responses[hash] = smtlib2Responses[hashString].asString();
+				ret.smtLib2Responses[hash] = smtlib2Responses[hashString].get<std::string>();
 			}
 		}
 	}
@@ -800,7 +800,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 		if (!settings["stopAfter"].is_string())
 			return formatFatalError(Error::Type::JSONError, "\"settings.stopAfter\" must be a string.");
 
-		if (settings["stopAfter"].asString() != "parsing")
+		if (settings["stopAfter"].get<std::string>() != "parsing")
 			return formatFatalError(Error::Type::JSONError, "Invalid value for \"settings.stopAfter\". Only valid value is \"parsing\".");
 
 		ret.stopAfter = CompilerStack::State::Parsed;
@@ -817,7 +817,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 	{
 		if (!settings["evmVersion"].is_string())
 			return formatFatalError(Error::Type::JSONError, "evmVersion must be a string.");
-		std::optional<langutil::EVMVersion> version = langutil::EVMVersion::fromString(settings["evmVersion"].asString());
+		std::optional<langutil::EVMVersion> version = langutil::EVMVersion::fromString(settings["evmVersion"].get<std::string>());
 		if (!version)
 			return formatFatalError(Error::Type::JSONError, "Invalid EVM version requested.");
 		if (version < EVMVersion::constantinople())
@@ -848,7 +848,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 		{
 			if (!settings["debug"]["revertStrings"].is_string())
 				return formatFatalError(Error::Type::JSONError, "settings.debug.revertStrings must be a string.");
-			std::optional<RevertStrings> revertStrings = revertStringsFromString(settings["debug"]["revertStrings"].asString());
+			std::optional<RevertStrings> revertStrings = revertStringsFromString(settings["debug"]["revertStrings"].get<std::string>());
 			if (!revertStrings)
 				return formatFatalError(Error::Type::JSONError, "Invalid value for settings.debug.revertStrings.");
 			if (*revertStrings == RevertStrings::VerboseDebug)
@@ -866,7 +866,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 
 			std::vector<std::string> components;
 			for (Json const& arrayValue: settings["debug"]["debugInfo"])
-				components.push_back(arrayValue.asString());
+				components.push_back(arrayValue.get<std::string>());
 
 			std::optional<DebugInfoSelection> debugInfoSelection = DebugInfoSelection::fromComponents(
 				components,
@@ -892,10 +892,10 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 	{
 		if (!remapping.is_string())
 			return formatFatalError(Error::Type::JSONError, "\"settings.remappings\" must be an array of strings");
-		if (auto r = ImportRemapper::parseRemapping(remapping.asString()))
+		if (auto r = ImportRemapper::parseRemapping(remapping.get<std::string>()))
 			ret.remappings.emplace_back(std::move(*r));
 		else
-			return formatFatalError(Error::Type::JSONError, "Invalid remapping: \"" + remapping.asString() + "\"");
+			return formatFatalError(Error::Type::JSONError, "Invalid remapping: \"" + remapping.get<std::string>() + "\"");
 	}
 
 	if (settings.contains("optimizer"))
@@ -919,7 +919,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 		{
 			if (!jsonSourceName[library].is_string())
 				return formatFatalError(Error::Type::JSONError, "Library address must be a string.");
-			std::string address = jsonSourceName[library].asString();
+			std::string address = jsonSourceName[library].get<std::string>();
 
 			if (!boost::starts_with(address, "0x"))
 				return formatFatalError(
@@ -961,7 +961,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 	ret.metadataLiteralSources = metadataSettings.get("useLiteralContent", Json(false)).asBool();
 	if (metadataSettings.contains("bytecodeHash"))
 	{
-		auto metadataHash = metadataSettings["bytecodeHash"].asString();
+		auto metadataHash = metadataSettings["bytecodeHash"].get<std::string>();
 		ret.metadataHash =
 			metadataHash == "ipfs" ?
 			CompilerStack::MetadataHash::IPFS :
@@ -1015,9 +1015,9 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 			{
 				if (!contract.is_string())
 					return formatFatalError(Error::Type::JSONError, "Every contract in settings.modelChecker.contracts must be a string.");
-				if (contract.asString().empty())
+				if (contract.get<std::string>().empty())
 					return formatFatalError(Error::Type::JSONError, "Contract name cannot be empty.");
-				sourceContracts[source].insert(contract.asString());
+				sourceContracts[source].insert(contract.get<std::string>());
 			}
 
 			if (sourceContracts[source].empty())
@@ -1038,7 +1038,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 	{
 		if (!modelCheckerSettings["engine"].is_string())
 			return formatFatalError(Error::Type::JSONError, "settings.modelChecker.engine must be a string.");
-		std::optional<ModelCheckerEngine> engine = ModelCheckerEngine::fromString(modelCheckerSettings["engine"].asString());
+		std::optional<ModelCheckerEngine> engine = ModelCheckerEngine::fromString(modelCheckerSettings["engine"].get<std::string>());
 		if (!engine)
 			return formatFatalError(Error::Type::JSONError, "Invalid model checker engine requested.");
 		ret.modelCheckerSettings.engine = *engine;
@@ -1058,7 +1058,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 	{
 		if (!modelCheckerSettings["extCalls"].is_string())
 			return formatFatalError(Error::Type::JSONError, "settings.modelChecker.extCalls must be a string.");
-		std::optional<ModelCheckerExtCalls> extCalls = ModelCheckerExtCalls::fromString(modelCheckerSettings["extCalls"].asString());
+		std::optional<ModelCheckerExtCalls> extCalls = ModelCheckerExtCalls::fromString(modelCheckerSettings["extCalls"].get<std::string>());
 		if (!extCalls)
 			return formatFatalError(Error::Type::JSONError, "Invalid model checker extCalls requested.");
 		ret.modelCheckerSettings.externalCalls = *extCalls;
@@ -1075,7 +1075,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 		{
 			if (!i.is_string())
 				return formatFatalError(Error::Type::JSONError, "Every invariant type in settings.modelChecker.invariants must be a string.");
-			if (!invariants.setFromString(i.asString()))
+			if (!invariants.setFromString(i.get<std::string>()))
 				return formatFatalError(Error::Type::JSONError, "Invalid model checker invariants requested.");
 		}
 
@@ -1120,7 +1120,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 		{
 			if (!s.is_string())
 				return formatFatalError(Error::Type::JSONError, "Every target in settings.modelChecker.solvers must be a string.");
-			if (!solvers.setSolver(s.asString()))
+			if (!solvers.setSolver(s.get<std::string>()))
 				return formatFatalError(Error::Type::JSONError, "Invalid model checker solvers requested.");
 		}
 
@@ -1150,7 +1150,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 		{
 			if (!t.is_string())
 				return formatFatalError(Error::Type::JSONError, "Every target in settings.modelChecker.targets must be a string.");
-			if (!targets.setFromString(t.asString()))
+			if (!targets.setFromString(t.get<std::string>()))
 				return formatFatalError(Error::Type::JSONError, "Invalid model checker targets requested.");
 		}
 
@@ -1180,7 +1180,7 @@ std::map<std::string, Json> StandardCompiler::parseAstFromInput(StringMap const&
 		std::string astKey = ast.contains("ast") ? "ast" : "AST";
 
 		astAssert(ast.contains(astKey), "astkey is not member");
-		astAssert(ast[astKey]["nodeType"].asString() == "SourceUnit", "Top-level node should be a 'SourceUnit'");
+		astAssert(ast[astKey]["nodeType"].get<std::string>() == "SourceUnit", "Top-level node should be a 'SourceUnit'");
 		astAssert(sourceJsons.count(sourceName) == 0, "All sources must have unique names");
 		sourceJsons.emplace(sourceName, std::move(ast[astKey]));
 	}

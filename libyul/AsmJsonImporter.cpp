@@ -45,7 +45,7 @@ SourceLocation const AsmJsonImporter::createSourceLocation(Json const& _node)
 {
 	yulAssert(member(_node, "src").is_string(), "'src' must be a string");
 
-	return solidity::langutil::parseSourceLocation(_node["src"].asString(), m_sourceNames);
+	return solidity::langutil::parseSourceLocation(_node["src"].get<std::string>(), m_sourceNames);
 }
 
 template <class T>
@@ -71,8 +71,8 @@ Json AsmJsonImporter::member(Json const& _node, std::string const& _name)
 TypedName AsmJsonImporter::createTypedName(Json const& _node)
 {
 	auto typedName = createAsmNode<TypedName>(_node);
-	typedName.type = YulString{member(_node, "type").asString()};
-	typedName.name = YulString{member(_node, "name").asString()};
+	typedName.type = YulString{member(_node, "type").get<std::string>()};
+	typedName.name = YulString{member(_node, "name").get<std::string>()};
 	return typedName;
 }
 
@@ -80,7 +80,7 @@ Statement AsmJsonImporter::createStatement(Json const& _node)
 {
 	Json jsonNodeType = member(_node, "nodeType");
 	yulAssert(jsonNodeType.is_string(), "Expected \"nodeType\" to be of type string!");
-	std::string nodeType = jsonNodeType.asString();
+	std::string nodeType = jsonNodeType.get<std::string>();
 
 	yulAssert(nodeType.substr(0, 3) == "Yul", "Invalid nodeType prefix");
 	nodeType = nodeType.substr(3);
@@ -118,7 +118,7 @@ Expression AsmJsonImporter::createExpression(Json const& _node)
 {
 	Json jsonNodeType = member(_node, "nodeType");
 	yulAssert(jsonNodeType.is_string(), "Expected \"nodeType\" to be of type string!");
-	std::string nodeType = jsonNodeType.asString();
+	std::string nodeType = jsonNodeType.get<std::string>();
 
 	yulAssert(nodeType.substr(0, 3) == "Yul", "Invalid nodeType prefix");
 	nodeType = nodeType.substr(3);
@@ -162,15 +162,15 @@ Block AsmJsonImporter::createBlock(Json const& _node)
 Literal AsmJsonImporter::createLiteral(Json const& _node)
 {
 	auto lit = createAsmNode<Literal>(_node);
-	std::string kind = member(_node, "kind").asString();
+	std::string kind = member(_node, "kind").get<std::string>();
 
 	solAssert(member(_node, "hexValue").is_string() || member(_node, "value").is_string(), "");
 	if (_node.contains("hexValue"))
-		lit.value = YulString{util::asString(util::fromHex(member(_node, "hexValue").asString()))};
+		lit.value = YulString{util::asString(util::fromHex(member(_node, "hexValue").get<std::string>()))};
 	else
-		lit.value = YulString{member(_node, "value").asString()};
+		lit.value = YulString{member(_node, "value").get<std::string>()};
 
-	lit.type= YulString{member(_node, "type").asString()};
+	lit.type= YulString{member(_node, "type").get<std::string>()};
 
 	if (kind == "number")
 	{
@@ -215,7 +215,7 @@ Leave AsmJsonImporter::createLeave(Json const& _node)
 Identifier AsmJsonImporter::createIdentifier(Json const& _node)
 {
 	auto identifier = createAsmNode<Identifier>(_node);
-	identifier.name = YulString(member(_node, "name").asString());
+	identifier.name = YulString(member(_node, "name").get<std::string>());
 	return identifier;
 }
 
@@ -265,7 +265,7 @@ VariableDeclaration AsmJsonImporter::createVariableDeclaration(Json const& _node
 FunctionDefinition AsmJsonImporter::createFunctionDefinition(Json const& _node)
 {
 	auto funcDef = createAsmNode<FunctionDefinition>(_node);
-	funcDef.name = YulString{member(_node, "name").asString()};
+	funcDef.name = YulString{member(_node, "name").get<std::string>()};
 
 	if (_node.contains("parameters"))
 		for (auto const& var: member(_node, "parameters"))
@@ -292,7 +292,7 @@ Case AsmJsonImporter::createCase(Json const& _node)
 	auto caseStatement = createAsmNode<Case>(_node);
 	auto const& value = member(_node, "value");
 	if (value.is_string())
-		yulAssert(value.asString() == "default", "Expected default case");
+		yulAssert(value.get<std::string>() == "default", "Expected default case");
 	else
 		caseStatement.value = std::make_unique<Literal>(createLiteral(value));
 	caseStatement.body = createBlock(member(_node, "body"));

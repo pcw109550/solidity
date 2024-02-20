@@ -143,13 +143,13 @@ std::optional<ABIType> isFixedPoint(std::string const& type)
 std::string functionSignatureFromABI(Json const& _functionABI)
 {
 	auto inputs = _functionABI["inputs"];
-	std::string signature = {_functionABI["name"].asString() + "("};
+	std::string signature = {_functionABI["name"].get<std::string>() + "("};
 	size_t parameterCount = 0;
 
 	for (auto const& input: inputs)
 	{
 		parameterCount++;
-		signature += input["type"].asString();
+		signature += input["type"].get<std::string>();
 		if (parameterCount < inputs.size())
 			signature += ",";
 	}
@@ -177,7 +177,7 @@ std::optional<solidity::frontend::test::ParameterList> ContractABIUtils::paramet
 
 			for (auto const& output: function["outputs"])
 			{
-				std::string type = output["type"].asString();
+				std::string type = output["type"].get<std::string>();
 
 				ABITypes inplaceTypes;
 				ABITypes dynamicTypes;
@@ -215,7 +215,7 @@ bool ContractABIUtils::appendTypesFromName(
 	bool _isCompoundType
 )
 {
-	std::string type = _functionOutput["type"].asString();
+	std::string type = _functionOutput["type"].get<std::string>();
 	if (isBool(type))
 		_inplaceTypes.push_back(ABIType{ABIType::Boolean});
 	else if (isUint(type))

@@ -356,20 +356,20 @@ void CommandLineInterface::handleSignatureHashes(std::string const& _contract)
 	Json interfaceSymbols = m_compiler->interfaceSymbols(_contract);
 	std::string out = "Function signatures:\n";
 	for (auto const& name: interfaceSymbols["methods"].getMemberNames())
-		out += interfaceSymbols["methods"][name].asString() + ": " + name + "\n";
+		out += interfaceSymbols["methods"][name].get<std::string>() + ": " + name + "\n";
 
 	if (interfaceSymbols.contains("errors"))
 	{
 		out += "\nError signatures:\n";
 		for (auto const& name: interfaceSymbols["errors"].getMemberNames())
-			out += interfaceSymbols["errors"][name].asString() + ": " + name + "\n";
+			out += interfaceSymbols["errors"][name].get<std::string>() + ": " + name + "\n";
 	}
 
 	if (interfaceSymbols.contains("events"))
 	{
 		out += "\nEvent signatures:\n";
 		for (auto const& name: interfaceSymbols["events"].getMemberNames())
-			out += interfaceSymbols["events"][name].asString() + ": " + name + "\n";
+			out += interfaceSymbols["events"][name].get<std::string>() + ": " + name + "\n";
 	}
 
 	if (!m_options.output.dir.empty())
@@ -474,9 +474,9 @@ void CommandLineInterface::handleGasEstimation(std::string const& _contract)
 	{
 		Json creation = estimates["creation"];
 		sout() << "construction:" << std::endl;
-		sout() << "   " << creation["executionCost"].asString();
-		sout() << " + " << creation["codeDepositCost"].asString();
-		sout() << " = " << creation["totalCost"].asString() << std::endl;
+		sout() << "   " << creation["executionCost"].get<std::string>();
+		sout() << " + " << creation["codeDepositCost"].get<std::string>();
+		sout() << " = " << creation["totalCost"].get<std::string>() << std::endl;
 	}
 
 	if (estimates["external"].isObject())
@@ -489,7 +489,7 @@ void CommandLineInterface::handleGasEstimation(std::string const& _contract)
 				sout() << "   fallback:\t";
 			else
 				sout() << "   " << name << ":\t";
-			sout() << externalFunctions[name].asString() << std::endl;
+			sout() << externalFunctions[name].get<std::string>() << std::endl;
 		}
 	}
 
@@ -500,7 +500,7 @@ void CommandLineInterface::handleGasEstimation(std::string const& _contract)
 		for (auto const& name: internalFunctions.getMemberNames())
 		{
 			sout() << "   " << name << ":\t";
-			sout() << internalFunctions[name].asString() << std::endl;
+			sout() << internalFunctions[name].get<std::string>() << std::endl;
 		}
 	}
 }
@@ -631,7 +631,7 @@ std::map<std::string, Json> CommandLineInterface::parseAstFromInput()
 			std::string astKey = ast["sources"][src].contains("ast") ? "ast" : "AST";
 
 			astAssert(ast["sources"][src].contains(astKey), "astkey is not member");
-			astAssert(ast["sources"][src][astKey]["nodeType"].asString() == "SourceUnit",  "Top-level node should be a 'SourceUnit'");
+			astAssert(ast["sources"][src][astKey]["nodeType"].get<std::string>() == "SourceUnit",  "Top-level node should be a 'SourceUnit'");
 			astAssert(sourceJsons.count(src) == 0, "All sources must have unique names");
 			sourceJsons.emplace(src, std::move(ast["sources"][src][astKey]));
 			tmpSources[src] = util::jsonCompactPrint(ast);

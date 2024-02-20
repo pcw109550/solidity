@@ -53,7 +53,7 @@ Json HandlerBase::toJson(SourceLocation const& _location) const
 
 std::pair<std::string, LineColumn> HandlerBase::extractSourceUnitNameAndLineColumn(Json const& _args) const
 {
-	std::string const uri = _args["textDocument"]["uri"].asString();
+	std::string const uri = _args["textDocument"]["uri"].get<std::string>();
 	std::string const sourceUnitName = fileRepository().uriToSourceUnitName(uri);
 	if (!fileRepository().sourceUnits().count(sourceUnitName))
 		BOOST_THROW_EXCEPTION(

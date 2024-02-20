@@ -193,11 +193,11 @@ Json ABI::formatType(
 			);
 			if (subtype.contains("components"))
 			{
-				ret["type"] = subtype["type"].asString() + suffix;
+				ret["type"] = subtype["type"].get<std::string>() + suffix;
 				ret["components"] = subtype["components"];
 			}
 			else
-				ret["type"] = subtype["type"].asString() + suffix;
+				ret["type"] = subtype["type"].get<std::string>() + suffix;
 		}
 	}
 	else if (StructType const* structType = dynamic_cast<StructType const*>(&_encodingType))

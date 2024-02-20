@@ -165,13 +165,13 @@ void FuzzerUtil::runCompiler(string const& _input, bool _quiet)
 	if (output.contains("errors"))
 		for (auto const& error: output["errors"])
 		{
-			string invalid = findAnyOf(error["type"].asString(), vector<string>{
+			string invalid = findAnyOf(error["type"].get<std::string>(), vector<string>{
 					"Exception",
 					"InternalCompilerError"
 			});
 			if (!invalid.empty())
 			{
-				string msg = "Invalid error: \"" + error["type"].asString() + "\"";
+				string msg = "Invalid error: \"" + error["type"].get<std::string>() + "\"";
 				cout << msg << endl;
 				BOOST_THROW_EXCEPTION(std::runtime_error(std::move(msg)));
 			}

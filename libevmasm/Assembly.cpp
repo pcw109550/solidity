@@ -449,7 +449,7 @@ Json Assembly::assemblyJSON(std::map<std::string, unsigned> const& _sourceIndice
 		jsonItem["end"] = item.location().end;
 		if (item.m_modifierDepth != 0)
 			jsonItem["modifierDepth"] = static_cast<int>(item.m_modifierDepth);
-		std::string jumpType = item.getJumpTypeAsString();
+		std::string jumpType = item.getJumpTypeget<std::string>();
 		if (!jumpType.empty())
 			jsonItem["jumpType"] = jumpType;
 		if (name == "PUSHLIB")
@@ -539,11 +539,11 @@ std::pair<std::shared_ptr<Assembly>, std::vector<std::string>> Assembly::fromJSO
 		for (Json const& sourceName: _json["sourceList"])
 		{
 			solRequire(
-				std::find(parsedSourceList.begin(), parsedSourceList.end(), sourceName.asString()) == parsedSourceList.end(),
+				std::find(parsedSourceList.begin(), parsedSourceList.end(), sourceName.get<std::string>()) == parsedSourceList.end(),
 				AssemblyImportException,
 				"Items in 'sourceList' array are not unique."
 			);
-			parsedSourceList.emplace_back(sourceName.asString());
+			parsedSourceList.emplace_back(sourceName.get<std::string>());
 		}
 	}
 
@@ -557,7 +557,7 @@ std::pair<std::shared_ptr<Assembly>, std::vector<std::string>> Assembly::fromJSO
 	if (_json.contains(".auxdata"))
 	{
 		solRequire(_json[".auxdata"].is_string(), AssemblyImportException, "Optional member '.auxdata' is not a string.");
-		result->m_auxiliaryData = fromHex(_json[".auxdata"].asString());
+		result->m_auxiliaryData = fromHex(_json[".auxdata"].get<std::string>());
 		solRequire(!result->m_auxiliaryData.empty(), AssemblyImportException, "Optional member '.auxdata' is not a valid hexadecimal string.");
 	}
 
@@ -569,16 +569,16 @@ std::pair<std::shared_ptr<Assembly>, std::vector<std::string>> Assembly::fromJSO
 		for (JsonConstIterator dataIter = data.begin(); dataIter != data.end(); dataIter++)
 		{
 			solAssert(dataIter.key().is_string());
-			std::string dataItemID = dataIter.key().asString();
+			std::string dataItemID = dataIter.key().get<std::string>();
 			Json const& dataItem = data[dataItemID];
 			if (dataItem.is_string())
 			{
 				solRequire(
-					dataItem.asString().empty() || !fromHex(dataItem.asString()).empty(),
+					dataItem.get<std::string>().empty() || !fromHex(dataItem.get<std::string>()).empty(),
 					AssemblyImportException,
 					"The value for key '" + dataItemID + "' inside '.data' is not a valid hexadecimal string."
 				);
-				result->m_data[h256(fromHex(dataItemID))] = fromHex(dataItem.asString());
+				result->m_data[h256(fromHex(dataItemID))] = fromHex(dataItem.get<std::string>());
 			}
 			else if (dataItem.isObject())
 			{
