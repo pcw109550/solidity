@@ -93,7 +93,7 @@ Json Object::toJson() const
 
 	Json subObjectsJson{Json::array()};
 	for (std::shared_ptr<ObjectNode> const& subObject: subObjects)
-		subObjectsJson.append(subObject->toJson());
+		subObjectsJson.push_back(subObject->toJson());
 
 	Json ret{Json::objectValue};
 	ret["nodeType"] = "YulObject";

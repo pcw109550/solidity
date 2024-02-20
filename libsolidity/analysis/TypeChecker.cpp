@@ -1144,7 +1144,7 @@ void TypeChecker::endVisit(TryStatement const& _tryStatement)
 				m_errorReporter.typeError(
 					5320_error,
 					clause.location(),
-					SecondarySourceLocation{}.append("The first clause is here:", lowLevelClause->location()),
+					SecondarySourceLocation{}.push_back("The first clause is here:", lowLevelClause->location()),
 					"This try statement already has a low-level catch clause."
 				);
 			lowLevelClause = &clause;
@@ -1182,7 +1182,7 @@ void TypeChecker::endVisit(TryStatement const& _tryStatement)
 					m_errorReporter.typeError(
 						1036_error,
 						clause.location(),
-						SecondarySourceLocation{}.append("The first clause is here:", errorClause->location()),
+						SecondarySourceLocation{}.push_back("The first clause is here:", errorClause->location()),
 						"This try statement already has an \"Error\" catch clause."
 					);
 				errorClause = &clause;
@@ -1199,7 +1199,7 @@ void TypeChecker::endVisit(TryStatement const& _tryStatement)
 					m_errorReporter.typeError(
 						6732_error,
 						clause.location(),
-						SecondarySourceLocation{}.append("The first clause is here:", panicClause->location()),
+						SecondarySourceLocation{}.push_back("The first clause is here:", panicClause->location()),
 						"This try statement already has a \"Panic\" catch clause."
 					);
 				panicClause = &clause;
@@ -2026,7 +2026,7 @@ Type const* TypeChecker::typeCheckTypeConversionAndRetrieveReturnType(
 							identifier->annotation().referencedDeclaration
 						)
 					)
-						ssl.append(
+						ssl.push_back(
 							"Did you mean to declare this variable as \"address payable\"?",
 							variableDeclaration->location()
 						);
@@ -2358,7 +2358,7 @@ void TypeChecker::typeCheckABIEncodeCallFunction(FunctionCall const& _functionCa
 
 		if (externalFunctionType->hasDeclaration())
 		{
-			ssl.append("Function is declared here:", externalFunctionType->declaration().location());
+			ssl.push_back("Function is declared here:", externalFunctionType->declaration().location());
 			if (
 				externalFunctionType->declaration().visibility() == Visibility::Public &&
 				externalFunctionType->declaration().scope() == m_currentContract
@@ -3731,10 +3731,10 @@ bool TypeChecker::visit(Identifier const& _identifier)
 							description += (description.empty() ? "" : ", ") + param->humanReadableName();
 						description = "function " + _identifier.name() + "(" + description + ")";
 
-						ssl.append("Candidate: " + description, declaration->location());
+						ssl.push_back("Candidate: " + description, declaration->location());
 					}
 					else
-						ssl.append("Candidate:", declaration->location());
+						ssl.push_back("Candidate:", declaration->location());
 				if (candidates.empty())
 					m_errorReporter.fatalTypeError(9322_error, _identifier.location(), ssl, "No matching declaration found after argument-dependent lookup.");
 				else
@@ -3967,7 +3967,7 @@ void TypeChecker::endVisit(UsingForDirective const& _usingFor)
 			m_errorReporter.fatalTypeError(
 				4731_error,
 				path->location(),
-				SecondarySourceLocation().append(
+				SecondarySourceLocation().push_back(
 					"Function defined here:",
 					functionDefinition.location()
 				),
@@ -3987,7 +3987,7 @@ void TypeChecker::endVisit(UsingForDirective const& _usingFor)
 			m_errorReporter.typeError(
 				6772_error,
 				path->location(),
-				SecondarySourceLocation().append(
+				SecondarySourceLocation().push_back(
 					"Function defined here:",
 					functionDefinition.location()
 				),
@@ -4008,7 +4008,7 @@ void TypeChecker::endVisit(UsingForDirective const& _usingFor)
 			m_errorReporter.typeError(
 				3100_error,
 				path->location(),
-				SecondarySourceLocation().append(
+				SecondarySourceLocation().push_back(
 					"Function defined here:",
 					functionDefinition.location()
 				),
@@ -4037,7 +4037,7 @@ void TypeChecker::endVisit(UsingForDirective const& _usingFor)
 				m_errorReporter.typeError(
 					7775_error,
 					path->location(),
-					SecondarySourceLocation().append(
+					SecondarySourceLocation().push_back(
 						"Function defined as non-pure here:",
 						functionDefinition.location()
 					),
@@ -4075,7 +4075,7 @@ void TypeChecker::endVisit(UsingForDirective const& _usingFor)
 				m_errorReporter.typeError(
 					1884_error,
 					functionDefinition.parameterList().location(),
-					SecondarySourceLocation().append(
+					SecondarySourceLocation().push_back(
 						"Function was used to implement an operator here:",
 						path->location()
 					),
@@ -4110,7 +4110,7 @@ void TypeChecker::endVisit(UsingForDirective const& _usingFor)
 				m_errorReporter.typeError(
 					7743_error,
 					functionDefinition.returnParameterList()->location(),
-					SecondarySourceLocation().append(
+					SecondarySourceLocation().push_back(
 						"Function was used to implement an operator here:",
 						path->location()
 					),
@@ -4142,7 +4142,7 @@ void TypeChecker::endVisit(UsingForDirective const& _usingFor)
 					SecondarySourceLocation secondaryLocation;
 					for (FunctionDefinition const* definition: matchingDefinitions)
 						if (functionDefinition != *definition)
-						secondaryLocation.append("Conflicting definition:", definition->location());
+						secondaryLocation.push_back("Conflicting definition:", definition->location());
 
 					m_errorReporter.typeError(
 						4705_error,

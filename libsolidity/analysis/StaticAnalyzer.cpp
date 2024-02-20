@@ -338,7 +338,7 @@ bool StaticAnalyzer::visit(FunctionCall const& _functionCall)
 			m_errorReporter.typeError(
 				6700_error,
 				_functionCall.location(),
-				SecondarySourceLocation().append(
+				SecondarySourceLocation().push_back(
 					"The function declaration is here:",
 					functionType->declaration().scope()->location()
 				),

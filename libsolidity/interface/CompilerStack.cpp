@@ -198,7 +198,7 @@ void CompilerStack::findAndReportCyclicContractDependencies()
 				continue;
 
 			SecondarySourceLocation secondaryLocation{};
-			secondaryLocation.append("Referenced contract is here:"s, cycle->location());
+			secondaryLocation.push_back("Referenced contract is here:"s, cycle->location());
 
 			m_errorReporter.typeError(
 				7813_error,
@@ -1678,8 +1678,8 @@ std::string CompilerStack::createMetadata(Contract const& _contract, bool _forIR
 		else
 		{
 			meta["sources"][s.first]["urls"] = Json::array();
-			meta["sources"][s.first]["urls"].append("bzz-raw://" + util::toHex(s.second.swarmHash().asBytes()));
-			meta["sources"][s.first]["urls"].append(s.second.ipfsUrl());
+			meta["sources"][s.first]["urls"].push_back("bzz-raw://" + util::toHex(s.second.swarmHash().asBytes()));
+			meta["sources"][s.first]["urls"].push_back(s.second.ipfsUrl());
 		}
 	}
 
@@ -1758,7 +1758,7 @@ std::string CompilerStack::createMetadata(Contract const& _contract, bool _forIR
 	for (auto const& r: m_importRemapper.remappings())
 		remappings.insert(r.context + ":" + r.prefix + "=" + r.target);
 	for (auto const& r: remappings)
-		meta["settings"]["remappings"].append(r);
+		meta["settings"]["remappings"].push_back(r);
 
 	meta["settings"]["libraries"] = Json::objectValue;
 	for (auto const& library: m_libraries)

@@ -69,8 +69,8 @@ BOOST_AUTO_TEST_CASE(json_types)
 	check(value, "{\"key\":\"value\"}");
 
 	value = Json::array();
-	value.append(1);
-	value.append(2);
+	value.push_back(1);
+	value.push_back(2);
 	check(value, "[1,2]");
 }
 

@@ -60,22 +60,22 @@ void EthAssemblyAdapter::setStackHeight(int height)
 
 void EthAssemblyAdapter::appendInstruction(evmasm::Instruction _instruction)
 {
-	m_assembly.append(_instruction);
+	m_assembly.push_back(_instruction);
 }
 
 void EthAssemblyAdapter::appendConstant(u256 const& _constant)
 {
-	m_assembly.append(_constant);
+	m_assembly.push_back(_constant);
 }
 
 void EthAssemblyAdapter::appendLabel(LabelID _labelId)
 {
-	m_assembly.append(evmasm::AssemblyItem(evmasm::Tag, _labelId));
+	m_assembly.push_back(evmasm::AssemblyItem(evmasm::Tag, _labelId));
 }
 
 void EthAssemblyAdapter::appendLabelReference(LabelID _labelId)
 {
-	m_assembly.append(evmasm::AssemblyItem(evmasm::PushTag, _labelId));
+	m_assembly.push_back(evmasm::AssemblyItem(evmasm::PushTag, _labelId));
 }
 
 size_t EthAssemblyAdapter::newLabelId()
@@ -208,5 +208,5 @@ void EthAssemblyAdapter::appendJumpInstruction(evmasm::Instruction _instruction,
 		jump.setJumpType(evmasm::AssemblyItem::JumpType::OutOfFunction);
 		break;
 	}
-	m_assembly.append(std::move(jump));
+	m_assembly.push_back(std::move(jump));
 }

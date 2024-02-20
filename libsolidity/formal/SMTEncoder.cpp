@@ -2603,10 +2603,10 @@ SecondarySourceLocation SMTEncoder::callStackMessage(std::vector<CallStackEntry>
 {
 	SecondarySourceLocation callStackLocation;
 	solAssert(!_callStack.empty(), "");
-	callStackLocation.append("Callstack:", SourceLocation());
+	callStackLocation.push_back("Callstack:", SourceLocation());
 	for (auto const& call: _callStack | ranges::views::reverse)
 		if (call.second)
-			callStackLocation.append("", call.second->location());
+			callStackLocation.push_back("", call.second->location());
 	return callStackLocation;
 }
 

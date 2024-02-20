@@ -1016,7 +1016,7 @@ void CommandLineInterface::handleCombinedJSON()
 		output[g_strSourceList] = Json(Json::array());
 
 		for (auto const& source: m_assemblyStack->sourceNames())
-			output[g_strSourceList].append(source);
+			output[g_strSourceList].push_back(source);
 	}
 
 	if (m_options.compiler.combinedJsonRequests->ast)

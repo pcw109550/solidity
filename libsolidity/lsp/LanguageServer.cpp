@@ -93,36 +93,36 @@ Json semanticTokensLegend()
 	//       their respective enum class members.
 
 	Json tokenTypes = Json::array();
-	tokenTypes.append("class");
-	tokenTypes.append("comment");
-	tokenTypes.append("enum");
-	tokenTypes.append("enumMember");
-	tokenTypes.append("event");
-	tokenTypes.append("function");
-	tokenTypes.append("interface");
-	tokenTypes.append("keyword");
-	tokenTypes.append("macro");
-	tokenTypes.append("method");
-	tokenTypes.append("modifier");
-	tokenTypes.append("number");
-	tokenTypes.append("operator");
-	tokenTypes.append("parameter");
-	tokenTypes.append("property");
-	tokenTypes.append("std::string");
-	tokenTypes.append("struct");
-	tokenTypes.append("type");
-	tokenTypes.append("typeParameter");
-	tokenTypes.append("variable");
+	tokenTypes.push_back("class");
+	tokenTypes.push_back("comment");
+	tokenTypes.push_back("enum");
+	tokenTypes.push_back("enumMember");
+	tokenTypes.push_back("event");
+	tokenTypes.push_back("function");
+	tokenTypes.push_back("interface");
+	tokenTypes.push_back("keyword");
+	tokenTypes.push_back("macro");
+	tokenTypes.push_back("method");
+	tokenTypes.push_back("modifier");
+	tokenTypes.push_back("number");
+	tokenTypes.push_back("operator");
+	tokenTypes.push_back("parameter");
+	tokenTypes.push_back("property");
+	tokenTypes.push_back("std::string");
+	tokenTypes.push_back("struct");
+	tokenTypes.push_back("type");
+	tokenTypes.push_back("typeParameter");
+	tokenTypes.push_back("variable");
 	legend["tokenTypes"] = tokenTypes;
 
 	Json tokenModifiers = Json::array();
-	tokenModifiers.append("abstract");
-	tokenModifiers.append("declaration");
-	tokenModifiers.append("definition");
-	tokenModifiers.append("deprecated");
-	tokenModifiers.append("documentation");
-	tokenModifiers.append("modification");
-	tokenModifiers.append("readonly");
+	tokenModifiers.push_back("abstract");
+	tokenModifiers.push_back("declaration");
+	tokenModifiers.push_back("definition");
+	tokenModifiers.push_back("deprecated");
+	tokenModifiers.push_back("documentation");
+	tokenModifiers.push_back("modification");
+	tokenModifiers.push_back("readonly");
 	legend["tokenModifiers"] = tokenModifiers;
 
 	return legend;
@@ -303,10 +303,10 @@ void LanguageServer::compileAndUpdateDiagnostics()
 				Json jsonRelated;
 				jsonRelated["message"] = secondaryMessage;
 				jsonRelated["location"] = toJson(secondaryLocation);
-				jsonDiag["relatedInformation"].append(jsonRelated);
+				jsonDiag["relatedInformation"].push_back(jsonRelated);
 			}
 
-		diagnosticsBySourceUnit[*location->sourceName].append(jsonDiag);
+		diagnosticsBySourceUnit[*location->sourceName].push_back(jsonDiag);
 	}
 
 	if (m_client.traceValue() != TraceValue::Off)

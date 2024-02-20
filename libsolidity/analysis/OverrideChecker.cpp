@@ -684,7 +684,7 @@ void OverrideChecker::overrideListError(
 	SecondarySourceLocation ssl;
 	for (Declaration const* c: _secondary)
 	{
-		ssl.append("This contract: ", c->location());
+		ssl.push_back("This contract: ", c->location());
 		names.insert("\"" + c->name() + "\"");
 	}
 	std::string contractSingularPlural = "contract ";
@@ -714,7 +714,7 @@ void OverrideChecker::overrideError(
 	m_errorReporter.typeError(
 		_error,
 		_overriding.location(),
-		SecondarySourceLocation().append(
+		SecondarySourceLocation().push_back(
 			_secondaryMsg.value_or("Overridden " + _super.astNodeName() + " is here:"),
 			_super.location()
 		),
@@ -796,7 +796,7 @@ void OverrideChecker::checkAmbiguousOverridesInternal(std::set<OverrideProxy> _b
 
 	SecondarySourceLocation ssl;
 	for (OverrideProxy const& baseFunction: _baseCallables)
-		ssl.append("Definition in \"" + baseFunction.contractName() + "\": ", baseFunction.location());
+		ssl.push_back("Definition in \"" + baseFunction.contractName() + "\": ", baseFunction.location());
 
 	std::string callableName = _baseCallables.begin()->astNodeName();
 	if (_baseCallables.begin()->isVariable())
@@ -864,7 +864,7 @@ void OverrideChecker::checkOverrideList(OverrideProxy _item, OverrideProxyBySign
 			if (aDecl->id() == bDecl->id())
 			{
 				SecondarySourceLocation ssl;
-				ssl.append("First occurrence here: ", list[i-1]->location());
+				ssl.push_back("First occurrence here: ", list[i-1]->location());
 				m_errorReporter.typeError(
 					4520_error,
 					list[i]->location(),

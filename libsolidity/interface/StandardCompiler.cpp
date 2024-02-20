@@ -80,7 +80,7 @@ Json formatFatalError(Error::Type _type, std::string const& _message)
 {
 	Json output{Json::objectValue};
 	output["errors"] = Json::array();
-	output["errors"].append(formatError(_type, "general", _message));
+	output["errors"].push_back(formatError(_type, "general", _message));
 	return output;
 }
 
@@ -106,7 +106,7 @@ Json formatSecondarySourceLocation(SecondarySourceLocation const* _secondaryLoca
 	{
 		Json msg = formatSourceLocation(&location.second);
 		msg["message"] = location.first;
-		secondarySourceLocation.append(msg);
+		secondarySourceLocation.push_back(msg);
 	}
 	return secondarySourceLocation;
 }
@@ -336,7 +336,7 @@ Json formatLinkReferences(std::map<size_t, std::string> const& linkReferences)
 		entry["start"] = Json::UInt(ref.first);
 		entry["length"] = 20;
 
-		libraryArray.append(entry);
+		libraryArray.push_back(entry);
 		fileObject[name] = libraryArray;
 		ret[file] = fileObject;
 	}
@@ -357,7 +357,7 @@ Json formatImmutableReferences(std::map<u256, std::pair<std::string, std::vector
 			Json byteRange{Json::objectValue};
 			byteRange["start"] = Json::UInt(byteOffset);
 			byteRange["length"] = Json::UInt(32); // immutable references are currently always 32 bytes wide
-			array.append(byteRange);
+			array.push_back(byteRange);
 		}
 		ret[identifier] = array;
 	}
@@ -668,7 +668,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 			{
 				std::string content = sources[sourceName]["content"].asString();
 				if (!hash.empty() && !hashMatchesContent(hash, content))
-					ret.errors.append(formatError(
+					ret.errors.push_back(formatError(
 						Error::Type::IOError,
 						"general",
 						"Mismatch between content and supplied hash for \"" + sourceName + "\""
@@ -694,7 +694,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 					if (result.success)
 					{
 						if (!hash.empty() && !hashMatchesContent(hash, result.responseOrErrorMessage))
-							ret.errors.append(formatError(
+							ret.errors.push_back(formatError(
 								Error::Type::IOError,
 								"general",
 								"Mismatch between content and supplied hash for \"" + sourceName + "\" at \"" + url.asString() + "\""
@@ -715,7 +715,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 				for (auto const& failure: failures)
 				{
 					/// If the import succeeded, let mark all the others as warnings, otherwise all of them are errors.
-					ret.errors.append(formatError(
+					ret.errors.push_back(formatError(
 						found ? Error::Type::Warning : Error::Type::IOError,
 						"general",
 						failure
@@ -821,7 +821,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 		if (!version)
 			return formatFatalError(Error::Type::JSONError, "Invalid EVM version requested.");
 		if (version < EVMVersion::constantinople())
-			ret.errors.append(formatError(
+			ret.errors.push_back(formatError(
 				Error::Type::Warning,
 				"general",
 				"Support for EVM versions older than constantinople is deprecated and will be removed in the future."
@@ -1330,7 +1330,7 @@ Json StandardCompiler::compileSolidity(StandardCompiler::InputsAndSettings _inpu
 			{
 				compilerStack.importASTs(parseAstFromInput(sourceList));
 				if (!compilerStack.analyze())
-					errors.append(formatError(Error::Type::FatalError, "general", "Analysis of the AST failed."));
+					errors.push_back(formatError(Error::Type::FatalError, "general", "Analysis of the AST failed."));
 				if (binariesRequested)
 					compilerStack.compile();
 			}
@@ -1347,7 +1347,7 @@ Json StandardCompiler::compileSolidity(StandardCompiler::InputsAndSettings _inpu
 				compilerStack.parseAndAnalyze(_inputsAndSettings.stopAfter);
 
 			for (auto const& error: compilerStack.errors())
-				errors.append(formatErrorWithException(
+				errors.push_back(formatErrorWithException(
 					compilerStack,
 					*error,
 					error->type(),
@@ -1360,7 +1360,7 @@ Json StandardCompiler::compileSolidity(StandardCompiler::InputsAndSettings _inpu
 	/// This is only thrown in a very few locations.
 	catch (Error const& _error)
 	{
-		errors.append(formatErrorWithException(
+		errors.push_back(formatErrorWithException(
 			compilerStack,
 			_error,
 			_error.type(),
@@ -1371,7 +1371,7 @@ Json StandardCompiler::compileSolidity(StandardCompiler::InputsAndSettings _inpu
 	/// This should not be leaked from compile().
 	catch (FatalError const& _exception)
 	{
-		errors.append(formatError(
+		errors.push_back(formatError(
 			Error::Type::FatalError,
 			"general",
 			"Uncaught fatal error: " + boost::diagnostic_information(_exception)
@@ -1379,7 +1379,7 @@ Json StandardCompiler::compileSolidity(StandardCompiler::InputsAndSettings _inpu
 	}
 	catch (CompilerError const& _exception)
 	{
-		errors.append(formatErrorWithException(
+		errors.push_back(formatErrorWithException(
 			compilerStack,
 			_exception,
 			Error::Type::CompilerError,
@@ -1389,7 +1389,7 @@ Json StandardCompiler::compileSolidity(StandardCompiler::InputsAndSettings _inpu
 	}
 	catch (InternalCompilerError const& _exception)
 	{
-		errors.append(formatErrorWithException(
+		errors.push_back(formatErrorWithException(
 			compilerStack,
 			_exception,
 			Error::Type::InternalCompilerError,
@@ -1399,7 +1399,7 @@ Json StandardCompiler::compileSolidity(StandardCompiler::InputsAndSettings _inpu
 	}
 	catch (UnimplementedFeatureError const& _exception)
 	{
-		errors.append(formatErrorWithException(
+		errors.push_back(formatErrorWithException(
 			compilerStack,
 			_exception,
 			Error::Type::UnimplementedFeatureError,
@@ -1409,7 +1409,7 @@ Json StandardCompiler::compileSolidity(StandardCompiler::InputsAndSettings _inpu
 	}
 	catch (yul::YulException const& _exception)
 	{
-		errors.append(formatErrorWithException(
+		errors.push_back(formatErrorWithException(
 			compilerStack,
 			_exception,
 			Error::Type::YulException,
@@ -1419,7 +1419,7 @@ Json StandardCompiler::compileSolidity(StandardCompiler::InputsAndSettings _inpu
 	}
 	catch (smtutil::SMTLogicError const& _exception)
 	{
-		errors.append(formatErrorWithException(
+		errors.push_back(formatErrorWithException(
 			compilerStack,
 			_exception,
 			Error::Type::SMTLogicException,
@@ -1429,7 +1429,7 @@ Json StandardCompiler::compileSolidity(StandardCompiler::InputsAndSettings _inpu
 	}
 	catch (util::Exception const& _exception)
 	{
-		errors.append(formatError(
+		errors.push_back(formatError(
 			Error::Type::Exception,
 			"general",
 			"Exception during compilation: " + boost::diagnostic_information(_exception)
@@ -1437,7 +1437,7 @@ Json StandardCompiler::compileSolidity(StandardCompiler::InputsAndSettings _inpu
 	}
 	catch (std::exception const& _exception)
 	{
-		errors.append(formatError(
+		errors.push_back(formatError(
 			Error::Type::Exception,
 			"general",
 			"Unknown exception during compilation: " + boost::diagnostic_information(_exception)
@@ -1445,7 +1445,7 @@ Json StandardCompiler::compileSolidity(StandardCompiler::InputsAndSettings _inpu
 	}
 	catch (...)
 	{
-		errors.append(formatError(
+		errors.push_back(formatError(
 			Error::Type::Exception,
 			"general",
 			"Unknown exception during compilation: " + boost::current_exception_diagnostic_information()
@@ -1605,7 +1605,7 @@ Json StandardCompiler::compileYul(InputsAndSettings _inputsAndSettings)
 
 	if (_inputsAndSettings.sources.size() != 1)
 	{
-		output["errors"].append(formatError(
+		output["errors"].push_back(formatError(
 			Error::Type::JSONError,
 			"general",
 			"Yul mode only supports exactly one input file."
@@ -1614,7 +1614,7 @@ Json StandardCompiler::compileYul(InputsAndSettings _inputsAndSettings)
 	}
 	if (!_inputsAndSettings.smtLib2Responses.empty())
 	{
-		output["errors"].append(formatError(
+		output["errors"].push_back(formatError(
 			Error::Type::JSONError,
 			"general",
 			"Yul mode does not support smtlib2responses."
@@ -1623,7 +1623,7 @@ Json StandardCompiler::compileYul(InputsAndSettings _inputsAndSettings)
 	}
 	if (!_inputsAndSettings.remappings.empty())
 	{
-		output["errors"].append(formatError(
+		output["errors"].push_back(formatError(
 			Error::Type::JSONError,
 			"general",
 			"Field \"settings.remappings\" cannot be used for Yul."
@@ -1632,7 +1632,7 @@ Json StandardCompiler::compileYul(InputsAndSettings _inputsAndSettings)
 	}
 	if (_inputsAndSettings.revertStrings != RevertStrings::Default)
 	{
-		output["errors"].append(formatError(
+		output["errors"].push_back(formatError(
 			Error::Type::JSONError,
 			"general",
 			"Field \"settings.debug.revertStrings\" cannot be used for Yul."
@@ -1655,7 +1655,7 @@ Json StandardCompiler::compileYul(InputsAndSettings _inputsAndSettings)
 	// Inconsistent state - stop here to receive error reports from users
 	if (!stack.parseAndAnalyze(sourceName, sourceContents) && stack.errors().empty())
 	{
-		output["errors"].append(formatError(
+		output["errors"].push_back(formatError(
 			Error::Type::InternalCompilerError,
 			"general",
 			"No error reported, but compilation failed."
@@ -1669,7 +1669,7 @@ Json StandardCompiler::compileYul(InputsAndSettings _inputsAndSettings)
 		{
 			auto err = std::dynamic_pointer_cast<Error const>(error);
 
-			output["errors"].append(formatErrorWithException(
+			output["errors"].push_back(formatErrorWithException(
 				stack,
 				*error,
 				err->type(),

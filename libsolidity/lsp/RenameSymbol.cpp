@@ -110,7 +110,7 @@ void RenameSymbol::operator()(MessageID _id, Json const& _args)
 		edit["newText"] = newName;
 
 		// Record changes for the client
-		edits.append(edit);
+		edits.push_back(edit);
 		if (i + 1 == m_locations.rend() || (i + 1)->sourceName != i->sourceName)
 		{
 			reply["changes"][uri] = edits;

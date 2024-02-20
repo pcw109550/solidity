@@ -403,7 +403,7 @@ void ReferencesResolver::operator()(yul::VariableDeclaration const& _varDecl)
 		{
 			SecondarySourceLocation ssl;
 			for (auto const* decl: declarations)
-				ssl.append("The shadowed declaration is here:", decl->location());
+				ssl.push_back("The shadowed declaration is here:", decl->location());
 			if (!ssl.infos.empty())
 				m_errorReporter.declarationError(
 					3859_error,

@@ -131,7 +131,7 @@ Json ASTJsonExporter::sourceLocationsToJson(std::vector<SourceLocation> const& _
 	Json locations = Json::array();
 
 	for (SourceLocation const& location: _sourceLocations)
-		locations.append(sourceLocationToString(location));
+		locations.push_back(sourceLocationToString(location));
 
 	return locations;
 }
@@ -226,7 +226,7 @@ bool ASTJsonExporter::visit(SourceUnit const& _node)
 		{
 			exportedSymbols[sym.first] = Json::array();
 			for (Declaration const* overload: sym.second)
-				exportedSymbols[sym.first].append(nodeId(*overload));
+				exportedSymbols[sym.first].push_back(nodeId(*overload));
 		}
 
 		attributes.emplace_back("exportedSymbols", exportedSymbols);
@@ -243,7 +243,7 @@ bool ASTJsonExporter::visit(PragmaDirective const& _node)
 {
 	Json literals(Json::array());
 	for (auto const& literal: _node.literals())
-		literals.append(literal);
+		literals.push_back(literal);
 	setJsonNode(_node, "PragmaDirective", {
 		std::make_pair("literals", std::move(literals))
 	});
@@ -271,7 +271,7 @@ bool ASTJsonExporter::visit(ImportDirective const& _node)
 		tuple["foreign"] = toJson(*symbolAlias.symbol);
 		tuple["local"] =  symbolAlias.alias ? Json(*symbolAlias.alias) : Json{};
 		tuple["nameLocation"] = sourceLocationToString(_node.nameLocation());
-		symbolAliases.append(tuple);
+		symbolAliases.push_back(tuple);
 	}
 	attributes.emplace_back("symbolAliases", std::move(symbolAliases));
 	setJsonNode(_node, "ImportDirective", std::move(attributes));
@@ -318,7 +318,7 @@ bool ASTJsonExporter::visit(IdentifierPath const& _node)
 	Json nameLocations = Json::array();
 
 	for (SourceLocation location: _node.pathLocations())
-		nameLocations.append(sourceLocationToString(location));
+		nameLocations.push_back(sourceLocationToString(location));
 
 	setJsonNode(_node, "IdentifierPath", {
 		std::make_pair("name", namePathToString(_node.path())),
@@ -356,7 +356,7 @@ bool ASTJsonExporter::visit(UsingForDirective const& _node)
 				functionNode["definition"] = toJson(*function);
 				functionNode["operator"] = std::string(TokenTraits::toString(*op));
 			}
-			functionList.append(std::move(functionNode));
+			functionList.push_back(std::move(functionNode));
 		}
 		attributes.emplace_back("functionList", std::move(functionList));
 	}
@@ -661,7 +661,7 @@ bool ASTJsonExporter::visit(InlineAssembly const& _node)
 
 	std::sort(externalReferences.begin(), externalReferences.end());
 	for (Json& it: externalReferences | ranges::views::values)
-		externalReferencesJson.append(std::move(it));
+		externalReferencesJson.push_back(std::move(it));
 
 	std::vector<std::pair<std::string, Json>> attributes = {
 		std::make_pair("AST", Json(yul::AsmJsonConverter(sourceIndexFromLocation(_node.location()))(_node.operations()))),
@@ -674,9 +674,9 @@ bool ASTJsonExporter::visit(InlineAssembly const& _node)
 		Json flags(Json::array());
 		for (auto const& flag: *_node.flags())
 			if (flag)
-				flags.append(*flag);
+				flags.push_back(*flag);
 			else
-				flags.append(Json{});
+				flags.push_back(Json{});
 		attributes.emplace_back(std::make_pair("flags", std::move(flags)));
 	}
 	setJsonNode(_node, "InlineAssembly", std::move(attributes));
@@ -891,7 +891,7 @@ bool ASTJsonExporter::visit(FunctionCall const& _node)
 {
 	Json names(Json::array());
 	for (auto const& name: _node.names())
-		names.append(Json(*name));
+		names.push_back(Json(*name));
 	std::vector<std::pair<std::string, Json>> attributes = {
 		std::make_pair("expression", toJson(_node.expression())),
 		std::make_pair("names", std::move(names)),
@@ -915,7 +915,7 @@ bool ASTJsonExporter::visit(FunctionCallOptions const& _node)
 {
 	Json names(Json::array());
 	for (auto const& name: _node.names())
-		names.append(Json(*name));
+		names.push_back(Json(*name));
 
 	std::vector<std::pair<std::string, Json>> attributes = {
 		std::make_pair("expression", toJson(_node.expression())),
@@ -978,7 +978,7 @@ bool ASTJsonExporter::visit(Identifier const& _node)
 {
 	Json overloads(Json::array());
 	for (auto const& dec: _node.annotation().overloadedDeclarations)
-		overloads.append(nodeId(*dec));
+		overloads.push_back(nodeId(*dec));
 	setJsonNode(_node, "Identifier", {
 		std::make_pair("name", _node.name()),
 		std::make_pair("referencedDeclaration", idOrNull(_node.annotation().referencedDeclaration)),

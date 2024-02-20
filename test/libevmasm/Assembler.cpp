@@ -75,25 +75,25 @@ BOOST_AUTO_TEST_CASE(all_assembly_items)
 
 	// PushImmutable
 	_subAsm.appendImmutable("someImmutable");
-	_subAsm.append(AssemblyItem(PushTag, 0));
-	_subAsm.append(Instruction::INVALID);
+	_subAsm.push_back(AssemblyItem(PushTag, 0));
+	_subAsm.push_back(Instruction::INVALID);
 	std::shared_ptr<Assembly> _subAsmPtr = std::make_shared<Assembly>(_subAsm);
 
 	_verbatimAsm.appendVerbatim({0xff,0xff}, 0, 0);
 	_verbatimAsm.appendVerbatim({0x74, 0x65, 0x73, 0x74}, 0, 1);
-	_verbatimAsm.append(Instruction::MSTORE);
+	_verbatimAsm.push_back(Instruction::MSTORE);
 	std::shared_ptr<Assembly> _verbatimAsmPtr = std::make_shared<Assembly>(_verbatimAsm);
 
 	// Tag
 	auto tag = _assembly.newTag();
-	_assembly.append(tag);
+	_assembly.push_back(tag);
 	// Operation
-	_assembly.append(u256(1));
-	_assembly.append(u256(2));
+	_assembly.push_back(u256(1));
+	_assembly.push_back(u256(2));
 	// Push
 	auto keccak256 = AssemblyItem(Instruction::KECCAK256);
 	_assembly.m_currentModifierDepth = 1;
-	_assembly.append(keccak256);
+	_assembly.push_back(keccak256);
 	_assembly.m_currentModifierDepth = 0;
 	// PushProgramSize
 	_assembly.appendProgramSize();
@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE(all_assembly_items)
 	// PushTag + Operation
 	_assembly.appendJump(tag);
 	// PushData
-	_assembly.append(bytes{0x1, 0x2, 0x3, 0x4});
+	_assembly.push_back(bytes{0x1, 0x2, 0x3, 0x4});
 	// PushSubSize
 	auto sub = _assembly.appendSubroutine(_subAsmPtr);
 	// PushSub
@@ -112,14 +112,14 @@ BOOST_AUTO_TEST_CASE(all_assembly_items)
 	// PushSub
 	_assembly.pushSubroutineOffset(static_cast<size_t>(verbatim_sub.data()));
 	// PushDeployTimeAddress
-	_assembly.append(PushDeployTimeAddress);
+	_assembly.push_back(PushDeployTimeAddress);
 	// AssignImmutable.
 	// Note that since there is no reference to "someOtherImmutable", this will just compile to two POPs in the hex output.
 	_assembly.appendImmutableAssignment("someOtherImmutable");
-	_assembly.append(u256(2));
+	_assembly.push_back(u256(2));
 	_assembly.appendImmutableAssignment("someImmutable");
 	// Operation
-	_assembly.append(Instruction::STOP);
+	_assembly.push_back(Instruction::STOP);
 	_assembly.appendToAuxiliaryData(bytes{0x42, 0x66});
 	_assembly.appendToAuxiliaryData(bytes{0xee, 0xaa});
 
@@ -260,8 +260,8 @@ BOOST_AUTO_TEST_CASE(immutables_and_its_source_maps)
 			for (char i = 1; i <= numImmutables; ++i)
 			{
 				assembly.setSourceLocation({10*i, 10*i + 3+i, assemblyName});
-				assembly.append(u256(0x71));              // immutble value
-				assembly.append(u256(0));                 // target... modules?
+				assembly.push_back(u256(0x71));              // immutble value
+				assembly.push_back(u256(0));                 // target... modules?
 				assembly.appendImmutableAssignment(std::string(1, char('a' + i - 1)));
 			}
 
@@ -318,11 +318,11 @@ BOOST_AUTO_TEST_CASE(immutable)
 	_subAsm.appendImmutable("someImmutable");
 	std::shared_ptr<Assembly> _subAsmPtr = std::make_shared<Assembly>(_subAsm);
 
-	_assembly.append(u256(42));
-	_assembly.append(u256(0));
+	_assembly.push_back(u256(42));
+	_assembly.push_back(u256(0));
 	_assembly.appendImmutableAssignment("someImmutable");
-	_assembly.append(u256(23));
-	_assembly.append(u256(0));
+	_assembly.push_back(u256(23));
+	_assembly.push_back(u256(0));
 	_assembly.appendImmutableAssignment("someOtherImmutable");
 
 	auto sub = _assembly.appendSubroutine(_subAsmPtr);

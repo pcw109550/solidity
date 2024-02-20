@@ -59,7 +59,7 @@ bool PostTypeContractLevelChecker::check(ContractDefinition const& _contract)
 			m_errorReporter.typeError(
 				4883_error,
 				error->nameLocation(),
-				SecondarySourceLocation{}.append("This error has a different signature but the same hash: ", otherLocation),
+				SecondarySourceLocation{}.push_back("This error has a different signature but the same hash: ", otherLocation),
 				"Error signature hash collision for " + error->functionType(true)->externalSignature()
 			);
 		}

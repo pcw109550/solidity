@@ -1152,7 +1152,7 @@ void BMC::checkCondition(
 			" has the same ABI but implements the function differently.";
 
 	SecondarySourceLocation secondaryLocation{};
-	secondaryLocation.append(extraComment, SourceLocation{});
+	secondaryLocation.push_back(extraComment, SourceLocation{});
 
 	switch (result)
 	{
@@ -1180,9 +1180,9 @@ void BMC::checkCondition(
 			_errorHappens,
 			_location,
 			message.str(),
-			SecondarySourceLocation().append(modelMessage.str(), SourceLocation{})
-			.append(SMTEncoder::callStackMessage(_callStack))
-			.append(std::move(secondaryLocation))
+			SecondarySourceLocation().push_back(modelMessage.str(), SourceLocation{})
+			.push_back(SMTEncoder::callStackMessage(_callStack))
+			.push_back(std::move(secondaryLocation))
 		);
 		break;
 	}

@@ -108,7 +108,7 @@ Json AsmJsonConverter::operator()(VariableDeclaration const& _node) const
 {
 	Json ret = createAstNode(originLocationOf(_node), nativeLocationOf(_node), "YulVariableDeclaration");
 	for (auto const& var: _node.variables)
-		ret["variables"].append((*this)(var));
+		ret["variables"].push_back((*this)(var));
 
 	ret["value"] = _node.value ? std::visit(*this, *_node.value) : Json{};
 
@@ -121,9 +121,9 @@ Json AsmJsonConverter::operator()(FunctionDefinition const& _node) const
 	Json ret = createAstNode(originLocationOf(_node), nativeLocationOf(_node), "YulFunctionDefinition");
 	ret["name"] = _node.name.str();
 	for (auto const& var: _node.parameters)
-		ret["parameters"].append((*this)(var));
+		ret["parameters"].push_back((*this)(var));
 	for (auto const& var: _node.returnVariables)
-		ret["returnVariables"].append((*this)(var));
+		ret["returnVariables"].push_back((*this)(var));
 	ret["body"] = (*this)(_node.body);
 	return ret;
 }
@@ -143,7 +143,7 @@ Json AsmJsonConverter::operator()(Switch const& _node) const
 	Json ret = createAstNode(originLocationOf(_node), nativeLocationOf(_node), "YulSwitch");
 	ret["expression"] = std::visit(*this, *_node.expression);
 	for (auto const& var: _node.cases)
-		ret["cases"].append((*this)(var));
+		ret["cases"].push_back((*this)(var));
 	return ret;
 }
 
@@ -200,7 +200,7 @@ Json AsmJsonConverter::vectorOfVariantsToJson(std::vector<T> const& _vec) const
 {
 	Json ret{Json::array()};
 	for (auto const& var: _vec)
-		ret.append(std::visit(*this, var));
+		ret.push_back(std::visit(*this, var));
 	return ret;
 }
 

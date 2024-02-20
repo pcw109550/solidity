@@ -459,7 +459,7 @@ Json Assembly::assemblyJSON(std::map<std::string, unsigned> const& _sourceIndice
 		if (!data.empty())
 			jsonItem["value"] = data;
 		jsonItem["source"] = sourceIndex;
-		code.append(std::move(jsonItem));
+		code.push_back(std::move(jsonItem));
 
 		if (item.type() == AssemblyItemType::Tag)
 		{
@@ -470,7 +470,7 @@ Json Assembly::assemblyJSON(std::map<std::string, unsigned> const& _sourceIndice
 			jumpdest["source"] = sourceIndex;
 			if (item.m_modifierDepth != 0)
 				jumpdest["modifierDepth"] = static_cast<int>(item.m_modifierDepth);
-			code.append(std::move(jumpdest));
+			code.push_back(std::move(jumpdest));
 		}
 	}
 	if (_includeSourceList)

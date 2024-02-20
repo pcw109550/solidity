@@ -120,14 +120,14 @@ void SemanticTokensBuilder::encode(
 
 	lspDebug(fmt::format("encode [{}:{}..{}] {}", line, startChar, length, static_cast<int>(_tokenType)));
 
-	m_encodedTokens.append(line - m_lastLine);
+	m_encodedTokens.push_back(line - m_lastLine);
 	if (line == m_lastLine)
-		m_encodedTokens.append(startChar - m_lastStartChar);
+		m_encodedTokens.push_back(startChar - m_lastStartChar);
 	else
-		m_encodedTokens.append(startChar);
-	m_encodedTokens.append(length);
-	m_encodedTokens.append(static_cast<int>(_tokenType));
-	m_encodedTokens.append(static_cast<int>(_modifiers));
+		m_encodedTokens.push_back(startChar);
+	m_encodedTokens.push_back(length);
+	m_encodedTokens.push_back(static_cast<int>(_tokenType));
+	m_encodedTokens.push_back(static_cast<int>(_modifiers));
 
 	m_lastLine = line;
 	m_lastStartChar = startChar;

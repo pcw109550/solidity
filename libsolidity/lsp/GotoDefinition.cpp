@@ -60,6 +60,6 @@ void GotoDefinition::operator()(MessageID _id, Json const& _args)
 
 	Json reply = Json::array();
 	for (SourceLocation const& location: locations)
-		reply.append(toJson(location));
+		reply.push_back(toJson(location));
 	client().reply(_id, reply);
 }

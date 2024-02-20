@@ -143,12 +143,12 @@ std::string regex_replace(
 	std::string result;
 	while (curMatch != matchEnd)
 	{
-		result.append(curMatch->prefix().first, curMatch->prefix().second);
-		result.append(_replace(*curMatch));
+		result.push_back(curMatch->prefix().first, curMatch->prefix().second);
+		result.push_back(_replace(*curMatch));
 		lastMatchedPos = (*curMatch)[0].second;
 		++curMatch;
 	}
-	result.append(lastMatchedPos, _source.cend());
+	result.push_back(lastMatchedPos, _source.cend());
 	return result;
 }
 }

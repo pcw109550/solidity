@@ -36,7 +36,7 @@ Json StorageLayout::generate(ContractDefinition const& _contractDef)
 
 	Json variables(Json::array());
 	for (auto [var, slot, offset]: contractType->stateVariables())
-		variables.append(generate(*var, slot, offset));
+		variables.push_back(generate(*var, slot, offset));
 
 	Json layout;
 	layout["storage"] = std::move(variables);
@@ -78,7 +78,7 @@ void StorageLayout::generate(Type const* _type)
 		for (auto const& member: structDef.members())
 		{
 			auto const& offsets = structType->storageOffsetsOfMember(member->name());
-			members.append(generate(*member, offsets.first, offsets.second));
+			members.push_back(generate(*member, offsets.first, offsets.second));
 		}
 		typeInfo["members"] = std::move(members);
 		typeInfo["encoding"] = "inplace";
