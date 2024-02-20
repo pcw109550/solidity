@@ -68,7 +68,7 @@ public:
 			if (n)
 				appendMove(ret, toJson(*n));
 			else
-				ret.append(Json{});
+				ret.push_back(Json{});
 		return ret;
 	}
 	bool visit(SourceUnit const& _node) override;
@@ -180,7 +180,7 @@ private:
 		Json json(Json::array());
 
 		for (int64_t val: tmp)
-			json.append(val);
+			json.push_back(val);
 
 		return json;
 	}
@@ -193,7 +193,7 @@ private:
 	static void appendMove(Json& _array, Json&& _value)
 	{
 		solAssert(_array.isArray(), "");
-		_array.append(std::move(_value));
+		_array.push_back(std::move(_value));
 	}
 
 	CompilerStack::State m_stackState = CompilerStack::State::Empty; ///< Used to only access information that already exists

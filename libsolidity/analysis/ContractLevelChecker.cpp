@@ -116,7 +116,7 @@ void ContractLevelChecker::checkDuplicateFunctions(ContractDefinition const& _co
 				m_errorReporter.declarationError(
 					7997_error,
 					function->location(),
-					SecondarySourceLocation().push_back("Another declaration is here:", constructor->location()),
+					SecondarySourceLocation().append("Another declaration is here:", constructor->location()),
 					"More than one constructor defined."
 				);
 			constructor = function;
@@ -127,7 +127,7 @@ void ContractLevelChecker::checkDuplicateFunctions(ContractDefinition const& _co
 				m_errorReporter.declarationError(
 					7301_error,
 					function->location(),
-					SecondarySourceLocation().push_back("Another declaration is here:", fallback->location()),
+					SecondarySourceLocation().append("Another declaration is here:", fallback->location()),
 					"Only one fallback function is allowed."
 				);
 			fallback = function;
@@ -138,7 +138,7 @@ void ContractLevelChecker::checkDuplicateFunctions(ContractDefinition const& _co
 				m_errorReporter.declarationError(
 					4046_error,
 					function->location(),
-					SecondarySourceLocation().push_back("Another declaration is here:", receive->location()),
+					SecondarySourceLocation().append("Another declaration is here:", receive->location()),
 					"Only one receive function is allowed."
 				);
 			receive = function;
@@ -220,7 +220,7 @@ void ContractLevelChecker::findDuplicateDefinitions(std::map<std::string, std::v
 						"Override is neither a namesake function/event in contract scope nor "
 						"a free function/event (alias)."
 					);
-					ssl.push_back("Other declaration is here:", overloads[j]->location());
+					ssl.append("Other declaration is here:", overloads[j]->location());
 					reported.insert(j);
 				}
 
@@ -309,7 +309,7 @@ void ContractLevelChecker::checkAbstractDefinitions(ContractDefinition const& _c
 	{
 		SecondarySourceLocation ssl;
 		for (auto declaration: *_contract.annotation().unimplementedDeclarations)
-			ssl.push_back("Missing implementation: ", declaration->location());
+			ssl.append("Missing implementation: ", declaration->location());
 		m_errorReporter.typeError(
 			3656_error,
 			_contract.location(),
@@ -371,7 +371,7 @@ void ContractLevelChecker::checkBaseConstructorArguments(ContractDefinition cons
 					m_errorReporter.typeError(
 						3415_error,
 						_contract.location(),
-						SecondarySourceLocation{}.push_back(
+						SecondarySourceLocation{}.append(
 							"Base constructor parameters:",
 							baseConstructor->parameterList().location()
 						),
@@ -408,13 +408,13 @@ void ContractLevelChecker::annotateBaseConstructorArguments(
 		)
 		{
 			mainLocation = &previousNode->location();
-			ssl.push_back("Second constructor call is here:", _argumentNode->location());
+			ssl.append("Second constructor call is here:", _argumentNode->location());
 		}
 		else
 		{
 			mainLocation = &_currentContract.location();
-			ssl.push_back("First constructor call is here:", _argumentNode->location());
-			ssl.push_back("Second constructor call is here:", previousNode->location());
+			ssl.append("First constructor call is here:", _argumentNode->location());
+			ssl.append("Second constructor call is here:", previousNode->location());
 		}
 
 		m_errorReporter.declarationError(
@@ -522,7 +522,7 @@ void ContractLevelChecker::checkBaseABICompatibility(ContractDefinition const& _
 		for (Type const* paramType: func.second->parameterTypes() + func.second->returnParameterTypes())
 			if (!TypeChecker::typeSupportedByOldABIEncoder(*paramType, false))
 			{
-				errors.push_back("Type only supported by ABIEncoderV2", currentLoc);
+				errors.append("Type only supported by ABIEncoderV2", currentLoc);
 				break;
 			}
 	}
@@ -549,7 +549,7 @@ void ContractLevelChecker::checkPayableFallbackWithoutReceive(ContractDefinition
 				3628_error,
 				_contract.location(),
 				"This contract has a payable fallback function, but no receive ether function. Consider adding a receive ether function.",
-				SecondarySourceLocation{}.push_back("The payable fallback function is defined here.", fallback->location())
+				SecondarySourceLocation{}.append("The payable fallback function is defined here.", fallback->location())
 			);
 }
 

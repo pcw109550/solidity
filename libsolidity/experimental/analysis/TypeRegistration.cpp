@@ -154,7 +154,7 @@ bool TypeRegistration::visit(TypeClassInstantiation const& _typeClassInstantiati
 	)
 	{
 		SecondarySourceLocation ssl;
-		ssl.push_back("Previous instantiation.", instantiation->second->location());
+		ssl.append("Previous instantiation.", instantiation->second->location());
 		m_errorReporter.typeError(6620_error, _typeClassInstantiation.location(), ssl, "Duplicate type class instantiation.");
 	}
 
@@ -186,7 +186,7 @@ void TypeRegistration::endVisit(TypeDefinition const& _typeDefinition)
 			m_errorReporter.typeError(
 				9609_error,
 				_typeDefinition.location(),
-				SecondarySourceLocation{}.push_back("Previous definition:", previousDefinition->location()),
+				SecondarySourceLocation{}.append("Previous definition:", previousDefinition->location()),
 				"Duplicate builtin type definition."
 			);
 		}

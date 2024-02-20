@@ -250,9 +250,9 @@ void NameAndTypeResolver::warnHomonymDeclarations() const
 			if (dynamic_cast<MagicVariableDeclaration const*>(outerDeclaration))
 				magicShadowed = true;
 			else if (!outerDeclaration->isVisibleInContract())
-				homonymousLocations.push_back("The other declaration is here:", outerDeclaration->location());
+				homonymousLocations.append("The other declaration is here:", outerDeclaration->location());
 			else
-				shadowedLocations.push_back("The shadowed declaration is here:", outerDeclaration->location());
+				shadowedLocations.append("The shadowed declaration is here:", outerDeclaration->location());
 		}
 
 		if (magicShadowed)
@@ -396,7 +396,7 @@ void NameAndTypeResolver::importInheritedScope(ContractDefinition const& _base)
 					m_errorReporter.declarationError(
 						9097_error,
 						secondDeclarationLocation,
-						SecondarySourceLocation().push_back("The previous declaration is here:", firstDeclarationLocation),
+						SecondarySourceLocation().append("The previous declaration is here:", firstDeclarationLocation),
 						"Identifier already declared."
 					);
 				}
@@ -568,7 +568,7 @@ bool DeclarationRegistrationHelper::registerDeclaration(
 		_errorReporter.declarationError(
 			2333_error,
 			secondDeclarationLocation,
-			SecondarySourceLocation().push_back("The previous declaration is here:", firstDeclarationLocation),
+			SecondarySourceLocation().append("The previous declaration is here:", firstDeclarationLocation),
 			"Identifier already declared."
 		);
 		return false;

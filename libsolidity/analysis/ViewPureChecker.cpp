@@ -276,7 +276,7 @@ void ViewPureChecker::reportMutability(
 				m_errorReporter.typeError(
 					4006_error,
 					_location,
-					SecondarySourceLocation().push_back("\"msg.value\" or \"callvalue()\" appear here inside the modifier.", *_nestedLocation),
+					SecondarySourceLocation().append("\"msg.value\" or \"callvalue()\" appear here inside the modifier.", *_nestedLocation),
 					m_currentFunction->isConstructor()  ?
 						"This modifier uses \"msg.value\" or \"callvalue()\" and thus the constructor has to be payable."
 						: "This modifier uses \"msg.value\" or \"callvalue()\" and thus the function has to be payable or internal."
