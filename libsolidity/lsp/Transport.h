@@ -18,8 +18,7 @@
 #pragma once
 
 #include <libsolutil/Exceptions.h>
-
-#include <json/value.h>
+#include <libsolutil/JSON.h>
 
 #include <functional>
 #include <iosfwd>
