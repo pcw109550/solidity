@@ -45,17 +45,16 @@ void removeNullMembersHelper(Json& _json)
 {
 	if (_json.is_array())
 	{
-		for (auto& child: _json)
+		for (auto& child : _json)
 			removeNullMembersHelper(child);
 	}
 	else if (_json.is_object())
 	{
-		for (auto it = _json.begin(); it != _json.end();)
+		for (auto it = _json.begin(); it != _json.end(); )
 		{
 			if (it->is_null())
 				it = _json.erase(it);
-			else
-			{
+			else {
 				removeNullMembersHelper(*it);
 				++it;
 			}
@@ -81,7 +80,8 @@ std::string jsonPrint(Json const& _input, JsonFormat const& _format)
 	return _input.dump(
 		/* indent */ (_format.format == JsonFormat::Pretty) ? static_cast<int>(_format.indent) : -1,
 		/* indent_char */ ' ',
-		/* ensure_ascii */ true);
+		/* ensure_ascii */ true
+	);
 }
 
 bool jsonParseStrict(std::string const& _input, Json& _json, std::string* _errs /* = nullptr */)
