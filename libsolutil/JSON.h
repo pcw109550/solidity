@@ -104,13 +104,17 @@ struct helper_impl
 	}
 };
 
-template<> struct helper<float>: helper_impl<float, &Json::isDouble, &Json::asFloat> {};
-template<> struct helper<double>: helper_impl<double, &Json::isDouble, &Json::asDouble> {};
-template<> struct helper<std::string>: helper_impl<std::string, &Json::isString, &Json::asString> {};
-template<> struct helper<Json::Int>: helper_impl<Json::Int, &Json::isInt, &Json::asInt> {};
-template<> struct helper<Json::Int64>: helper_impl<Json::Int64, &Json::isInt64, &Json::asInt64> {};
-template<> struct helper<Json::UInt>: helper_impl<Json::UInt, &Json::isUInt, &Json::asUInt> {};
-template<> struct helper<Json::UInt64>: helper_impl<Json::UInt64, &Json::isUInt64, &Json::asUInt64> {};
+template<> struct helper<float>: helper_impl<float, &Json::is_number_float, &Json::get<float>> {};
+template<> struct helper<double>: helper_impl<double, &Json::is_number_float, &Json::get<double>> {};
+template<> struct helper<std::string>: helper_impl<std::string, &Json::is_string, &Json::get<std::string>> {};
+template<> struct helper<int8_t>: helper_impl<int8_t, &Json::is_number_integer, &Json::get<int8_t>> {};
+template<> struct helper<int16_t>: helper_impl<int16_t, &Json::is_number_integer, &Json::get<int16_t>> {};
+template<> struct helper<int32_t>: helper_impl<int32_t, &Json::is_number_integer, &Json::get<int32_t>> {};
+template<> struct helper<int64_t>: helper_impl<int64_t, &Json::is_number_integer, &Json::get<int64_t>> {};
+template<> struct helper<uint8_t>: helper_impl<uint8_t, &Json::is_number_unsigned, &Json::get<uint8_t>> {};
+template<> struct helper<uint16_t>: helper_impl<uint16_t, &Json::is_number_unsigned, &Json::get<uint16_t>> {};
+template<> struct helper<uint32_t>: helper_impl<uint32_t, &Json::is_number_unsigned, &Json::get<uint32_t>> {};
+template<> struct helper<uint64_t>: helper_impl<uint64_t, &Json::is_number_unsigned, &Json::get<uint64_t>> {};
 
 } // namespace detail
 
