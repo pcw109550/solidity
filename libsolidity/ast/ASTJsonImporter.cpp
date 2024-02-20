@@ -272,7 +272,7 @@ ASTPointer<SourceUnit> ASTJsonImporter::createSourceUnit(Json const& _node, std:
 
 	bool experimentalSolidity = false;
 	if (_node.contains("experimentalSolidity") && !_node["experimentalSolidity"].is_null())
-		experimentalSolidity = _node["experimentalSolidity"].asBool();
+		experimentalSolidity = _node["experimentalSolidity"].get<bool>();
 
 	std::vector<ASTPointer<ASTNode>> nodes;
 	for (auto& child: member(_node, "nodes"))
@@ -1109,8 +1109,8 @@ ASTPointer<ASTString> ASTJsonImporter::memberAsASTString(Json const& _node, std:
 bool ASTJsonImporter::memberAsBool(Json const& _node, std::string const& _name)
 {
 	Json value = member(_node, _name);
-	astAssert(value.isBool(), "field " + _name + " must be of type boolean.");
-	return _node[_name].asBool();
+	astAssert(value.is_boolean(), "field " + _name + " must be of type boolean.");
+	return _node[_name].get<bool>();
 }
 
 

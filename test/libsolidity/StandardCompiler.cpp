@@ -1085,7 +1085,7 @@ BOOST_AUTO_TEST_CASE(optimizer_settings_default_disabled)
 
 	Json const& optimizer = metadata["settings"]["optimizer"];
 	BOOST_CHECK(optimizer.contains("enabled"));
-	BOOST_CHECK(optimizer["enabled"].asBool() == false);
+	BOOST_CHECK(optimizer["enabled"].get<bool>() == false);
 	BOOST_CHECK(!optimizer.contains("details"));
 	BOOST_CHECK(optimizer["runs"].asUInt() == 200);
 }
@@ -1118,7 +1118,7 @@ BOOST_AUTO_TEST_CASE(optimizer_settings_default_enabled)
 
 	Json const& optimizer = metadata["settings"]["optimizer"];
 	BOOST_CHECK(optimizer.contains("enabled"));
-	BOOST_CHECK(optimizer["enabled"].asBool() == true);
+	BOOST_CHECK(optimizer["enabled"].get<bool>() == true);
 	BOOST_CHECK(!optimizer.contains("details"));
 	BOOST_CHECK(optimizer["runs"].asUInt() == 200);
 }
@@ -1159,7 +1159,7 @@ BOOST_AUTO_TEST_CASE(optimizer_settings_details_exactly_as_default_disabled)
 	Json const& optimizer = metadata["settings"]["optimizer"];
 	BOOST_CHECK(optimizer.contains("enabled"));
 	// enabled is switched to false instead!
-	BOOST_CHECK(optimizer["enabled"].asBool() == false);
+	BOOST_CHECK(optimizer["enabled"].get<bool>() == false);
 	BOOST_CHECK(!optimizer.contains("details"));
 	BOOST_CHECK(optimizer["runs"].asUInt() == 200);
 }
@@ -1202,19 +1202,19 @@ BOOST_AUTO_TEST_CASE(optimizer_settings_details_different)
 	Json const& optimizer = metadata["settings"]["optimizer"];
 	BOOST_CHECK(!optimizer.contains("enabled"));
 	BOOST_CHECK(optimizer.contains("details"));
-	BOOST_CHECK(optimizer["details"]["constantOptimizer"].asBool() == true);
-	BOOST_CHECK(optimizer["details"]["cse"].asBool() == false);
-	BOOST_CHECK(optimizer["details"]["deduplicate"].asBool() == true);
-	BOOST_CHECK(optimizer["details"]["jumpdestRemover"].asBool() == true);
-	BOOST_CHECK(optimizer["details"]["orderLiterals"].asBool() == false);
-	BOOST_CHECK(optimizer["details"]["peephole"].asBool() == true);
-	BOOST_CHECK(optimizer["details"]["yul"].asBool() == true);
+	BOOST_CHECK(optimizer["details"]["constantOptimizer"].get<bool>() == true);
+	BOOST_CHECK(optimizer["details"]["cse"].get<bool>() == false);
+	BOOST_CHECK(optimizer["details"]["deduplicate"].get<bool>() == true);
+	BOOST_CHECK(optimizer["details"]["jumpdestRemover"].get<bool>() == true);
+	BOOST_CHECK(optimizer["details"]["orderLiterals"].get<bool>() == false);
+	BOOST_CHECK(optimizer["details"]["peephole"].get<bool>() == true);
+	BOOST_CHECK(optimizer["details"]["yul"].get<bool>() == true);
 	BOOST_CHECK(optimizer["details"]["yulDetails"].is_object());
 	BOOST_CHECK(
 		util::convertContainer<std::set<std::string>>(optimizer["details"]["yulDetails"].getMemberNames()) ==
 		(std::set<std::string>{"stackAllocation", "optimizerSteps"})
 	);
-	BOOST_CHECK(optimizer["details"]["yulDetails"]["stackAllocation"].asBool() == true);
+	BOOST_CHECK(optimizer["details"]["yulDetails"]["stackAllocation"].get<bool>() == true);
 	BOOST_CHECK(
 		optimizer["details"]["yulDetails"]["optimizerSteps"].get<std::string>() ==
 		OptimiserSettings::DefaultYulOptimiserSteps + ":"s + OptimiserSettings::DefaultYulOptimiserCleanupSteps

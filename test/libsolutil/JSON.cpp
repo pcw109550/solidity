@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE(parse_json_strict)
 	BOOST_CHECK(!jsonParseStrict("\"hello\"", json, &errors));
 	// BOOST_CHECK(json.is_string());
 	BOOST_CHECK(!jsonParseStrict("true", json, &errors));
-	// BOOST_CHECK(json.isBool());
+	// BOOST_CHECK(json.is_boolean());
 	BOOST_CHECK(!jsonParseStrict("null", json, &errors));
 	// BOOST_CHECK(json.is_null());
 

@@ -366,7 +366,7 @@ BOOST_AUTO_TEST_CASE(metadata_useLiteralContent)
 		if (_literal)
 		{
 			BOOST_CHECK(metadata["settings"]["metadata"].contains("useLiteralContent"));
-			BOOST_CHECK(metadata["settings"]["metadata"]["useLiteralContent"].asBool());
+			BOOST_CHECK(metadata["settings"]["metadata"]["useLiteralContent"].get<bool>());
 		}
 	};
 
@@ -398,7 +398,7 @@ BOOST_AUTO_TEST_CASE(metadata_viair)
 		if (_viaIR)
 		{
 			BOOST_CHECK(metadata["settings"].contains("viaIR"));
-			BOOST_CHECK(metadata["settings"]["viaIR"].asBool());
+			BOOST_CHECK(metadata["settings"]["viaIR"].get<bool>());
 		}
 		else
 			BOOST_CHECK(!metadata["settings"].contains("viaIR"));

@@ -450,9 +450,9 @@ std::optional<Json> checkOptimizerDetail(Json const& _details, std::string const
 {
 	if (_details.contains(_name))
 	{
-		if (!_details[_name].isBool())
+		if (!_details[_name].is_boolean())
 			return formatFatalError(Error::Type::JSONError, "\"settings.optimizer.details." + _name + "\" must be Boolean");
-		_setting = _details[_name].asBool();
+		_setting = _details[_name].get<bool>();
 	}
 	return {};
 }
@@ -498,9 +498,9 @@ std::optional<Json> checkMetadataKeys(Json const& _input)
 {
 	if (_input.is_object())
 	{
-		if (_input.contains("appendCBOR") && !_input["appendCBOR"].isBool())
+		if (_input.contains("appendCBOR") && !_input["appendCBOR"].is_boolean())
 			return formatFatalError(Error::Type::JSONError, "\"settings.metadata.appendCBOR\" must be Boolean");
-		if (_input.contains("useLiteralContent") && !_input["useLiteralContent"].isBool())
+		if (_input.contains("useLiteralContent") && !_input["useLiteralContent"].is_boolean())
 			return formatFatalError(Error::Type::JSONError, "\"settings.metadata.useLiteralContent\" must be Boolean");
 
 		static std::set<std::string> hashes{"ipfs", "bzzr1", "none"};
@@ -567,10 +567,10 @@ std::variant<OptimiserSettings, Json> parseOptimizerSettings(Json const& _jsonIn
 
 	if (_jsonInput.contains("enabled"))
 	{
-		if (!_jsonInput["enabled"].isBool())
+		if (!_jsonInput["enabled"].is_boolean())
 			return formatFatalError(Error::Type::JSONError, "The \"enabled\" setting must be a Boolean.");
 
-		if (_jsonInput["enabled"].asBool())
+		if (_jsonInput["enabled"].get<bool>())
 			settings = OptimiserSettings::standard();
 	}
 
@@ -808,9 +808,9 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 
 	if (settings.contains("viaIR"))
 	{
-		if (!settings["viaIR"].isBool())
+		if (!settings["viaIR"].is_boolean())
 			return formatFatalError(Error::Type::JSONError, "\"settings.viaIR\" must be a Boolean.");
-		ret.viaIR = settings["viaIR"].asBool();
+		ret.viaIR = settings["viaIR"].get<bool>();
 	}
 
 	if (settings.contains("evmVersion"))
@@ -954,11 +954,11 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 
 	solAssert(CompilerStack::defaultMetadataFormat() != CompilerStack::MetadataFormat::NoMetadata, "");
 	ret.metadataFormat =
-		metadataSettings.get("appendCBOR", Json(true)).asBool() ?
+		metadataSettings.get("appendCBOR", Json(true)).get<bool>() ?
 		CompilerStack::defaultMetadataFormat() :
 		CompilerStack::MetadataFormat::NoMetadata;
 
-	ret.metadataLiteralSources = metadataSettings.get("useLiteralContent", Json(false)).asBool();
+	ret.metadataLiteralSources = metadataSettings.get("useLiteralContent", Json(false)).get<bool>();
 	if (metadataSettings.contains("bytecodeHash"))
 	{
 		auto metadataHash = metadataSettings["bytecodeHash"].get<std::string>();
@@ -1029,9 +1029,9 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 	if (modelCheckerSettings.contains("divModNoSlacks"))
 	{
 		auto const& divModNoSlacks = modelCheckerSettings["divModNoSlacks"];
-		if (!divModNoSlacks.isBool())
+		if (!divModNoSlacks.is_boolean())
 			return formatFatalError(Error::Type::JSONError, "settings.modelChecker.divModNoSlacks must be a Boolean.");
-		ret.modelCheckerSettings.divModNoSlacks = divModNoSlacks.asBool();
+		ret.modelCheckerSettings.divModNoSlacks = divModNoSlacks.get<bool>();
 	}
 
 	if (modelCheckerSettings.contains("engine"))
@@ -1088,25 +1088,25 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 	if (modelCheckerSettings.contains("showProvedSafe"))
 	{
 		auto const& showProvedSafe = modelCheckerSettings["showProvedSafe"];
-		if (!showProvedSafe.isBool())
+		if (!showProvedSafe.is_boolean())
 			return formatFatalError(Error::Type::JSONError, "settings.modelChecker.showProvedSafe must be a Boolean value.");
-		ret.modelCheckerSettings.showProvedSafe = showProvedSafe.asBool();
+		ret.modelCheckerSettings.showProvedSafe = showProvedSafe.get<bool>();
 	}
 
 	if (modelCheckerSettings.contains("showUnproved"))
 	{
 		auto const& showUnproved = modelCheckerSettings["showUnproved"];
-		if (!showUnproved.isBool())
+		if (!showUnproved.is_boolean())
 			return formatFatalError(Error::Type::JSONError, "settings.modelChecker.showUnproved must be a Boolean value.");
-		ret.modelCheckerSettings.showUnproved = showUnproved.asBool();
+		ret.modelCheckerSettings.showUnproved = showUnproved.get<bool>();
 	}
 
 	if (modelCheckerSettings.contains("showUnsupported"))
 	{
 		auto const& showUnsupported = modelCheckerSettings["showUnsupported"];
-		if (!showUnsupported.isBool())
+		if (!showUnsupported.is_boolean())
 			return formatFatalError(Error::Type::JSONError, "settings.modelChecker.showUnsupported must be a Boolean value.");
-		ret.modelCheckerSettings.showUnsupported = showUnsupported.asBool();
+		ret.modelCheckerSettings.showUnsupported = showUnsupported.get<bool>();
 	}
 
 	if (modelCheckerSettings.contains("solvers"))
@@ -1130,13 +1130,13 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 	if (modelCheckerSettings.contains("printQuery"))
 	{
 		auto const& printQuery = modelCheckerSettings["printQuery"];
-		if (!printQuery.isBool())
+		if (!printQuery.is_boolean())
 			return formatFatalError(Error::Type::JSONError, "settings.modelChecker.printQuery must be a Boolean value.");
 
 		if (!(ret.modelCheckerSettings.solvers == smtutil::SMTSolverChoice::SMTLIB2()))
 			return formatFatalError(Error::Type::JSONError, "Only SMTLib2 solver can be enabled to print queries");
 
-		ret.modelCheckerSettings.printQuery = printQuery.asBool();
+		ret.modelCheckerSettings.printQuery = printQuery.get<bool>();
 	}
 
 	if (modelCheckerSettings.contains("targets"))
