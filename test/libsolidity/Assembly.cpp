@@ -208,7 +208,7 @@ BOOST_AUTO_TEST_CASE(jump_type)
 	std::string jumpTypes;
 	for (AssemblyItem const& item: items)
 		if (item.getJumpType() != AssemblyItem::JumpType::Ordinary)
-			jumpTypes += item.getJumpTypeget<std::string>() + "\n";
+			jumpTypes += itemgetJumpTypeAsString() + "\n";
 
 	if (solidity::test::CommonOptions::get().optimize)
 		BOOST_CHECK_EQUAL(jumpTypes, "[in]\n[out]\n[out]\n[in]\n[out]\n");

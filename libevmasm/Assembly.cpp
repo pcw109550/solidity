@@ -449,7 +449,7 @@ Json Assembly::assemblyJSON(std::map<std::string, unsigned> const& _sourceIndice
 		jsonItem["end"] = item.location().end;
 		if (item.m_modifierDepth != 0)
 			jsonItem["modifierDepth"] = static_cast<int>(item.m_modifierDepth);
-		std::string jumpType = item.getJumpTypeget<std::string>();
+		std::string jumpType = itemgetJumpTypeAsString();
 		if (!jumpType.empty())
 			jsonItem["jumpType"] = jumpType;
 		if (name == "PUSHLIB")
