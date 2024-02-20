@@ -576,9 +576,9 @@ std::variant<OptimiserSettings, Json> parseOptimizerSettings(Json const& _jsonIn
 
 	if (_jsonInput.contains("runs"))
 	{
-		if (!_jsonInput["runs"].isUInt())
+		if (!_jsonInput["runs"].is_number_unsigned())
 			return formatFatalError(Error::Type::JSONError, "The \"runs\" setting must be an unsigned number.");
-		settings.expectedExecutionsPerDeployment = _jsonInput["runs"].asUInt();
+		settings.expectedExecutionsPerDeployment = _jsonInput["runs"].get<size_t>();
 	}
 
 	if (_jsonInput.contains("details"))
@@ -831,7 +831,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 
 	if (settings.contains("eofVersion"))
 	{
-		if (!settings["eofVersion"].isUInt())
+		if (!settings["eofVersion"].is_number_unsigned())
 			return formatFatalError(Error::Type::JSONError, "eofVersion must be an unsigned integer.");
 		auto eofVersion = settings["evmVersion"].asUInt();
 		if (eofVersion != 1)
@@ -1048,7 +1048,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 	{
 		if (!ret.modelCheckerSettings.engine.bmc)
 			return formatFatalError(Error::Type::JSONError, "settings.modelChecker.bmcLoopIterations requires the BMC engine to be enabled.");
-		if (modelCheckerSettings["bmcLoopIterations"].isUInt())
+		if (modelCheckerSettings["bmcLoopIterations"].is_number_unsigned())
 			ret.modelCheckerSettings.bmcLoopIterations = modelCheckerSettings["bmcLoopIterations"].asUInt();
 		else
 			return formatFatalError(Error::Type::JSONError, "settings.modelChecker.bmcLoopIterations must be an unsigned integer.");
@@ -1162,7 +1162,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 
 	if (modelCheckerSettings.contains("timeout"))
 	{
-		if (!modelCheckerSettings["timeout"].isUInt())
+		if (!modelCheckerSettings["timeout"].is_number_unsigned())
 			return formatFatalError(Error::Type::JSONError, "settings.modelChecker.timeout must be an unsigned integer.");
 		ret.modelCheckerSettings.timeout = modelCheckerSettings["timeout"].asUInt();
 	}

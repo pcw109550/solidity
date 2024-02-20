@@ -118,8 +118,8 @@ void checkLinkReferencesSchema(Json const& _contractResult)
 			{
 				BOOST_TEST_REQUIRE(linkReferenceResult[fileName][libraryName][i].is_object());
 				BOOST_TEST_REQUIRE(linkReferenceResult[fileName][libraryName][i].size() == 2);
-				BOOST_TEST_REQUIRE(linkReferenceResult[fileName][libraryName][i]["length"].isUInt());
-				BOOST_TEST_REQUIRE(linkReferenceResult[fileName][libraryName][i]["start"].isUInt());
+				BOOST_TEST_REQUIRE(linkReferenceResult[fileName][libraryName][i]["length"].is_number_unsigned());
+				BOOST_TEST_REQUIRE(linkReferenceResult[fileName][libraryName][i]["start"].is_number_unsigned());
 			}
 		}
 	}
