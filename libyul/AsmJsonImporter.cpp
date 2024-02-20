@@ -43,7 +43,7 @@ using SourceLocation = langutil::SourceLocation;
 
 SourceLocation const AsmJsonImporter::createSourceLocation(Json const& _node)
 {
-	yulAssert(member(_node, "src").isString(), "'src' must be a string");
+	yulAssert(member(_node, "src").is_string(), "'src' must be a string");
 
 	return solidity::langutil::parseSourceLocation(_node["src"].asString(), m_sourceNames);
 }
@@ -79,7 +79,7 @@ TypedName AsmJsonImporter::createTypedName(Json const& _node)
 Statement AsmJsonImporter::createStatement(Json const& _node)
 {
 	Json jsonNodeType = member(_node, "nodeType");
-	yulAssert(jsonNodeType.isString(), "Expected \"nodeType\" to be of type string!");
+	yulAssert(jsonNodeType.is_string(), "Expected \"nodeType\" to be of type string!");
 	std::string nodeType = jsonNodeType.asString();
 
 	yulAssert(nodeType.substr(0, 3) == "Yul", "Invalid nodeType prefix");
@@ -117,7 +117,7 @@ Statement AsmJsonImporter::createStatement(Json const& _node)
 Expression AsmJsonImporter::createExpression(Json const& _node)
 {
 	Json jsonNodeType = member(_node, "nodeType");
-	yulAssert(jsonNodeType.isString(), "Expected \"nodeType\" to be of type string!");
+	yulAssert(jsonNodeType.is_string(), "Expected \"nodeType\" to be of type string!");
 	std::string nodeType = jsonNodeType.asString();
 
 	yulAssert(nodeType.substr(0, 3) == "Yul", "Invalid nodeType prefix");
@@ -164,7 +164,7 @@ Literal AsmJsonImporter::createLiteral(Json const& _node)
 	auto lit = createAsmNode<Literal>(_node);
 	std::string kind = member(_node, "kind").asString();
 
-	solAssert(member(_node, "hexValue").isString() || member(_node, "value").isString(), "");
+	solAssert(member(_node, "hexValue").is_string() || member(_node, "value").is_string(), "");
 	if (_node.contains("hexValue"))
 		lit.value = YulString{util::asString(util::fromHex(member(_node, "hexValue").asString()))};
 	else
@@ -291,7 +291,7 @@ Case AsmJsonImporter::createCase(Json const& _node)
 {
 	auto caseStatement = createAsmNode<Case>(_node);
 	auto const& value = member(_node, "value");
-	if (value.isString())
+	if (value.is_string())
 		yulAssert(value.asString() == "default", "Expected default case");
 	else
 		caseStatement.value = std::make_unique<Literal>(createLiteral(value));

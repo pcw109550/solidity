@@ -520,7 +520,7 @@ std::pair<std::shared_ptr<Assembly>, std::vector<std::string>> Assembly::fromJSO
 		{
 			solRequire(_json["sourceList"].isArray(), AssemblyImportException, "Optional member 'sourceList' is not an array.");
 			for (Json const& sourceName: _json["sourceList"])
-				solRequire(sourceName.isString(), AssemblyImportException, "The 'sourceList' array contains an item that is not a string.");
+				solRequire(sourceName.is_string(), AssemblyImportException, "The 'sourceList' array contains an item that is not a string.");
 		}
 	}
 	else
@@ -556,7 +556,7 @@ std::pair<std::shared_ptr<Assembly>, std::vector<std::string>> Assembly::fromJSO
 
 	if (_json.contains(".auxdata"))
 	{
-		solRequire(_json[".auxdata"].isString(), AssemblyImportException, "Optional member '.auxdata' is not a string.");
+		solRequire(_json[".auxdata"].is_string(), AssemblyImportException, "Optional member '.auxdata' is not a string.");
 		result->m_auxiliaryData = fromHex(_json[".auxdata"].asString());
 		solRequire(!result->m_auxiliaryData.empty(), AssemblyImportException, "Optional member '.auxdata' is not a valid hexadecimal string.");
 	}
@@ -568,10 +568,10 @@ std::pair<std::shared_ptr<Assembly>, std::vector<std::string>> Assembly::fromJSO
 		std::map<size_t, std::shared_ptr<Assembly>> subAssemblies;
 		for (JsonConstIterator dataIter = data.begin(); dataIter != data.end(); dataIter++)
 		{
-			solAssert(dataIter.key().isString());
+			solAssert(dataIter.key().is_string());
 			std::string dataItemID = dataIter.key().asString();
 			Json const& dataItem = data[dataItemID];
-			if (dataItem.isString())
+			if (dataItem.is_string())
 			{
 				solRequire(
 					dataItem.asString().empty() || !fromHex(dataItem.asString()).empty(),

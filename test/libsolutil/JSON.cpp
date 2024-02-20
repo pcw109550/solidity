@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE(parse_json_strict)
 	BOOST_CHECK(!jsonParseStrict("1", json, &errors));
 	// BOOST_CHECK(json.isNumeric());
 	BOOST_CHECK(!jsonParseStrict("\"hello\"", json, &errors));
-	// BOOST_CHECK(json.isString());
+	// BOOST_CHECK(json.is_string());
 	BOOST_CHECK(!jsonParseStrict("true", json, &errors));
 	// BOOST_CHECK(json.isBool());
 	BOOST_CHECK(!jsonParseStrict("null", json, &errors));
@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE(parse_json_strict)
 
 	// Single quotes are also disallowed by ECMA-404
 	BOOST_CHECK(!jsonParseStrict("'hello'", json, &errors));
-	// BOOST_CHECK(json.isString());
+	// BOOST_CHECK(json.is_string());
 
 	// Only string keys in objects are allowed in ECMA-404
 	BOOST_CHECK(!jsonParseStrict("{ 42: \"hello\" }", json, &errors));

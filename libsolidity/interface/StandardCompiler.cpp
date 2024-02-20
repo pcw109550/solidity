@@ -461,7 +461,7 @@ std::optional<Json> checkOptimizerDetailSteps(Json const& _details, std::string 
 {
 	if (_details.contains(_name))
 	{
-		if (_details[_name].isString())
+		if (_details[_name].is_string())
 		{
 			std::string const fullSequence = _details[_name].asString();
 			if (!_runYulOptimizer && !OptimiserSuite::isEmptyOptimizerSequence(fullSequence))
@@ -541,7 +541,7 @@ std::optional<Json> checkOutputSelection(Json const& _outputSelection)
 				);
 
 			for (auto const& output: contractVal)
-				if (!output.isString())
+				if (!output.is_string())
 					return formatFatalError(
 						Error::Type::JSONError,
 						"\"settings.outputSelection." +
@@ -661,10 +661,10 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 			if (auto result = checkSourceKeys(sources[sourceName], sourceName))
 				return *result;
 
-			if (sources[sourceName]["keccak256"].isString())
+			if (sources[sourceName]["keccak256"].is_string())
 				hash = sources[sourceName]["keccak256"].asString();
 
-			if (sources[sourceName]["content"].isString())
+			if (sources[sourceName]["content"].is_string())
 			{
 				std::string content = sources[sourceName]["content"].asString();
 				if (!hash.empty() && !hashMatchesContent(hash, content))
@@ -688,7 +688,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 
 				for (auto const& url: sources[sourceName]["urls"])
 				{
-					if (!url.isString())
+					if (!url.is_string())
 						return formatFatalError(Error::Type::JSONError, "URL must be a string.");
 					ReadCallback::Result result = m_readFile(ReadCallback::kindString(ReadCallback::Kind::ReadFile), url.asString());
 					if (result.success)
@@ -779,7 +779,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 					return formatFatalError(Error::Type::JSONError, "Invalid hex encoding of SMTLib2 auxiliary input.");
 				}
 
-				if (!smtlib2Responses[hashString].isString())
+				if (!smtlib2Responses[hashString].is_string())
 					return formatFatalError(
 						Error::Type::JSONError,
 						"\"smtlib2Responses." + hashString + "\" must be a string."
@@ -797,7 +797,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 
 	if (settings.contains("stopAfter"))
 	{
-		if (!settings["stopAfter"].isString())
+		if (!settings["stopAfter"].is_string())
 			return formatFatalError(Error::Type::JSONError, "\"settings.stopAfter\" must be a string.");
 
 		if (settings["stopAfter"].asString() != "parsing")
@@ -815,7 +815,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 
 	if (settings.contains("evmVersion"))
 	{
-		if (!settings["evmVersion"].isString())
+		if (!settings["evmVersion"].is_string())
 			return formatFatalError(Error::Type::JSONError, "evmVersion must be a string.");
 		std::optional<langutil::EVMVersion> version = langutil::EVMVersion::fromString(settings["evmVersion"].asString());
 		if (!version)
@@ -846,7 +846,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 
 		if (settings["debug"].contains("revertStrings"))
 		{
-			if (!settings["debug"]["revertStrings"].isString())
+			if (!settings["debug"]["revertStrings"].is_string())
 				return formatFatalError(Error::Type::JSONError, "settings.debug.revertStrings must be a string.");
 			std::optional<RevertStrings> revertStrings = revertStringsFromString(settings["debug"]["revertStrings"].asString());
 			if (!revertStrings)
@@ -890,7 +890,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 
 	for (auto const& remapping: settings.get("remappings", Json()))
 	{
-		if (!remapping.isString())
+		if (!remapping.is_string())
 			return formatFatalError(Error::Type::JSONError, "\"settings.remappings\" must be an array of strings");
 		if (auto r = ImportRemapper::parseRemapping(remapping.asString()))
 			ret.remappings.emplace_back(std::move(*r));
@@ -917,7 +917,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 			return formatFatalError(Error::Type::JSONError, "Library entry is not a JSON object.");
 		for (auto const& library: jsonSourceName.getMemberNames())
 		{
-			if (!jsonSourceName[library].isString())
+			if (!jsonSourceName[library].is_string())
 				return formatFatalError(Error::Type::JSONError, "Library address must be a string.");
 			std::string address = jsonSourceName[library].asString();
 
@@ -1013,7 +1013,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 
 			for (auto const& contract: contracts)
 			{
-				if (!contract.isString())
+				if (!contract.is_string())
 					return formatFatalError(Error::Type::JSONError, "Every contract in settings.modelChecker.contracts must be a string.");
 				if (contract.asString().empty())
 					return formatFatalError(Error::Type::JSONError, "Contract name cannot be empty.");
@@ -1036,7 +1036,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 
 	if (modelCheckerSettings.contains("engine"))
 	{
-		if (!modelCheckerSettings["engine"].isString())
+		if (!modelCheckerSettings["engine"].is_string())
 			return formatFatalError(Error::Type::JSONError, "settings.modelChecker.engine must be a string.");
 		std::optional<ModelCheckerEngine> engine = ModelCheckerEngine::fromString(modelCheckerSettings["engine"].asString());
 		if (!engine)
@@ -1056,7 +1056,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 
 	if (modelCheckerSettings.contains("extCalls"))
 	{
-		if (!modelCheckerSettings["extCalls"].isString())
+		if (!modelCheckerSettings["extCalls"].is_string())
 			return formatFatalError(Error::Type::JSONError, "settings.modelChecker.extCalls must be a string.");
 		std::optional<ModelCheckerExtCalls> extCalls = ModelCheckerExtCalls::fromString(modelCheckerSettings["extCalls"].asString());
 		if (!extCalls)
@@ -1073,7 +1073,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 		ModelCheckerInvariants invariants;
 		for (auto const& i: invariantsArray)
 		{
-			if (!i.isString())
+			if (!i.is_string())
 				return formatFatalError(Error::Type::JSONError, "Every invariant type in settings.modelChecker.invariants must be a string.");
 			if (!invariants.setFromString(i.asString()))
 				return formatFatalError(Error::Type::JSONError, "Invalid model checker invariants requested.");
@@ -1118,7 +1118,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 		smtutil::SMTSolverChoice solvers;
 		for (auto const& s: solversArray)
 		{
-			if (!s.isString())
+			if (!s.is_string())
 				return formatFatalError(Error::Type::JSONError, "Every target in settings.modelChecker.solvers must be a string.");
 			if (!solvers.setSolver(s.asString()))
 				return formatFatalError(Error::Type::JSONError, "Invalid model checker solvers requested.");
@@ -1148,7 +1148,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 		ModelCheckerTargets targets;
 		for (auto const& t: targetsArray)
 		{
-			if (!t.isString())
+			if (!t.is_string())
 				return formatFatalError(Error::Type::JSONError, "Every target in settings.modelChecker.targets must be a string.");
 			if (!targets.setFromString(t.asString()))
 				return formatFatalError(Error::Type::JSONError, "Invalid model checker targets requested.");

@@ -198,7 +198,7 @@ void LanguageServer::changeConfiguration(Json const& _settings)
 			std::vector<boost::filesystem::path> includePaths;
 			for (Json const& jsonPath: jsonIncludePaths)
 			{
-				if (jsonPath.isString())
+				if (jsonPath.is_string())
 					includePaths.emplace_back(boost::filesystem::path(jsonPath.asString()));
 				else
 					typeFailureCount++;
@@ -339,7 +339,7 @@ bool LanguageServer::run()
 			if (!jsonMessage)
 				continue;
 
-			if ((*jsonMessage)["method"].isString())
+			if ((*jsonMessage)["method"].is_string())
 			{
 				std::string const methodName = (*jsonMessage)["method"].asString();
 				id = (*jsonMessage)["id"];
@@ -460,7 +460,7 @@ void LanguageServer::handleWorkspaceDidChangeConfiguration(Json const& _args)
 
 void LanguageServer::setTrace(Json const& _args)
 {
-	if (!_args.isString())
+	if (!_args.is_string())
 		// Simply ignore invalid parameter.
 		return;
 

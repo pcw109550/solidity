@@ -2181,7 +2181,7 @@ bool ExpressionCompiler::visit(IndexAccess const& _indexAccess)
 					ArrayUtils(m_context).accessIndex(arrayType);
 					if (arrayType.isByteArrayOrString())
 					{
-						solAssert(!arrayType.isString(), "Index access to string is not allowed.");
+						solAssert(!arrayType.is_string(), "Index access to string is not allowed.");
 						setLValue<StorageByteArrayElement>(_indexAccess);
 					}
 					else

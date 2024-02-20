@@ -66,7 +66,7 @@ std::optional<std::string> compileAndCheckLicenseMetadata(std::string const& _co
 
 	if (metadata["sources"]["A.sol"].contains("license"))
 	{
-		BOOST_REQUIRE(metadata["sources"]["A.sol"]["license"].isString());
+		BOOST_REQUIRE(metadata["sources"]["A.sol"]["license"].is_string());
 		return metadata["sources"]["A.sol"]["license"].asString();
 	}
 	else

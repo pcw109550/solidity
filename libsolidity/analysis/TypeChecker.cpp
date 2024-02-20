@@ -3492,7 +3492,7 @@ bool TypeChecker::visit(IndexAccess const& _access)
 		ArrayType const& actualType = dynamic_cast<ArrayType const&>(*baseType);
 		if (!index)
 			m_errorReporter.typeError(9689_error, _access.location(), "Index expression cannot be omitted.");
-		else if (actualType.isString())
+		else if (actualType.is_string())
 		{
 			m_errorReporter.typeError(9961_error, _access.location(), "Index access for string is not possible.");
 			index->accept(*this);
