@@ -73,9 +73,10 @@ std::map<std::string, ASTPointer<SourceUnit>> ASTJsonImporter::jsonToSourceUnit(
 template <typename T, typename... Args>
 ASTPointer<T> ASTJsonImporter::createASTNode(Json const& _node, Args&&... _args)
 {
-	astAssert(member(_node, "id").isInt64(), "'id'-field must be 64bit integer.");
+	astAssert(member(_node, "id").is_number_integer(), "'id'-field must be an integer.");
 
-	int64_t id = _node["id"].asInt64();
+	// TODO: range checking
+	int64_t id = _node["id"].get<int64_t>();
 
 	astAssert(m_usedIDs.insert(id).second, "Found duplicate node ID!");
 
