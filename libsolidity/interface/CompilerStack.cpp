@@ -846,7 +846,7 @@ Json CompilerStack::generatedSources(std::string const& _contractName, bool _run
 		c.runtimeGeneratedSources :
 		c.generatedSources;
 	return sources.init([&]{
-		Json sources{Json::arrayValue};
+		Json sources{Json::array()};
 		// If there is no compiler, then no bytecode was generated and thus no
 		// sources were generated (or we compiled "via IR").
 		if (c.compiler)
@@ -1677,7 +1677,7 @@ std::string CompilerStack::createMetadata(Contract const& _contract, bool _forIR
 			meta["sources"][s.first]["content"] = s.second.charStream->source();
 		else
 		{
-			meta["sources"][s.first]["urls"] = Json::arrayValue;
+			meta["sources"][s.first]["urls"] = Json::array();
 			meta["sources"][s.first]["urls"].append("bzz-raw://" + util::toHex(s.second.swarmHash().asBytes()));
 			meta["sources"][s.first]["urls"].append(s.second.ipfsUrl());
 		}
@@ -1753,7 +1753,7 @@ std::string CompilerStack::createMetadata(Contract const& _contract, bool _forIR
 	meta["settings"]["compilationTarget"][_contract.contract->sourceUnitName()] =
 		*_contract.contract->annotation().canonicalName;
 
-	meta["settings"]["remappings"] = Json::arrayValue;
+	meta["settings"]["remappings"] = Json::array();
 	std::set<std::string> remappings;
 	for (auto const& r: m_importRemapper.remappings())
 		remappings.insert(r.context + ":" + r.prefix + "=" + r.target);

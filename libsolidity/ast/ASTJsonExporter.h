@@ -63,7 +63,7 @@ public:
 	template <class T>
 	Json toJson(std::vector<ASTPointer<T>> const& _nodes)
 	{
-		Json ret(Json::arrayValue);
+		Json ret(Json::array());
 		for (auto const& n: _nodes)
 			if (n)
 				appendMove(ret, toJson(*n));
@@ -177,7 +177,7 @@ private:
 		}
 		if (_order)
 			std::sort(tmp.begin(), tmp.end());
-		Json json(Json::arrayValue);
+		Json json(Json::array());
 
 		for (int64_t val: tmp)
 			json.append(val);

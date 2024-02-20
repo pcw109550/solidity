@@ -106,7 +106,7 @@ Json ABI::generate(ContractDefinition const& _contractDef)
 		event["type"] = "event";
 		event["name"] = it->name();
 		event["anonymous"] = it->isAnonymous();
-		Json params{Json::arrayValue};
+		Json params{Json::array()};
 		for (auto const& p: it->parameters())
 		{
 			Type const* type = p->annotation().type->interfaceType(false);
@@ -124,7 +124,7 @@ Json ABI::generate(ContractDefinition const& _contractDef)
 		Json errorJson{Json::objectValue};
 		errorJson["type"] = "error";
 		errorJson["name"] = error->name();
-		errorJson["inputs"] = Json::arrayValue;
+		errorJson["inputs"] = Json::array();
 		for (auto const& p: error->parameters())
 		{
 			Type const* type = p->annotation().type->interfaceType(false);
@@ -136,7 +136,7 @@ Json ABI::generate(ContractDefinition const& _contractDef)
 		abi.emplace(std::move(errorJson));
 	}
 
-	Json abiJson{Json::arrayValue};
+	Json abiJson{Json::array()};
 	for (auto& f: abi)
 		abiJson.append(std::move(f));
 	return abiJson;
@@ -149,7 +149,7 @@ Json ABI::formatTypeList(
 	bool _forLibrary
 )
 {
-	Json params{Json::arrayValue};
+	Json params{Json::array()};
 	solAssert(_names.size() == _encodingTypes.size(), "Names and types vector size does not match");
 	solAssert(_names.size() == _solidityTypes.size(), "");
 	for (unsigned i = 0; i < _names.size(); ++i)
@@ -203,7 +203,7 @@ Json ABI::formatType(
 	else if (StructType const* structType = dynamic_cast<StructType const*>(&_encodingType))
 	{
 		ret["type"] = "tuple";
-		ret["components"] = Json::arrayValue;
+		ret["components"] = Json::array();
 		for (auto const& member: structType->members(nullptr))
 		{
 			solAssert(member.type, "");

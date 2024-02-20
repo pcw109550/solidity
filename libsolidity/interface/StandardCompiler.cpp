@@ -79,7 +79,7 @@ Json formatError(
 Json formatFatalError(Error::Type _type, std::string const& _message)
 {
 	Json output{Json::objectValue};
-	output["errors"] = Json::arrayValue;
+	output["errors"] = Json::array();
 	output["errors"].append(formatError(_type, "general", _message));
 	return output;
 }
@@ -101,7 +101,7 @@ Json formatSecondarySourceLocation(SecondarySourceLocation const* _secondaryLoca
 	if (!_secondaryLocation)
 		return Json{};
 
-	Json secondarySourceLocation{Json::arrayValue};
+	Json secondarySourceLocation{Json::array()};
 	for (auto const& location: _secondaryLocation->infos)
 	{
 		Json msg = formatSourceLocation(&location.second);
@@ -330,7 +330,7 @@ Json formatLinkReferences(std::map<size_t, std::string> const& linkReferences)
 		std::string name = (colon != std::string::npos ? fullname.substr(colon + 1) : fullname);
 
 		Json fileObject = ret.get(file, Json::objectValue);
-		Json libraryArray = fileObject.get(name, Json::arrayValue);
+		Json libraryArray = fileObject.get(name, Json::array());
 
 		Json entry{Json::objectValue};
 		entry["start"] = Json::UInt(ref.first);
@@ -351,7 +351,7 @@ Json formatImmutableReferences(std::map<u256, std::pair<std::string, std::vector
 	for (auto const& immutableReference: _immutableReferences)
 	{
 		auto const& [identifier, byteOffsets] = immutableReference.second;
-		Json array(Json::arrayValue);
+		Json array(Json::array());
 		for (size_t byteOffset: byteOffsets)
 		{
 			Json byteRange{Json::objectValue};
@@ -650,7 +650,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 	if (sources.empty())
 		return formatFatalError(Error::Type::JSONError, "No input sources specified.");
 
-	ret.errors = Json::arrayValue;
+	ret.errors = Json::array();
 
 	if (ret.language == "Solidity" || ret.language == "Yul")
 	{
@@ -1720,7 +1720,7 @@ Json StandardCompiler::compileYul(InputsAndSettings _inputsAndSettings)
 						_inputsAndSettings.evmVersion,
 						*o.bytecode,
 						o.sourceMappings.get(),
-						Json::arrayValue,
+						Json::array(),
 						isDeployed,
 						[&, kind = kind](std::string const& _element) { return isArtifactRequested(
 							_inputsAndSettings.outputSelection,

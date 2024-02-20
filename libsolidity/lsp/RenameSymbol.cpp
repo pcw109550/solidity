@@ -93,7 +93,7 @@ void RenameSymbol::operator()(MessageID _id, Json const& _args)
 	Json reply = Json::objectValue;
 	reply["changes"] = Json::objectValue;
 
-	Json edits = Json::arrayValue;
+	Json edits = Json::array();
 
 	for (auto i = m_locations.rbegin(); i != m_locations.rend(); i++)
 	{
@@ -114,7 +114,7 @@ void RenameSymbol::operator()(MessageID _id, Json const& _args)
 		if (i + 1 == m_locations.rend() || (i + 1)->sourceName != i->sourceName)
 		{
 			reply["changes"][uri] = edits;
-			edits = Json::arrayValue;
+			edits = Json::array();
 		}
 	}
 

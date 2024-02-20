@@ -430,7 +430,7 @@ std::string Assembly::assemblyString(
 Json Assembly::assemblyJSON(std::map<std::string, unsigned> const& _sourceIndices, bool _includeSourceList) const
 {
 	Json root;
-	root[".code"] = Json::arrayValue;
+	root[".code"] = Json::array();
 	Json& code = root[".code"];
 	for (AssemblyItem const& item: m_items)
 	{
@@ -475,7 +475,7 @@ Json Assembly::assemblyJSON(std::map<std::string, unsigned> const& _sourceIndice
 	}
 	if (_includeSourceList)
 	{
-		root["sourceList"] = Json::arrayValue;
+		root["sourceList"] = Json::array();
 		Json& jsonSourceList = root["sourceList"];
 		for (auto const& [name, index]: _sourceIndices)
 			jsonSourceList[index] = name;

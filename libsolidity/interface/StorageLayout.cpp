@@ -34,7 +34,7 @@ Json StorageLayout::generate(ContractDefinition const& _contractDef)
 	auto contractType = dynamic_cast<ContractType const*>(typeType->actualType());
 	solAssert(contractType, "");
 
-	Json variables(Json::arrayValue);
+	Json variables(Json::array());
 	for (auto [var, slot, offset]: contractType->stateVariables())
 		variables.append(generate(*var, slot, offset));
 
@@ -73,7 +73,7 @@ void StorageLayout::generate(Type const* _type)
 
 	if (auto structType = dynamic_cast<StructType const*>(_type))
 	{
-		Json members(Json::arrayValue);
+		Json members(Json::array());
 		auto const& structDef = structType->structDefinition();
 		for (auto const& member: structDef.members())
 		{

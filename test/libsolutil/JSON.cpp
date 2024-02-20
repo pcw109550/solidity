@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE(json_types)
 	check(Json(), "null");
 	check(Json{}, "null");
 	check(Json::objectValue, "{}");
-	check(Json::arrayValue, "[]");
+	check(Json::array(), "[]");
 	check(Json::UInt(1), "1");
 	check(Json::UInt(-1), "4294967295");
 	check(Json::UInt64(1), "1");
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(json_types)
 	value["key"] = "value";
 	check(value, "{\"key\":\"value\"}");
 
-	value = Json::arrayValue;
+	value = Json::array();
 	value.append(1);
 	value.append(2);
 	check(value, "[1,2]");

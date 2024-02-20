@@ -198,7 +198,7 @@ Json AsmJsonConverter::createAstNode(langutil::SourceLocation const& _originLoca
 template <class T>
 Json AsmJsonConverter::vectorOfVariantsToJson(std::vector<T> const& _vec) const
 {
-	Json ret{Json::arrayValue};
+	Json ret{Json::array()};
 	for (auto const& var: _vec)
 		ret.append(std::visit(*this, var));
 	return ret;

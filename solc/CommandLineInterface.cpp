@@ -1013,7 +1013,7 @@ void CommandLineInterface::handleCombinedJSON()
 	if (needsSourceList)
 	{
 		// Indices into this array are used to abbreviate source names in source locations.
-		output[g_strSourceList] = Json(Json::arrayValue);
+		output[g_strSourceList] = Json(Json::array());
 
 		for (auto const& source: m_assemblyStack->sourceNames())
 			output[g_strSourceList].append(source);

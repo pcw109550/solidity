@@ -128,7 +128,7 @@ std::string ASTJsonExporter::sourceLocationToString(SourceLocation const& _locat
 
 Json ASTJsonExporter::sourceLocationsToJson(std::vector<SourceLocation> const& _sourceLocations) const
 {
-	Json locations = Json::arrayValue;
+	Json locations = Json::array();
 
 	for (SourceLocation const& location: _sourceLocations)
 		locations.append(sourceLocationToString(location));
@@ -153,7 +153,7 @@ Json ASTJsonExporter::typePointerToJson(std::optional<FuncCallArguments> const& 
 {
 	if (_tps)
 	{
-		Json arguments(Json::arrayValue);
+		Json arguments(Json::array());
 		for (auto const& tp: _tps->types)
 			appendMove(arguments, typePointerToJson(tp));
 		return arguments;
@@ -224,7 +224,7 @@ bool ASTJsonExporter::visit(SourceUnit const& _node)
 		Json exportedSymbols = Json::objectValue;
 		for (auto const& sym: *_node.annotation().exportedSymbols)
 		{
-			exportedSymbols[sym.first] = Json::arrayValue;
+			exportedSymbols[sym.first] = Json::array();
 			for (Declaration const* overload: sym.second)
 				exportedSymbols[sym.first].append(nodeId(*overload));
 		}
@@ -241,7 +241,7 @@ bool ASTJsonExporter::visit(SourceUnit const& _node)
 
 bool ASTJsonExporter::visit(PragmaDirective const& _node)
 {
-	Json literals(Json::arrayValue);
+	Json literals(Json::array());
 	for (auto const& literal: _node.literals())
 		literals.append(literal);
 	setJsonNode(_node, "PragmaDirective", {
@@ -263,7 +263,7 @@ bool ASTJsonExporter::visit(ImportDirective const& _node)
 	attributes.emplace_back("unitAlias", _node.name());
 	attributes.emplace_back("nameLocation", Json(sourceLocationToString(_node.nameLocation())));
 
-	Json symbolAliases(Json::arrayValue);
+	Json symbolAliases(Json::array());
 	for (auto const& symbolAlias: _node.symbolAliases())
 	{
 		Json tuple(Json::objectValue);
@@ -315,7 +315,7 @@ bool ASTJsonExporter::visit(ContractDefinition const& _node)
 
 bool ASTJsonExporter::visit(IdentifierPath const& _node)
 {
-	Json nameLocations = Json::arrayValue;
+	Json nameLocations = Json::array();
 
 	for (SourceLocation location: _node.pathLocations())
 		nameLocations.append(sourceLocationToString(location));
@@ -657,7 +657,7 @@ bool ASTJsonExporter::visit(InlineAssembly const& _node)
 				inlineAssemblyIdentifierToJson(it)
 			));
 
-	Json externalReferencesJson = Json::arrayValue;
+	Json externalReferencesJson = Json::array();
 
 	std::sort(externalReferences.begin(), externalReferences.end());
 	for (Json& it: externalReferences | ranges::views::values)
@@ -671,7 +671,7 @@ bool ASTJsonExporter::visit(InlineAssembly const& _node)
 
 	if (_node.flags())
 	{
-		Json flags(Json::arrayValue);
+		Json flags(Json::array());
 		for (auto const& flag: *_node.flags())
 			if (flag)
 				flags.append(*flag);
@@ -802,7 +802,7 @@ bool ASTJsonExporter::visit(RevertStatement const& _node)
 
 bool ASTJsonExporter::visit(VariableDeclarationStatement const& _node)
 {
-	Json varDecs(Json::arrayValue);
+	Json varDecs(Json::array());
 	for (auto const& v: _node.declarations())
 		appendMove(varDecs, idOrNull(v.get()));
 	setJsonNode(_node, "VariableDeclarationStatement", {
@@ -889,7 +889,7 @@ bool ASTJsonExporter::visit(BinaryOperation const& _node)
 
 bool ASTJsonExporter::visit(FunctionCall const& _node)
 {
-	Json names(Json::arrayValue);
+	Json names(Json::array());
 	for (auto const& name: _node.names())
 		names.append(Json(*name));
 	std::vector<std::pair<std::string, Json>> attributes = {
@@ -913,7 +913,7 @@ bool ASTJsonExporter::visit(FunctionCall const& _node)
 
 bool ASTJsonExporter::visit(FunctionCallOptions const& _node)
 {
-	Json names(Json::arrayValue);
+	Json names(Json::array());
 	for (auto const& name: _node.names())
 		names.append(Json(*name));
 
@@ -976,7 +976,7 @@ bool ASTJsonExporter::visit(IndexRangeAccess const& _node)
 
 bool ASTJsonExporter::visit(Identifier const& _node)
 {
-	Json overloads(Json::arrayValue);
+	Json overloads(Json::array());
 	for (auto const& dec: _node.annotation().overloadedDeclarations)
 		overloads.append(nodeId(*dec));
 	setJsonNode(_node, "Identifier", {

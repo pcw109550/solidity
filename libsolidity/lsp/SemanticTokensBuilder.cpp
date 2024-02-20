@@ -79,7 +79,7 @@ Json SemanticTokensBuilder::build(SourceUnit const& _sourceUnit, CharStream cons
 
 void SemanticTokensBuilder::reset(CharStream const* _charStream)
 {
-	m_encodedTokens = Json::arrayValue;
+	m_encodedTokens = Json::array();
 	m_charStream = _charStream;
 	m_lastLine = 0;
 	m_lastStartChar = 0;

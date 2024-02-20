@@ -58,7 +58,7 @@ void GotoDefinition::operator()(MessageID _id, Json const& _args)
 			locations.emplace_back(SourceLocation{0, 0, std::make_shared<std::string const>(path)});
 	}
 
-	Json reply = Json::arrayValue;
+	Json reply = Json::array();
 	for (SourceLocation const& location: locations)
 		reply.append(toJson(location));
 	client().reply(_id, reply);

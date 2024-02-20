@@ -92,7 +92,7 @@ Json semanticTokensLegend()
 	// NOTE! The (alphabetical) order and items must match exactly the items of
 	//       their respective enum class members.
 
-	Json tokenTypes = Json::arrayValue;
+	Json tokenTypes = Json::array();
 	tokenTypes.append("class");
 	tokenTypes.append("comment");
 	tokenTypes.append("enum");
@@ -115,7 +115,7 @@ Json semanticTokensLegend()
 	tokenTypes.append("variable");
 	legend["tokenTypes"] = tokenTypes;
 
-	Json tokenModifiers = Json::arrayValue;
+	Json tokenModifiers = Json::array();
 	tokenModifiers.append("abstract");
 	tokenModifiers.append("declaration");
 	tokenModifiers.append("definition");
@@ -276,9 +276,9 @@ void LanguageServer::compileAndUpdateDiagnostics()
 	// even if it is just to clear previous diagnostics.
 	std::map<std::string, Json> diagnosticsBySourceUnit;
 	for (std::string const& sourceUnitName: m_fileRepository.sourceUnits() | ranges::views::keys)
-		diagnosticsBySourceUnit[sourceUnitName] = Json::arrayValue;
+		diagnosticsBySourceUnit[sourceUnitName] = Json::array();
 	for (std::string const& sourceUnitName: m_nonemptyDiagnostics)
-		diagnosticsBySourceUnit[sourceUnitName] = Json::arrayValue;
+		diagnosticsBySourceUnit[sourceUnitName] = Json::array();
 
 	for (std::shared_ptr<Error const> const& error: m_compilerStack.errors())
 	{
