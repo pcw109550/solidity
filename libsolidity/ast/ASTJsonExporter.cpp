@@ -193,7 +193,7 @@ Json ASTJsonExporter::inlineAssemblyIdentifierToJson(std::pair<yul::Identifier c
 	if (!_info.second.suffix.empty())
 		tuple["suffix"] = Json(_info.second.suffix);
 
-	tuple["valueSize"] = Json(Json::LargestUInt(_info.second.valueSize));
+	tuple["valueSize"] = Json(_info.second.valueSize);
 
 	return tuple;
 }

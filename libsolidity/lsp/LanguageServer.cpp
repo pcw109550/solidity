@@ -353,7 +353,7 @@ bool LanguageServer::run()
 			else
 				m_client.error({}, ErrorCode::ParseError, "\"method\" has to be a string.");
 		}
-		catch (Json::Exception const&)
+		catch (Json::exception const&)
 		{
 			m_client.error(id, ErrorCode::InvalidParams, "JSON object access error. Most likely due to a badly formatted JSON request message."s);
 		}
@@ -439,7 +439,7 @@ void LanguageServer::semanticTokensFull(MessageID _id, Json const& _args)
 
 	compile();
 
-	auto const sourceName = m_fileRepository.uriToSourceUnitName(uri.as<std::string>());
+	auto const sourceName = m_fileRepository.uriToSourceUnitName(uri.get<std::string>());
 	SourceUnit const& ast = m_compilerStack.ast(sourceName);
 	m_compilerStack.charStream(sourceName);
 	Json data = SemanticTokensBuilder().build(ast, m_compilerStack.charStream(sourceName));

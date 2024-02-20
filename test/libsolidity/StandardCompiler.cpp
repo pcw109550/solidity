@@ -107,14 +107,14 @@ void checkLinkReferencesSchema(Json const& _contractResult)
 	Json const& linkReferenceResult = _contractResult["evm"]["bytecode"]["linkReferences"];
 	BOOST_TEST_REQUIRE(linkReferenceResult.is_object());
 
-	for (std::string const& fileName: linkReferenceResult.getMemberNames())
+	for (auto const& [fileName, _]: linkReferenceResult.items())
 	{
 		BOOST_TEST_REQUIRE(linkReferenceResult[fileName].is_object());
-		for (std::string const& libraryName: linkReferenceResult[fileName].getMemberNames())
+		for (auto const& [libraryName, _]: linkReferenceResult[fileName].items())
 		{
 			BOOST_TEST_REQUIRE(linkReferenceResult[fileName][libraryName].is_array());
 			BOOST_TEST_REQUIRE(!linkReferenceResult[fileName][libraryName].empty());
-			for (int i = 0; i < static_cast<int>(linkReferenceResult.size()); ++i)
+			for (size_t i = 0; i < static_cast<size_t>(linkReferenceResult.size()); ++i)
 			{
 				BOOST_TEST_REQUIRE(linkReferenceResult[fileName][libraryName][i].is_object());
 				BOOST_TEST_REQUIRE(linkReferenceResult[fileName][libraryName][i].size() == 2);
@@ -1087,7 +1087,7 @@ BOOST_AUTO_TEST_CASE(optimizer_settings_default_disabled)
 	BOOST_CHECK(optimizer.contains("enabled"));
 	BOOST_CHECK(optimizer["enabled"].get<bool>() == false);
 	BOOST_CHECK(!optimizer.contains("details"));
-	BOOST_CHECK(optimizer["runs"].asUInt() == 200);
+	BOOST_CHECK(optimizer["runs"].get<unsigned>() == 200);
 }
 
 BOOST_AUTO_TEST_CASE(optimizer_settings_default_enabled)
@@ -1120,7 +1120,7 @@ BOOST_AUTO_TEST_CASE(optimizer_settings_default_enabled)
 	BOOST_CHECK(optimizer.contains("enabled"));
 	BOOST_CHECK(optimizer["enabled"].get<bool>() == true);
 	BOOST_CHECK(!optimizer.contains("details"));
-	BOOST_CHECK(optimizer["runs"].asUInt() == 200);
+	BOOST_CHECK(optimizer["runs"].get<unsigned>() == 200);
 }
 
 BOOST_AUTO_TEST_CASE(optimizer_settings_details_exactly_as_default_disabled)
@@ -1161,7 +1161,7 @@ BOOST_AUTO_TEST_CASE(optimizer_settings_details_exactly_as_default_disabled)
 	// enabled is switched to false instead!
 	BOOST_CHECK(optimizer["enabled"].get<bool>() == false);
 	BOOST_CHECK(!optimizer.contains("details"));
-	BOOST_CHECK(optimizer["runs"].asUInt() == 200);
+	BOOST_CHECK(optimizer["runs"].get<unsigned>() == 200);
 }
 
 BOOST_AUTO_TEST_CASE(optimizer_settings_details_different)
@@ -1220,7 +1220,7 @@ BOOST_AUTO_TEST_CASE(optimizer_settings_details_different)
 		OptimiserSettings::DefaultYulOptimiserSteps + ":"s + OptimiserSettings::DefaultYulOptimiserCleanupSteps
  	);
 	BOOST_CHECK_EQUAL(optimizer["details"].getMemberNames().size(), 10);
-	BOOST_CHECK(optimizer["runs"].asUInt() == 600);
+	BOOST_CHECK(optimizer["runs"].get<unsigned>() == 600);
 }
 
 BOOST_AUTO_TEST_CASE(metadata_without_compilation)

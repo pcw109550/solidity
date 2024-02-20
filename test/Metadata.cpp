@@ -195,7 +195,7 @@ bool isValidMetadata(Json const& _metadata)
 	)
 		return false;
 
-	if (!_metadata["version"].isNumeric() || _metadata["version"] != 1)
+	if (!_metadata["version"].is_number() || _metadata["version"] != 1)
 		return false;
 
 	if (!_metadata["language"].is_string() || _metadata["language"].get<std::string>() != "Solidity")

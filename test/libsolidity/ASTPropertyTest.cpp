@@ -121,7 +121,7 @@ void ASTPropertyTest::extractTestsFromAST(Json const& _astJson)
 			for (auto&& member: node)
 				nodesToVisit.push(member);
 		else if (node.is_object())
-			for (std::string const& memberName: node.getMemberNames())
+			for (auto& [memberName, _]: node.items())
 			{
 				if (memberName != "documentation")
 				{

@@ -3731,10 +3731,10 @@ bool TypeChecker::visit(Identifier const& _identifier)
 							description += (description.empty() ? "" : ", ") + param->humanReadableName();
 						description = "function " + _identifier.name() + "(" + description + ")";
 
-						ssl.push_back("Candidate: " + description, declaration->location());
+						ssl.append("Candidate: " + description, declaration->location());
 					}
 					else
-						ssl.push_back("Candidate:", declaration->location());
+						ssl.append("Candidate:", declaration->location());
 				if (candidates.empty())
 					m_errorReporter.fatalTypeError(9322_error, _identifier.location(), ssl, "No matching declaration found after argument-dependent lookup.");
 				else
@@ -3967,7 +3967,7 @@ void TypeChecker::endVisit(UsingForDirective const& _usingFor)
 			m_errorReporter.fatalTypeError(
 				4731_error,
 				path->location(),
-				SecondarySourceLocation().push_back(
+				SecondarySourceLocation().append(
 					"Function defined here:",
 					functionDefinition.location()
 				),
@@ -3987,7 +3987,7 @@ void TypeChecker::endVisit(UsingForDirective const& _usingFor)
 			m_errorReporter.typeError(
 				6772_error,
 				path->location(),
-				SecondarySourceLocation().push_back(
+				SecondarySourceLocation().append(
 					"Function defined here:",
 					functionDefinition.location()
 				),
@@ -4008,7 +4008,7 @@ void TypeChecker::endVisit(UsingForDirective const& _usingFor)
 			m_errorReporter.typeError(
 				3100_error,
 				path->location(),
-				SecondarySourceLocation().push_back(
+				SecondarySourceLocation().append(
 					"Function defined here:",
 					functionDefinition.location()
 				),
@@ -4037,7 +4037,7 @@ void TypeChecker::endVisit(UsingForDirective const& _usingFor)
 				m_errorReporter.typeError(
 					7775_error,
 					path->location(),
-					SecondarySourceLocation().push_back(
+					SecondarySourceLocation().append(
 						"Function defined as non-pure here:",
 						functionDefinition.location()
 					),
@@ -4075,7 +4075,7 @@ void TypeChecker::endVisit(UsingForDirective const& _usingFor)
 				m_errorReporter.typeError(
 					1884_error,
 					functionDefinition.parameterList().location(),
-					SecondarySourceLocation().push_back(
+					SecondarySourceLocation().append(
 						"Function was used to implement an operator here:",
 						path->location()
 					),
@@ -4110,7 +4110,7 @@ void TypeChecker::endVisit(UsingForDirective const& _usingFor)
 				m_errorReporter.typeError(
 					7743_error,
 					functionDefinition.returnParameterList()->location(),
-					SecondarySourceLocation().push_back(
+					SecondarySourceLocation().append(
 						"Function was used to implement an operator here:",
 						path->location()
 					),
@@ -4142,7 +4142,7 @@ void TypeChecker::endVisit(UsingForDirective const& _usingFor)
 					SecondarySourceLocation secondaryLocation;
 					for (FunctionDefinition const* definition: matchingDefinitions)
 						if (functionDefinition != *definition)
-						secondaryLocation.push_back("Conflicting definition:", definition->location());
+						secondaryLocation.append("Conflicting definition:", definition->location());
 
 					m_errorReporter.typeError(
 						4705_error,

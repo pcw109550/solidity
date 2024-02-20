@@ -102,7 +102,7 @@ AssemblyItem Assembly::createAssemblyItemFromJSON(Json const& _json, std::vector
 {
 	solRequire(_json.is_object(), AssemblyImportException, "Supplied JSON is not an object.");
 	static std::set<std::string> const validMembers{"name", "begin", "end", "source", "value", "modifierDepth", "jumpType"};
-	for (std::string const& member: _json.getMemberNames())
+	for (auto const& [member, _]: _json.items())
 		solRequire(
 			validMembers.count(member),
 			AssemblyImportException,
@@ -449,7 +449,7 @@ Json Assembly::assemblyJSON(std::map<std::string, unsigned> const& _sourceIndice
 		jsonItem["end"] = item.location().end;
 		if (item.m_modifierDepth != 0)
 			jsonItem["modifierDepth"] = static_cast<int>(item.m_modifierDepth);
-		std::string jumpType = itemgetJumpTypeAsString();
+		std::string jumpType = item.getJumpTypeAsString();
 		if (!jumpType.empty())
 			jsonItem["jumpType"] = jumpType;
 		if (name == "PUSHLIB")
@@ -511,7 +511,7 @@ std::pair<std::shared_ptr<Assembly>, std::vector<std::string>> Assembly::fromJSO
 {
 	solRequire(_json.is_object(), AssemblyImportException, "Supplied JSON is not an object.");
 	static std::set<std::string> const validMembers{".code", ".data", ".auxdata", "sourceList"};
-	for (std::string const& attribute: _json.getMemberNames())
+	for (auto const& [attribute, _]: _json.items())
 		solRequire(validMembers.count(attribute), AssemblyImportException, "Unknown attribute '" + attribute + "'.");
 
 	if (_level == 0)
@@ -566,10 +566,10 @@ std::pair<std::shared_ptr<Assembly>, std::vector<std::string>> Assembly::fromJSO
 		solRequire(_json[".data"].is_object(), AssemblyImportException, "Optional member '.data' is not an object.");
 		Json const& data = _json[".data"];
 		std::map<size_t, std::shared_ptr<Assembly>> subAssemblies;
-		for (JsonConstIterator dataIter = data.begin(); dataIter != data.end(); dataIter++)
+		for (Json::const_iterator dataIter = data.begin(); dataIter != data.end(); dataIter++)
 		{
-			solAssert(dataIter.key().is_string());
-			std::string dataItemID = dataIter.key().get<std::string>();
+			solAssert(dataIter->is_string());
+			std::string dataItemID = dataIter->get<std::string>();
 			Json const& dataItem = data[dataItemID];
 			if (dataItem.is_string())
 			{

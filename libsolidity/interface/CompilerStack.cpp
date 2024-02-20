@@ -198,7 +198,7 @@ void CompilerStack::findAndReportCyclicContractDependencies()
 				continue;
 
 			SecondarySourceLocation secondaryLocation{};
-			secondaryLocation.push_back("Referenced contract is here:"s, cycle->location());
+			secondaryLocation.append("Referenced contract is here:"s, cycle->location());
 
 			m_errorReporter.typeError(
 				7813_error,
@@ -1683,9 +1683,10 @@ std::string CompilerStack::createMetadata(Contract const& _contract, bool _forIR
 		}
 	}
 
-	static_assert(sizeof(m_optimiserSettings.expectedExecutionsPerDeployment) <= sizeof(Json::LargestUInt), "Invalid word size.");
-	solAssert(static_cast<Json::LargestUInt>(m_optimiserSettings.expectedExecutionsPerDeployment) < std::numeric_limits<Json::LargestUInt>::max(), "");
-	meta["settings"]["optimizer"]["runs"] = Json(Json::LargestUInt(m_optimiserSettings.expectedExecutionsPerDeployment));
+	// TODO: check logic
+	static_assert(sizeof(m_optimiserSettings.expectedExecutionsPerDeployment) <= sizeof(int64_t), "Invalid word size.");
+	solAssert(static_cast<int64_t>(m_optimiserSettings.expectedExecutionsPerDeployment) < std::numeric_limits<int64_t>::max(), "");
+	meta["settings"]["optimizer"]["runs"] = Json(m_optimiserSettings.expectedExecutionsPerDeployment);
 
 	/// Backwards compatibility: If set to one of the default settings, do not provide details.
 	OptimiserSettings settingsWithoutRuns = m_optimiserSettings;

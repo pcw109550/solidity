@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE(parse_json_strict)
 	BOOST_CHECK(jsonParseStrict("{}", json, &errors));
 	BOOST_CHECK(json.is_object());
 	BOOST_CHECK(!jsonParseStrict("1", json, &errors));
-	// BOOST_CHECK(json.isNumeric());
+	// BOOST_CHECK(json.is_number());
 	BOOST_CHECK(!jsonParseStrict("\"hello\"", json, &errors));
 	// BOOST_CHECK(json.is_string());
 	BOOST_CHECK(!jsonParseStrict("true", json, &errors));
@@ -190,7 +190,7 @@ BOOST_AUTO_TEST_CASE(json_isOfType)
 	json["float"] = 3.1f;
 	json["double"] = 3.1;
 	json["int"] = 2;
-	json["int64"] = Json::Int64{0x4000000000000000};
+	json["int64"] = 0x4000000000000000;
 	json["string"] = "Hello World!";
 
 	BOOST_CHECK(isOfType<float>(json["float"]));

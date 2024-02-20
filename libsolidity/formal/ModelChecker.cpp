@@ -138,7 +138,7 @@ void ModelChecker::analyze(SourceUnit const& _source)
 
 	if (m_settings.showUnsupported)
 	{
-		m_errorReporter.push_back(m_unsupportedErrorReporter.errors());
+		m_errorReporter.append(m_unsupportedErrorReporter.errors());
 		m_unsupportedErrorReporter.clear();
 	}
 	else if (!m_unsupportedErrorReporter.errors().empty())
@@ -151,7 +151,7 @@ void ModelChecker::analyze(SourceUnit const& _source)
 			" Enable the model checker option \"show unsupported\" to see all of them."
 		);
 
-	m_errorReporter.push_back(m_uniqueErrorReporter.errors());
+	m_errorReporter.append(m_uniqueErrorReporter.errors());
 	m_uniqueErrorReporter.clear();
 }
 

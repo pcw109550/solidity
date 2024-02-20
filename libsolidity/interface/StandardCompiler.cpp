@@ -654,7 +654,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 
 	if (ret.language == "Solidity" || ret.language == "Yul")
 	{
-		for (auto const& sourceName: sources.getMemberNames())
+		for (auto const& [sourceName, _]: sources.items())
 		{
 			std::string hash;
 
@@ -728,12 +728,12 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 	}
 	else if (ret.language == "SolidityAST")
 	{
-		for (auto const& sourceName: sources.getMemberNames())
+		for (auto const& [sourceName, _]: sources.items())
 			ret.sources[sourceName] = util::jsonCompactPrint(sources[sourceName]);
 	}
 	else if (ret.language == "EVMAssembly")
 	{
-		for (std::string const& sourceName: sources.getMemberNames())
+		for (auto const& [sourceName, _]: sources.items())
 		{
 			solAssert(sources.contains(sourceName));
 			if (
@@ -767,7 +767,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 			if (!smtlib2Responses.is_object())
 				return formatFatalError(Error::Type::JSONError, "\"auxiliaryInput.smtlib2responses\" must be an object.");
 
-			for (auto const& hashString: smtlib2Responses.getMemberNames())
+			for (auto const& [hashString, _]: smtlib2Responses.items())
 			{
 				util::h256 hash;
 				try
@@ -790,7 +790,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 		}
 	}
 
-	Json const& settings = _input.get("settings", Json());
+	Json const& settings = _input["settings"];
 
 	if (auto result = checkSettingsKeys(settings))
 		return *result;
@@ -833,7 +833,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 	{
 		if (!settings["eofVersion"].is_number_unsigned())
 			return formatFatalError(Error::Type::JSONError, "eofVersion must be an unsigned integer.");
-		auto eofVersion = settings["evmVersion"].asUInt();
+		auto eofVersion = settings["evmVersion"].get<uint8_t>();
 		if (eofVersion != 1)
 			return formatFatalError(Error::Type::JSONError, "Invalid EOF version requested.");
 		ret.eofVersion = 1;
@@ -888,7 +888,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 	if (settings.contains("remappings") && !settings["remappings"].is_array())
 		return formatFatalError(Error::Type::JSONError, "\"settings.remappings\" must be an array of strings.");
 
-	for (auto const& remapping: settings.get("remappings", Json()))
+	for (auto const& remapping: settings["remappings"])
 	{
 		if (!remapping.is_string())
 			return formatFatalError(Error::Type::JSONError, "\"settings.remappings\" must be an array of strings");
@@ -907,15 +907,15 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 			ret.optimiserSettings = std::get<OptimiserSettings>(std::move(optimiserSettings));
 	}
 
-	Json jsonLibraries = settings.get("libraries", Json(Json::object()));
+	Json const& jsonLibraries = settings["libraries"];
 	if (!jsonLibraries.is_object())
 		return formatFatalError(Error::Type::JSONError, "\"libraries\" is not a JSON object.");
-	for (auto const& sourceName: jsonLibraries.getMemberNames())
+	for (auto const& [sourceName, _]: jsonLibraries.items())
 	{
 		auto const& jsonSourceName = jsonLibraries[sourceName];
 		if (!jsonSourceName.is_object())
 			return formatFatalError(Error::Type::JSONError, "Library entry is not a JSON object.");
-		for (auto const& library: jsonSourceName.getMemberNames())
+		for (auto const& [library, _]: jsonSourceName.items())
 		{
 			if (!jsonSourceName[library].is_string())
 				return formatFatalError(Error::Type::JSONError, "Library address must be a string.");
@@ -947,18 +947,21 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 		}
 	}
 
-	Json metadataSettings = settings.get("metadata", Json());
+	Json const& metadataSettings = settings["metadata"];
 
 	if (auto result = checkMetadataKeys(metadataSettings))
 		return *result;
 
 	solAssert(CompilerStack::defaultMetadataFormat() != CompilerStack::MetadataFormat::NoMetadata, "");
+	bool appendCBOR = true;
+	if (metadataSettings.contains("appendCBOR"))
+		appendCBOR = metadataSettings["appendCBOR"].get<bool>();
 	ret.metadataFormat =
-		metadataSettings.get("appendCBOR", Json(true)).get<bool>() ?
+		appendCBOR ?
 		CompilerStack::defaultMetadataFormat() :
 		CompilerStack::MetadataFormat::NoMetadata;
 
-	ret.metadataLiteralSources = metadataSettings.get("useLiteralContent", Json(false)).get<bool>();
+	ret.metadataLiteralSources = metadataSettings["useLiteralContent"].get<bool>();
 	if (metadataSettings.contains("bytecodeHash"))
 	{
 		auto metadataHash = metadataSettings["bytecodeHash"].get<std::string>();
@@ -977,7 +980,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 			);
 	}
 
-	Json outputSelection = settings.get("outputSelection", Json());
+	Json const& outputSelection = settings["outputSelection"];
 
 	if (auto jsonError = checkOutputSelection(outputSelection))
 		return *jsonError;
@@ -990,7 +993,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 			"Requested output selection conflicts with \"settings.stopAfter\"."
 		);
 
-	Json const& modelCheckerSettings = settings.get("modelChecker", Json());
+	Json const& modelCheckerSettings = settings["modelChecker"];
 
 	if (auto result = checkModelCheckerSettingsKeys(modelCheckerSettings))
 		return *result;
@@ -1002,7 +1005,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 			return formatFatalError(Error::Type::JSONError, "settings.modelChecker.contracts is not a JSON object.");
 
 		std::map<std::string, std::set<std::string>> sourceContracts;
-		for (auto const& source: sources.getMemberNames())
+		for (auto const& [source, _]: sources.items())
 		{
 			if (source.empty())
 				return formatFatalError(Error::Type::JSONError, "Source name cannot be empty.");
@@ -1049,7 +1052,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 		if (!ret.modelCheckerSettings.engine.bmc)
 			return formatFatalError(Error::Type::JSONError, "settings.modelChecker.bmcLoopIterations requires the BMC engine to be enabled.");
 		if (modelCheckerSettings["bmcLoopIterations"].is_number_unsigned())
-			ret.modelCheckerSettings.bmcLoopIterations = modelCheckerSettings["bmcLoopIterations"].asUInt();
+			ret.modelCheckerSettings.bmcLoopIterations = modelCheckerSettings["bmcLoopIterations"].get<unsigned>();
 		else
 			return formatFatalError(Error::Type::JSONError, "settings.modelChecker.bmcLoopIterations must be an unsigned integer.");
 	}
@@ -1164,7 +1167,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 	{
 		if (!modelCheckerSettings["timeout"].is_number_unsigned())
 			return formatFatalError(Error::Type::JSONError, "settings.modelChecker.timeout must be an unsigned integer.");
-		ret.modelCheckerSettings.timeout = modelCheckerSettings["timeout"].asUInt();
+		ret.modelCheckerSettings.timeout = modelCheckerSettings["timeout"].get<unsigned>();
 	}
 
 	return {std::move(ret)};
@@ -1762,13 +1765,9 @@ Json StandardCompiler::compile(Json const& _input) noexcept
 		else
 			return formatFatalError(Error::Type::JSONError, "Only \"Solidity\", \"Yul\", \"SolidityAST\" or \"EVMAssembly\" is supported as a language.");
 	}
-	catch (Json::LogicError const& _exception)
+	catch (Json::exception const& _exception)
 	{
-		return formatFatalError(Error::Type::InternalCompilerError, std::string("JSON logic exception: ") + _exception.what());
-	}
-	catch (Json::RuntimeError const& _exception)
-	{
-		return formatFatalError(Error::Type::InternalCompilerError, std::string("JSON runtime exception: ") + _exception.what());
+		return formatFatalError(Error::Type::InternalCompilerError, std::string("JSON exception: ") + _exception.what());
 	}
 	catch (util::Exception const& _exception)
 	{

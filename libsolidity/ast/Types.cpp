@@ -1284,7 +1284,7 @@ BoolResult StringLiteralType::isImplicitlyConvertibleTo(Type const& _convertTo) 
 	else if (auto arrayType = dynamic_cast<ArrayType const*>(&_convertTo))
 	{
 		size_t invalidSequence;
-		if (arrayType->is_string() && !util::validateUTF8(value(), invalidSequence))
+		if (arrayType->isString() && !util::validateUTF8(value(), invalidSequence))
 			return BoolResult::err(
 				"Contains invalid UTF-8 sequence at position " +
 				util::toString(invalidSequence) +
@@ -1616,7 +1616,7 @@ BoolResult ArrayType::isImplicitlyConvertibleTo(Type const& _convertTo) const
 	if (_convertTo.category() != category())
 		return false;
 	auto& convertTo = dynamic_cast<ArrayType const&>(_convertTo);
-	if (convertTo.isByteArray() != isByteArray() || convertTo.is_string() != is_string())
+	if (convertTo.isByteArray() != isByteArray() || convertTo.isString() != isString())
 		return false;
 	// memory/calldata to storage can be converted, but only to a direct storage reference
 	if (convertTo.location() == DataLocation::Storage && location() != DataLocation::Storage && convertTo.isPointer())
@@ -1669,7 +1669,7 @@ BoolResult ArrayType::isExplicitlyConvertibleTo(Type const& _convertTo) const
 std::string ArrayType::richIdentifier() const
 {
 	std::string id;
-	if (is_string())
+	if (isString())
 		id = "t_string";
 	else if (isByteArrayOrString())
 		id = "t_bytes";
@@ -1695,7 +1695,7 @@ bool ArrayType::operator==(Type const& _other) const
 	if (
 		!equals(other) ||
 		other.isByteArray() != isByteArray() ||
-		other.is_string() != is_string() ||
+		other.isString() != isString() ||
 		other.isDynamicallySized() != isDynamicallySized()
 	)
 		return false;
@@ -1835,7 +1835,7 @@ std::vector<std::tuple<std::string, Type const*>> ArrayType::makeStackItems() co
 std::string ArrayType::toString(bool _withoutDataLocation) const
 {
 	std::string ret;
-	if (is_string())
+	if (isString())
 		ret = "string";
 	else if (isByteArrayOrString())
 		ret = "bytes";
@@ -1854,7 +1854,7 @@ std::string ArrayType::toString(bool _withoutDataLocation) const
 std::string ArrayType::humanReadableName() const
 {
 	std::string ret;
-	if (is_string())
+	if (isString())
 		ret = "string";
 	else if (isByteArrayOrString())
 		ret = "bytes";
@@ -1872,7 +1872,7 @@ std::string ArrayType::humanReadableName() const
 std::string ArrayType::canonicalName() const
 {
 	std::string ret;
-	if (is_string())
+	if (isString())
 		ret = "string";
 	else if (isByteArrayOrString())
 		ret = "bytes";
@@ -1904,7 +1904,7 @@ std::string ArrayType::signatureInExternalFunction(bool _structsByName) const
 MemberList::MemberMap ArrayType::nativeMembers(ASTNode const*) const
 {
 	MemberList::MemberMap members;
-	if (!is_string())
+	if (!isString())
 	{
 		members.emplace_back("length", TypeProvider::uint256());
 		if (isDynamicallySized() && location() == DataLocation::Storage)
@@ -3983,10 +3983,10 @@ MemberList::MemberMap TypeType::nativeMembers(ASTNode const* _currentScope) cons
 	)
 		members.emplace_back("concat", TypeProvider::function(
 			TypePointers{},
-			TypePointers{arrayType->is_string() ? TypeProvider::stringMemory() : TypeProvider::bytesMemory()},
+			TypePointers{arrayType->isString() ? TypeProvider::stringMemory() : TypeProvider::bytesMemory()},
 			strings{},
 			strings{std::string{}},
-			arrayType->is_string() ? FunctionType::Kind::StringConcat : FunctionType::Kind::BytesConcat,
+			arrayType->isString() ? FunctionType::Kind::StringConcat : FunctionType::Kind::BytesConcat,
 			StateMutability::Pure,
 			nullptr,
 			FunctionType::Options::withArbitraryParameters()

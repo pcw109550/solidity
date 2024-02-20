@@ -469,7 +469,7 @@ experimental::Type TypeInference::handleIdentifierByReferencedDeclaration(langut
 		)
 		{
 			SecondarySourceLocation ssl;
-			ssl.push_back("Referenced node.", _declaration.location());
+			ssl.append("Referenced node.", _declaration.location());
 			m_errorReporter.fatalTypeError(3101_error, _location, ssl, "Attempt to type identifier referring to unexpected node.");
 		}
 
@@ -508,7 +508,7 @@ experimental::Type TypeInference::handleIdentifierByReferencedDeclaration(langut
 		)
 		{
 			SecondarySourceLocation ssl;
-			ssl.push_back("Referenced node.", _declaration.location());
+			ssl.append("Referenced node.", _declaration.location());
 			m_errorReporter.fatalTypeError(2217_error, _location, ssl, "Attempt to type identifier referring to unexpected node.");
 		}
 
@@ -1118,7 +1118,7 @@ void TypeInference::unify(Type _a, Type _b, langutil::SourceLocation _location)
 								{
 									langutil::SecondarySourceLocation ssl;
 									for (auto activeInstantiation: m_activeInstantiations)
-										ssl.push_back("Involved instantiation", activeInstantiation->location());
+										ssl.append("Involved instantiation", activeInstantiation->location());
 									m_errorReporter.typeError(
 										3573_error,
 										_location,

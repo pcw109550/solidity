@@ -355,20 +355,20 @@ void CommandLineInterface::handleSignatureHashes(std::string const& _contract)
 
 	Json interfaceSymbols = m_compiler->interfaceSymbols(_contract);
 	std::string out = "Function signatures:\n";
-	for (auto const& name: interfaceSymbols["methods"].getMemberNames())
+	for (auto const& [name, _]: interfaceSymbols["methods"].items())
 		out += interfaceSymbols["methods"][name].get<std::string>() + ": " + name + "\n";
 
 	if (interfaceSymbols.contains("errors"))
 	{
 		out += "\nError signatures:\n";
-		for (auto const& name: interfaceSymbols["errors"].getMemberNames())
+		for (auto const& [name, _]: interfaceSymbols["errors"].items())
 			out += interfaceSymbols["errors"][name].get<std::string>() + ": " + name + "\n";
 	}
 
 	if (interfaceSymbols.contains("events"))
 	{
 		out += "\nEvent signatures:\n";
-		for (auto const& name: interfaceSymbols["events"].getMemberNames())
+		for (auto const& [name, _]: interfaceSymbols["events"].items())
 			out += interfaceSymbols["events"][name].get<std::string>() + ": " + name + "\n";
 	}
 
@@ -483,7 +483,7 @@ void CommandLineInterface::handleGasEstimation(std::string const& _contract)
 	{
 		Json externalFunctions = estimates["external"];
 		sout() << "external:" << std::endl;
-		for (auto const& name: externalFunctions.getMemberNames())
+		for (auto const& [name, _]: externalFunctions.items())
 		{
 			if (name.empty())
 				sout() << "   fallback:\t";
@@ -497,7 +497,7 @@ void CommandLineInterface::handleGasEstimation(std::string const& _contract)
 	{
 		Json internalFunctions = estimates["internal"];
 		sout() << "internal:" << std::endl;
-		for (auto const& name: internalFunctions.getMemberNames())
+		for (auto const& [name, _]: internalFunctions.items())
 		{
 			sout() << "   " << name << ":\t";
 			sout() << internalFunctions[name].get<std::string>() << std::endl;
@@ -626,7 +626,7 @@ std::map<std::string, Json> CommandLineInterface::parseAstFromInput()
 		astAssert(jsonParseStrict(sourceCode, ast), "Input file could not be parsed to JSON");
 		astAssert(ast.contains("sources"), "Invalid Format for import-JSON: Must have 'sources'-object");
 
-		for (auto& src: ast["sources"].getMemberNames())
+		for (auto& [src, _]: ast["sources"].items())
 		{
 			std::string astKey = ast["sources"][src].contains("ast") ? "ast" : "AST";
 

@@ -129,7 +129,7 @@ std::tuple<std::string_view, NatspecJSONKind> NatspecJSONTest::parseExpectationH
 	}
 
 	BOOST_THROW_EXCEPTION(std::runtime_error(
-		"Natspec kind (devdoc/userdoc) not present in the expectation: "s.push_back(_line)
+		"Natspec kind (devdoc/userdoc) not present in the expectation: "s.append(_line)
 	));
 }
 
@@ -155,7 +155,7 @@ std::string_view NatspecJSONTest::expectLinePrefix(std::string_view _line)
 	size_t startPosition = 0;
 	if (!boost::algorithm::starts_with(_line, "//"))
 		BOOST_THROW_EXCEPTION(std::runtime_error(
-			"Expectation line is not a comment: "s.push_back(_line)
+			"Expectation line is not a comment: "s.append(_line)
 		));
 
 	startPosition += 2;
