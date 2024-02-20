@@ -1144,7 +1144,7 @@ void TypeChecker::endVisit(TryStatement const& _tryStatement)
 				m_errorReporter.typeError(
 					5320_error,
 					clause.location(),
-					SecondarySourceLocation{}.push_back("The first clause is here:", lowLevelClause->location()),
+					SecondarySourceLocation{}.append("The first clause is here:", lowLevelClause->location()),
 					"This try statement already has a low-level catch clause."
 				);
 			lowLevelClause = &clause;
@@ -1182,7 +1182,7 @@ void TypeChecker::endVisit(TryStatement const& _tryStatement)
 					m_errorReporter.typeError(
 						1036_error,
 						clause.location(),
-						SecondarySourceLocation{}.push_back("The first clause is here:", errorClause->location()),
+						SecondarySourceLocation{}.append("The first clause is here:", errorClause->location()),
 						"This try statement already has an \"Error\" catch clause."
 					);
 				errorClause = &clause;
@@ -1199,7 +1199,7 @@ void TypeChecker::endVisit(TryStatement const& _tryStatement)
 					m_errorReporter.typeError(
 						6732_error,
 						clause.location(),
-						SecondarySourceLocation{}.push_back("The first clause is here:", panicClause->location()),
+						SecondarySourceLocation{}.append("The first clause is here:", panicClause->location()),
 						"This try statement already has a \"Panic\" catch clause."
 					);
 				panicClause = &clause;
@@ -2026,7 +2026,7 @@ Type const* TypeChecker::typeCheckTypeConversionAndRetrieveReturnType(
 							identifier->annotation().referencedDeclaration
 						)
 					)
-						ssl.push_back(
+						ssl.append(
 							"Did you mean to declare this variable as \"address payable\"?",
 							variableDeclaration->location()
 						);
@@ -2358,7 +2358,7 @@ void TypeChecker::typeCheckABIEncodeCallFunction(FunctionCall const& _functionCa
 
 		if (externalFunctionType->hasDeclaration())
 		{
-			ssl.push_back("Function is declared here:", externalFunctionType->declaration().location());
+			ssl.append("Function is declared here:", externalFunctionType->declaration().location());
 			if (
 				externalFunctionType->declaration().visibility() == Visibility::Public &&
 				externalFunctionType->declaration().scope() == m_currentContract
