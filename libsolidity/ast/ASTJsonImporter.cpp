@@ -726,7 +726,7 @@ ASTPointer<InlineAssembly> ASTJsonImporter::createInlineAssembly(Json const& _no
 		flags = std::make_shared<std::vector<ASTPointer<ASTString>>>();
 		Json const& flagsNode = _node["flags"];
 		astAssert(flagsNode.is_array(), "Assembly flags must be an array.");
-		for (Json::ArrayIndex i = 0; i < flagsNode.size(); ++i)
+		for (size_t i = 0; i < flagsNode.size(); ++i)
 		{
 			astAssert(flagsNode[i].is_string(), "Assembly flag must be a string.");
 			flags->emplace_back(std::make_shared<ASTString>(flagsNode[i].get<std::string>()));
