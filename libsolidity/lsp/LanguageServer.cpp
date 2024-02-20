@@ -87,7 +87,7 @@ int toDiagnosticSeverity(Error::Type _errorType)
 
 Json semanticTokensLegend()
 {
-	Json legend = Json::objectValue;
+	Json legend = Json::object();
 
 	// NOTE! The (alphabetical) order and items must match exactly the items of
 	//       their respective enum class members.
@@ -444,7 +444,7 @@ void LanguageServer::semanticTokensFull(MessageID _id, Json const& _args)
 	m_compilerStack.charStream(sourceName);
 	Json data = SemanticTokensBuilder().build(ast, m_compilerStack.charStream(sourceName));
 
-	Json reply = Json::objectValue;
+	Json reply = Json::object();
 	reply["data"] = data;
 
 	m_client.reply(_id, std::move(reply));

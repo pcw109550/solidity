@@ -55,7 +55,7 @@ Json ABI::generate(ContractDefinition const& _contractDef)
 
 		FunctionType const* externalFunctionType = it.second->interfaceFunctionType();
 		solAssert(!!externalFunctionType, "");
-		Json method{Json::objectValue};
+		Json method{Json::object()};
 		method["type"] = "function";
 		method["name"] = it.second->declaration().name();
 		method["stateMutability"] = stateMutabilityToString(externalFunctionType->stateMutability());
@@ -79,7 +79,7 @@ Json ABI::generate(ContractDefinition const& _contractDef)
 		FunctionType constrType(*constructor);
 		FunctionType const* externalFunctionType = constrType.interfaceFunctionType();
 		solAssert(!!externalFunctionType, "");
-		Json method{Json::objectValue};
+		Json method{Json::object()};
 		method["type"] = "constructor";
 		method["stateMutability"] = stateMutabilityToString(externalFunctionType->stateMutability());
 		method["inputs"] = formatTypeList(
@@ -95,14 +95,14 @@ Json ABI::generate(ContractDefinition const& _contractDef)
 		{
 			auto const* externalFunctionType = FunctionType(*fallbackOrReceive).interfaceFunctionType();
 			solAssert(!!externalFunctionType, "");
-			Json method{Json::objectValue};
+			Json method{Json::object()};
 			method["type"] = TokenTraits::toString(fallbackOrReceive->kind());
 			method["stateMutability"] = stateMutabilityToString(externalFunctionType->stateMutability());
 			abi.emplace(std::move(method));
 		}
 	for (auto const& it: _contractDef.interfaceEvents())
 	{
-		Json event{Json::objectValue};
+		Json event{Json::object()};
 		event["type"] = "event";
 		event["name"] = it->name();
 		event["anonymous"] = it->isAnonymous();
@@ -121,7 +121,7 @@ Json ABI::generate(ContractDefinition const& _contractDef)
 
 	for (ErrorDefinition const* error: _contractDef.interfaceErrors())
 	{
-		Json errorJson{Json::objectValue};
+		Json errorJson{Json::object()};
 		errorJson["type"] = "error";
 		errorJson["name"] = error->name();
 		errorJson["inputs"] = Json::array();
@@ -167,7 +167,7 @@ Json ABI::formatType(
 	bool _forLibrary
 )
 {
-	Json ret{Json::objectValue};
+	Json ret{Json::object()};
 	ret["name"] = _name;
 	ret["internalType"] = _solidityType.toString(true);
 	std::string suffix = (_forLibrary && _encodingType.dataStoredIn(DataLocation::Storage)) ? " storage" : "";

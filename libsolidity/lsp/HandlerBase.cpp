@@ -45,7 +45,7 @@ Json HandlerBase::toRange(SourceLocation const& _location) const
 Json HandlerBase::toJson(SourceLocation const& _location) const
 {
 	solAssert(_location.sourceName);
-	Json item = Json::objectValue;
+	Json item = Json::object();
 	item["uri"] = fileRepository().sourceUnitNameToUri(*_location.sourceName);
 	item["range"] = toRange(_location);
 	return item;

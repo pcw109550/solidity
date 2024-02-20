@@ -112,7 +112,7 @@ void DocumentHoverHandler::operator()(MessageID _id, Json const& _args)
 		return;
 	}
 
-	Json reply = Json::objectValue;
+	Json reply = Json::object();
 	reply["range"] = rangeToHighlight;
 	reply["contents"]["kind"] = "markdown";
 	reply["contents"]["value"] = std::move(tooltipText);

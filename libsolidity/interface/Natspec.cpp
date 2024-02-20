@@ -35,11 +35,11 @@ using namespace solidity::frontend;
 
 Json Natspec::userDocumentation(ContractDefinition const& _contractDef)
 {
-	Json doc{Json::objectValue};
+	Json doc{Json::object()};
 
 	doc["version"] = Json(c_natspecVersion);
 	doc["kind"]    = Json("user");
-	doc["methods"] = Json::objectValue;
+	doc["methods"] = Json::object();
 
 	auto constructorDefinition(_contractDef.constructor());
 	if (constructorDefinition)
@@ -48,7 +48,7 @@ Json Natspec::userDocumentation(ContractDefinition const& _contractDef)
 		if (!value.empty())
 		{
 			// add the constructor, only if we have any documentation to add
-			Json user{Json::objectValue};
+			Json user{Json::object()};
 			user["notice"] = Json(value);
 			doc["methods"]["constructor"] = user;
 		}
@@ -88,7 +88,7 @@ Json Natspec::userDocumentation(ContractDefinition const& _contractDef)
 		std::string value = extractDoc(error->annotation().docTags, "notice");
 		if (!value.empty())
 		{
-			Json errorDoc{Json::objectValue};
+			Json errorDoc{Json::object()};
 			errorDoc["notice"] = value;
 			doc["errors"][error->functionType(true)->externalSignature()].push_back(std::move(errorDoc));
 		}
@@ -114,7 +114,7 @@ Json Natspec::devDocumentation(ContractDefinition const& _contractDef)
 	if (!dev.empty())
 		doc["details"] = Json(dev);
 
-	doc["methods"] = Json::objectValue;
+	doc["methods"] = Json::object();
 	auto constructorDefinition(_contractDef.constructor());
 	if (constructorDefinition)
 	{
@@ -178,7 +178,7 @@ Json Natspec::devDocumentation(ContractDefinition const& _contractDef)
 
 Json Natspec::extractReturnParameterDocs(std::multimap<std::string, DocTag> const& _tags, std::vector<std::string> const& _returnParameterNames)
 {
-	Json jsonReturn{Json::objectValue};
+	Json jsonReturn{Json::object()};
 	auto returnDocs = _tags.equal_range("return");
 
 	if (!_returnParameterNames.empty())
@@ -225,7 +225,7 @@ Json Natspec::extractCustomDoc(std::multimap<std::string, DocTag> const& _tags)
 	// We do not want to create an object if there are no custom tags found.
 	if (concatenated.empty())
 		return Json{};
-	Json result{Json::objectValue};
+	Json result{Json::object()};
 	for (auto& [tag, value]: concatenated)
 		result[tag] = std::move(value);
 	return result;
@@ -242,7 +242,7 @@ Json Natspec::devDocumentation(std::multimap<std::string, DocTag> const& _tags)
 	if (!author.empty())
 		json["author"] = author;
 
-	Json params(Json::objectValue);
+	Json params(Json::object());
 	auto paramRange = _tags.equal_range("param");
 	for (auto i = paramRange.first; i != paramRange.second; ++i)
 		params[i->second.paramName] = Json(i->second.content);

@@ -77,7 +77,7 @@ std::string Object::toString(
 
 Json Data::toJson() const
 {
-	Json ret{Json::objectValue};
+	Json ret{Json::object()};
 	ret["nodeType"] = "YulData";
 	ret["value"] = util::toHex(data);
 	return ret;
@@ -87,7 +87,7 @@ Json Object::toJson() const
 {
 	yulAssert(code, "No code");
 
-	Json codeJson{Json::objectValue};
+	Json codeJson{Json::object()};
 	codeJson["nodeType"] = "YulCode";
 	codeJson["block"] = AsmJsonConverter(0 /* sourceIndex */)(*code);
 
@@ -95,7 +95,7 @@ Json Object::toJson() const
 	for (std::shared_ptr<ObjectNode> const& subObject: subObjects)
 		subObjectsJson.push_back(subObject->toJson());
 
-	Json ret{Json::objectValue};
+	Json ret{Json::object()};
 	ret["nodeType"] = "YulObject";
 	ret["name"] = name.str();
 	ret["code"] = codeJson;

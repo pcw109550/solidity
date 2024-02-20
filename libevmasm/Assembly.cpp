@@ -483,7 +483,7 @@ Json Assembly::assemblyJSON(std::map<std::string, unsigned> const& _sourceIndice
 
 	if (!m_data.empty() || !m_subs.empty())
 	{
-		root[".data"] = Json::objectValue;
+		root[".data"] = Json::object();
 		Json& data = root[".data"];
 		for (auto const& i: m_data)
 			if (u256(i.first) >= m_subs.size())

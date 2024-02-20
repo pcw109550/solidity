@@ -183,7 +183,7 @@ Json AsmJsonConverter::operator()(Leave const& _node) const
 
 Json AsmJsonConverter::createAstNode(langutil::SourceLocation const& _originLocation, langutil::SourceLocation const& _nativeLocation, std::string _nodeType) const
 {
-	Json ret{Json::objectValue};
+	Json ret{Json::object()};
 	ret["nodeType"] = std::move(_nodeType);
 	auto srcLocation = [&](int start, int end) -> std::string
 	{

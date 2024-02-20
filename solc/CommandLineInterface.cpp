@@ -942,16 +942,16 @@ void CommandLineInterface::handleCombinedJSON()
 	if (!m_options.compiler.combinedJsonRequests.has_value())
 		return;
 
-	Json output(Json::objectValue);
+	Json output(Json::object());
 
 	output[g_strVersion] = frontend::VersionString;
 	std::vector<std::string> contracts = m_assemblyStack->contractNames();
 
 	if (!contracts.empty())
-		output[g_strContracts] = Json(Json::objectValue);
+		output[g_strContracts] = Json(Json::object());
 	for (std::string const& contractName: contracts)
 	{
-		Json& contractData = output[g_strContracts][contractName] = Json::objectValue;
+		Json& contractData = output[g_strContracts][contractName] = Json::object();
 
 		// NOTE: The state checks here are more strict that in Standard JSON. There we allow
 		// requesting certain outputs even if compilation fails as long as analysis went ok.
@@ -1022,10 +1022,10 @@ void CommandLineInterface::handleCombinedJSON()
 	if (m_options.compiler.combinedJsonRequests->ast)
 	{
 		solAssert(m_compiler);
-		output[g_strSources] = Json(Json::objectValue);
+		output[g_strSources] = Json(Json::object());
 		for (auto const& sourceCode: m_fileReader.sourceUnits())
 		{
-			output[g_strSources][sourceCode.first] = Json(Json::objectValue);
+			output[g_strSources][sourceCode.first] = Json(Json::object());
 			output[g_strSources][sourceCode.first]["AST"] = ASTJsonExporter(
 				m_compiler->state(),
 				m_compiler->sourceIndices()

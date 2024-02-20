@@ -41,7 +41,7 @@ std::optional<LineColumn> parseLineColumn(Json const& _lineColumn)
 
 Json toJson(LineColumn const& _pos)
 {
-	Json json = Json::objectValue;
+	Json json = Json::object();
 	json["line"] = std::max(_pos.line, 0);
 	json["character"] = std::max(_pos.column, 0);
 

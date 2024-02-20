@@ -63,7 +63,7 @@ Json formatError(
 	Json const& _secondarySourceLocation = Json()
 )
 {
-	Json error{Json::objectValue};
+	Json error{Json::object()};
 	error["type"] = Error::formatErrorType(_type);
 	error["component"] = _component;
 	error["severity"] = Error::formatErrorSeverityLowercase(Error::errorSeverity(_type));
@@ -78,7 +78,7 @@ Json formatError(
 
 Json formatFatalError(Error::Type _type, std::string const& _message)
 {
-	Json output{Json::objectValue};
+	Json output{Json::object()};
 	output["errors"] = Json::array();
 	output["errors"].push_back(formatError(_type, "general", _message));
 	return output;
@@ -89,7 +89,7 @@ Json formatSourceLocation(SourceLocation const* location)
 	if (!location || !location->sourceName)
 		return Json{};
 
-	Json sourceLocation{Json::objectValue};
+	Json sourceLocation{Json::object()};
 	sourceLocation["file"] = *location->sourceName;
 	sourceLocation["start"] = location->start;
 	sourceLocation["end"] = location->end;
@@ -317,7 +317,7 @@ bool isIRRequested(Json const& _outputSelection)
 
 Json formatLinkReferences(std::map<size_t, std::string> const& linkReferences)
 {
-	Json ret{Json::objectValue};
+	Json ret{Json::object()};
 
 	for (auto const& ref: linkReferences)
 	{
@@ -329,10 +329,10 @@ Json formatLinkReferences(std::map<size_t, std::string> const& linkReferences)
 		std::string file = (colon != std::string::npos ? fullname.substr(0, colon) : "");
 		std::string name = (colon != std::string::npos ? fullname.substr(colon + 1) : fullname);
 
-		Json fileObject = ret.get(file, Json::objectValue);
+		Json fileObject = ret.get(file, Json::object());
 		Json libraryArray = fileObject.get(name, Json::array());
 
-		Json entry{Json::objectValue};
+		Json entry{Json::object()};
 		entry["start"] = Json::UInt(ref.first);
 		entry["length"] = 20;
 
@@ -346,7 +346,7 @@ Json formatLinkReferences(std::map<size_t, std::string> const& linkReferences)
 
 Json formatImmutableReferences(std::map<u256, std::pair<std::string, std::vector<size_t>>> const& _immutableReferences)
 {
-	Json ret{Json::objectValue};
+	Json ret{Json::object()};
 
 	for (auto const& immutableReference: _immutableReferences)
 	{
@@ -354,7 +354,7 @@ Json formatImmutableReferences(std::map<u256, std::pair<std::string, std::vector
 		Json array(Json::array());
 		for (size_t byteOffset: byteOffsets)
 		{
-			Json byteRange{Json::objectValue};
+			Json byteRange{Json::object()};
 			byteRange["start"] = Json::UInt(byteOffset);
 			byteRange["length"] = Json::UInt(32); // immutable references are currently always 32 bytes wide
 			array.push_back(byteRange);
@@ -374,7 +374,7 @@ Json collectEVMObject(
 	std::function<bool(std::string)> const& _artifactRequested
 )
 {
-	Json output{Json::objectValue};
+	Json output{Json::object()};
 	if (_artifactRequested("object"))
 		output["object"] = _object.toHex();
 	if (_artifactRequested("opcodes"))
@@ -907,7 +907,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 			ret.optimiserSettings = std::get<OptimiserSettings>(std::move(optimiserSettings));
 	}
 
-	Json jsonLibraries = settings.get("libraries", Json(Json::objectValue));
+	Json jsonLibraries = settings.get("libraries", Json(Json::object()));
 	if (!jsonLibraries.isObject())
 		return formatFatalError(Error::Type::JSONError, "\"libraries\" is not a JSON object.");
 	for (auto const& sourceName: jsonLibraries.getMemberNames())
@@ -1194,7 +1194,7 @@ Json StandardCompiler::importEVMAssembly(StandardCompiler::InputsAndSettings _in
 	solAssert(_inputsAndSettings.jsonSources.size() == 1);
 
 	if (!isBinaryRequested(_inputsAndSettings.outputSelection))
-		return Json::objectValue;
+		return Json::object();
 
 	evmasm::EVMAssemblyStack stack(_inputsAndSettings.evmVersion);
 	std::string const& sourceName = _inputsAndSettings.jsonSources.begin()->first; // result of structured binding can only be used within lambda from C++20 on.
@@ -1221,11 +1221,11 @@ Json StandardCompiler::importEVMAssembly(StandardCompiler::InputsAndSettings _in
 		);
 	}
 	if (!stack.compilationSuccessful())
-		return Json::objectValue;
+		return Json::object();
 
 	// EVM
 	bool const wildcardMatchesExperimental = false;
-	Json evmData = Json::objectValue;
+	Json evmData = Json::object();
 	if (isArtifactRequested(_inputsAndSettings.outputSelection, sourceName, "", "evm.assembly", wildcardMatchesExperimental))
 		evmData["assembly"] = stack.assemblyString(sourceName, {});
 	if (isArtifactRequested(_inputsAndSettings.outputSelection, sourceName, "", "evm.legacyAssembly", wildcardMatchesExperimental))
@@ -1279,13 +1279,13 @@ Json StandardCompiler::importEVMAssembly(StandardCompiler::InputsAndSettings _in
 			}
 		);
 
-	Json contractData = Json::objectValue;
+	Json contractData = Json::object();
 	if (!evmData.empty())
 		contractData["evm"] = evmData;
 
-	Json contractsOutput = Json::objectValue;
+	Json contractsOutput = Json::object();
 	contractsOutput[sourceName][""] = contractData;
-	Json output = Json::objectValue;
+	Json output = Json::object();
 	output["contracts"] = contractsOutput;
 	return util::removeNullMembers(output);
 }
@@ -1468,7 +1468,7 @@ Json StandardCompiler::compileSolidity(StandardCompiler::InputsAndSettings _inpu
 	)
 		return formatFatalError(Error::Type::InternalCompilerError, "No error reported, but compilation failed.");
 
-	Json output = Json::objectValue;
+	Json output = Json::object();
 
 	if (errors.size() > 0)
 		output["errors"] = std::move(errors);
@@ -1479,21 +1479,21 @@ Json StandardCompiler::compileSolidity(StandardCompiler::InputsAndSettings _inpu
 
 	bool const wildcardMatchesExperimental = false;
 
-	output["sources"] = Json::objectValue;
+	output["sources"] = Json::object();
 	unsigned sourceIndex = 0;
 	// NOTE: A case that will pass `parsingSuccess && !analysisFailed` but not `analysisSuccess` is
 	// stopAfter: parsing with no parsing errors.
 	if (parsingSuccess && !analysisFailed)
 		for (std::string const& sourceName: compilerStack.sourceNames())
 		{
-			Json sourceResult = Json::objectValue;
+			Json sourceResult = Json::object();
 			sourceResult["id"] = sourceIndex++;
 			if (isArtifactRequested(_inputsAndSettings.outputSelection, sourceName, "", "ast", wildcardMatchesExperimental))
 				sourceResult["ast"] = ASTJsonExporter(compilerStack.state(), compilerStack.sourceIndices()).toJson(compilerStack.ast(sourceName));
 			output["sources"][sourceName] = sourceResult;
 		}
 
-	Json contractsOutput = Json::objectValue;
+	Json contractsOutput = Json::object();
 	for (std::string const& contractName: analysisSuccess ? compilerStack.contractNames() : std::vector<std::string>())
 	{
 		size_t colon = contractName.rfind(':');
@@ -1502,7 +1502,7 @@ Json StandardCompiler::compileSolidity(StandardCompiler::InputsAndSettings _inpu
 		std::string name = contractName.substr(colon + 1);
 
 		// ABI, storage layout, documentation and metadata
-		Json contractData(Json::objectValue);
+		Json contractData(Json::object());
 		if (isArtifactRequested(_inputsAndSettings.outputSelection, file, name, "abi", wildcardMatchesExperimental))
 			contractData["abi"] = compilerStack.contractABI(contractName);
 		if (isArtifactRequested(_inputsAndSettings.outputSelection, file, name, "storageLayout", false))
@@ -1525,7 +1525,7 @@ Json StandardCompiler::compileSolidity(StandardCompiler::InputsAndSettings _inpu
 			contractData["irOptimizedAst"] = compilerStack.yulIROptimizedAst(contractName);
 
 		// EVM
-		Json evmData(Json::objectValue);
+		Json evmData(Json::object());
 		if (compilationSuccess && isArtifactRequested(_inputsAndSettings.outputSelection, file, name, "evm.assembly", wildcardMatchesExperimental))
 			evmData["assembly"] = compilerStack.assemblyString(contractName, sourceList);
 		if (compilationSuccess && isArtifactRequested(_inputsAndSettings.outputSelection, file, name, "evm.legacyAssembly", wildcardMatchesExperimental))
@@ -1585,7 +1585,7 @@ Json StandardCompiler::compileSolidity(StandardCompiler::InputsAndSettings _inpu
 		if (!contractData.empty())
 		{
 			if (!contractsOutput.contains(file))
-				contractsOutput[file] = Json::objectValue;
+				contractsOutput[file] = Json::object();
 			contractsOutput[file][name] = contractData;
 		}
 	}
@@ -1600,7 +1600,7 @@ Json StandardCompiler::compileYul(InputsAndSettings _inputsAndSettings)
 {
 	solAssert(_inputsAndSettings.jsonSources.empty());
 
-	Json output = Json::objectValue;
+	Json output = Json::object();
 	output["errors"] = std::move(_inputsAndSettings.errors);
 
 	if (_inputsAndSettings.sources.size() != 1)
@@ -1688,7 +1688,7 @@ Json StandardCompiler::compileYul(InputsAndSettings _inputsAndSettings)
 
 	if (isArtifactRequested(_inputsAndSettings.outputSelection, sourceName, contractName, "ast", wildcardMatchesExperimental))
 	{
-		Json sourceResult = Json::objectValue;
+		Json sourceResult = Json::object();
 		sourceResult["id"] = 0;
 		sourceResult["ast"] = stack.astJson();
 		output["sources"][sourceName] = sourceResult;
@@ -1812,7 +1812,7 @@ Json StandardCompiler::formatFunctionDebugData(
 	std::map<std::string, evmasm::LinkerObject::FunctionDebugData> const& _debugInfo
 )
 {
-	Json ret(Json::objectValue);
+	Json ret(Json::object());
 	for (auto const& [name, info]: _debugInfo)
 	{
 		Json fun;

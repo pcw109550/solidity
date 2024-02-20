@@ -98,7 +98,7 @@ void ASTJsonExporter::setJsonNode(
 	std::vector<std::pair<std::string, Json>>&& _attributes
 )
 {
-	m_currentValue = Json::objectValue;
+	m_currentValue = Json::object();
 	m_currentValue["id"] = nodeId(_node);
 	m_currentValue["src"] = sourceLocationToString(_node.location());
 	if (auto const* documented = dynamic_cast<Documented const*>(&_node))
@@ -143,7 +143,7 @@ std::string ASTJsonExporter::namePathToString(std::vector<ASTString> const& _nam
 
 Json ASTJsonExporter::typePointerToJson(Type const* _tp, bool _withoutDataLocation)
 {
-	Json typeDescriptions(Json::objectValue);
+	Json typeDescriptions(Json::object());
 	typeDescriptions["typeString"] = _tp ? Json(_tp->toString(_withoutDataLocation)) : Json{};
 	typeDescriptions["typeIdentifier"] = _tp ? Json(_tp->identifier()) : Json{};
 	return typeDescriptions;
@@ -184,7 +184,7 @@ void ASTJsonExporter::appendExpressionAttributes(
 
 Json ASTJsonExporter::inlineAssemblyIdentifierToJson(std::pair<yul::Identifier const*, InlineAssemblyAnnotation::ExternalIdentifierInfo> _info) const
 {
-	Json tuple(Json::objectValue);
+	Json tuple(Json::object());
 	tuple["src"] = sourceLocationToString(nativeLocationOf(*_info.first));
 	tuple["declaration"] = idOrNull(_info.second.declaration);
 	tuple["isSlot"] = Json(_info.second.suffix == "slot");
@@ -221,7 +221,7 @@ bool ASTJsonExporter::visit(SourceUnit const& _node)
 
 	if (_node.annotation().exportedSymbols.set())
 	{
-		Json exportedSymbols = Json::objectValue;
+		Json exportedSymbols = Json::object();
 		for (auto const& sym: *_node.annotation().exportedSymbols)
 		{
 			exportedSymbols[sym.first] = Json::array();
@@ -266,7 +266,7 @@ bool ASTJsonExporter::visit(ImportDirective const& _node)
 	Json symbolAliases(Json::array());
 	for (auto const& symbolAlias: _node.symbolAliases())
 	{
-		Json tuple(Json::objectValue);
+		Json tuple(Json::object());
 		solAssert(symbolAlias.symbol, "");
 		tuple["foreign"] = toJson(*symbolAlias.symbol);
 		tuple["local"] =  symbolAlias.alias ? Json(*symbolAlias.alias) : Json{};
@@ -303,7 +303,7 @@ bool ASTJsonExporter::visit(ContractDefinition const& _node)
 
 	if (!_node.annotation().internalFunctionIDs.empty())
 	{
-		Json internalFunctionIDs(Json::objectValue);
+		Json internalFunctionIDs(Json::object());
 		for (auto const& [functionDefinition, internalFunctionID]: _node.annotation().internalFunctionIDs)
 			internalFunctionIDs[std::to_string(functionDefinition->id())] = internalFunctionID;
 		attributes.emplace_back("internalFunctionIDs", std::move(internalFunctionIDs));

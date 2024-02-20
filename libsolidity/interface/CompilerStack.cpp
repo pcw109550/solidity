@@ -1111,9 +1111,9 @@ Json CompilerStack::interfaceSymbols(std::string const& _contractName) const
 
 	solUnimplementedAssert(!isExperimentalSolidity());
 
-	Json interfaceSymbols(Json::objectValue);
+	Json interfaceSymbols(Json::object());
 	// Always have a methods object
-	interfaceSymbols["methods"] = Json::objectValue;
+	interfaceSymbols["methods"] = Json::object();
 
 	for (auto const& it: contractDefinition(_contractName).interfaceFunctions())
 		interfaceSymbols["methods"][it.second->externalSignature()] = it.first.hex();
@@ -1642,7 +1642,7 @@ CompilerStack::Source const& CompilerStack::source(std::string const& _sourceNam
 
 std::string CompilerStack::createMetadata(Contract const& _contract, bool _forIR) const
 {
-	Json meta{Json::objectValue};
+	Json meta{Json::object()};
 	meta["version"] = 1;
 	std::string sourceType;
 	switch (m_compilationSourceType)
@@ -1663,7 +1663,7 @@ std::string CompilerStack::createMetadata(Contract const& _contract, bool _forIR
 	for (auto const sourceUnit: _contract.contract->sourceUnit().referencedSourceUnits(true))
 		referencedSources.insert(*sourceUnit->annotation().path);
 
-	meta["sources"] = Json::objectValue;
+	meta["sources"] = Json::object();
 	for (auto const& s: m_sources)
 	{
 		if (!referencedSources.count(s.first))
@@ -1697,7 +1697,7 @@ std::string CompilerStack::createMetadata(Contract const& _contract, bool _forIR
 		meta["settings"]["optimizer"]["enabled"] = true;
 	else
 	{
-		Json details{Json::objectValue};
+		Json details{Json::object()};
 
 		details["orderLiterals"] = m_optimiserSettings.runOrderLiterals;
 		details["inliner"] = m_optimiserSettings.runInliner;
@@ -1710,7 +1710,7 @@ std::string CompilerStack::createMetadata(Contract const& _contract, bool _forIR
 		details["yul"] = m_optimiserSettings.runYulOptimiser;
 		if (m_optimiserSettings.runYulOptimiser)
 		{
-			details["yulDetails"] = Json::objectValue;
+			details["yulDetails"] = Json::object();
 			details["yulDetails"]["stackAllocation"] = m_optimiserSettings.optimizeStackAllocation;
 			details["yulDetails"]["optimizerSteps"] = m_optimiserSettings.yulOptimiserSteps + ":" + m_optimiserSettings.yulOptimiserCleanupSteps;
 		}
@@ -1720,7 +1720,7 @@ std::string CompilerStack::createMetadata(Contract const& _contract, bool _forIR
 		)
 		{
 			solAssert(m_optimiserSettings.optimizeStackAllocation == false);
-			details["yulDetails"] = Json::objectValue;
+			details["yulDetails"] = Json::object();
 			details["yulDetails"]["optimizerSteps"] = ":";
 		}
 		else
@@ -1760,7 +1760,7 @@ std::string CompilerStack::createMetadata(Contract const& _contract, bool _forIR
 	for (auto const& r: remappings)
 		meta["settings"]["remappings"].push_back(r);
 
-	meta["settings"]["libraries"] = Json::objectValue;
+	meta["settings"]["libraries"] = Json::object();
 	for (auto const& library: m_libraries)
 		meta["settings"]["libraries"][library.first] = "0x" + util::toHex(library.second.asBytes());
 
@@ -1914,14 +1914,14 @@ Json CompilerStack::gasEstimates(std::string const& _contractName) const
 
 	using Gas = GasEstimator::GasConsumption;
 	GasEstimator gasEstimator(m_evmVersion);
-	Json output(Json::objectValue);
+	Json output(Json::object());
 
 	if (evmasm::AssemblyItems const* items = assemblyItems(_contractName))
 	{
 		Gas executionGas = gasEstimator.functionalEstimation(*items);
 		Gas codeDepositGas{evmasm::GasMeter::dataGas(runtimeObject(_contractName).bytecode, false, m_evmVersion)};
 
-		Json creation(Json::objectValue);
+		Json creation(Json::object());
 		creation["codeDepositCost"] = gasToJson(codeDepositGas);
 		creation["executionCost"] = gasToJson(executionGas);
 		/// TODO: implement + overload to avoid the need of +=
@@ -1934,7 +1934,7 @@ Json CompilerStack::gasEstimates(std::string const& _contractName) const
 	{
 		/// External functions
 		ContractDefinition const& contract = contractDefinition(_contractName);
-		Json externalFunctions(Json::objectValue);
+		Json externalFunctions(Json::object());
 		for (auto it: contract.interfaceFunctions())
 		{
 			std::string sig = it.second->externalSignature();
@@ -1951,7 +1951,7 @@ Json CompilerStack::gasEstimates(std::string const& _contractName) const
 			output["external"] = externalFunctions;
 
 		/// Internal functions
-		Json internalFunctions(Json::objectValue);
+		Json internalFunctions(Json::object());
 		for (auto const& it: contract.definedFunctions())
 		{
 			/// Exclude externally visible functions, constructor, fallback and receive ether function

@@ -58,13 +58,13 @@ void FuzzerUtil::testCompilerJsonInterface(string const& _input, bool _optimize,
 	if (!_quiet)
 		cout << "Testing compiler " << (_optimize ? "with" : "without") << " optimizer." << endl;
 
-	Json config = Json::objectValue;
+	Json config = Json::object();
 	config["language"] = "Solidity";
-	config["sources"] = Json::objectValue;
-	config["sources"][""] = Json::objectValue;
+	config["sources"] = Json::object();
+	config["sources"][""] = Json::object();
 	config["sources"][""]["content"] = _input;
-	config["settings"] = Json::objectValue;
-	config["settings"]["optimizer"] = Json::objectValue;
+	config["settings"] = Json::object();
+	config["settings"]["optimizer"] = Json::object();
 	config["settings"]["optimizer"]["enabled"] = _optimize;
 	config["settings"]["optimizer"]["runs"] = static_cast<int>(OptimiserSettings{}.expectedExecutionsPerDeployment);
 	config["settings"]["evmVersion"] = "berlin";
