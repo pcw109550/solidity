@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE(parse_json_strict)
 	BOOST_CHECK(!jsonParseStrict("true", json, &errors));
 	// BOOST_CHECK(json.isBool());
 	BOOST_CHECK(!jsonParseStrict("null", json, &errors));
-	// BOOST_CHECK(json.isNull());
+	// BOOST_CHECK(json.is_null());
 
 	// Single quotes are also disallowed by ECMA-404
 	BOOST_CHECK(!jsonParseStrict("'hello'", json, &errors));

@@ -45,7 +45,7 @@ using SourceLocation = langutil::SourceLocation;
 template<class T>
 ASTPointer<T> ASTJsonImporter::nullOrCast(Json const& _json)
 {
-	if (_json.isNull())
+	if (_json.is_null())
 		return nullptr;
 	else
 		return std::dynamic_pointer_cast<T>(convertJsonToASTNode(_json));
@@ -60,7 +60,7 @@ std::map<std::string, ASTPointer<SourceUnit>> ASTJsonImporter::jsonToSourceUnit(
 		m_sourceNames.emplace_back(std::make_shared<std::string const>(src.first));
 	for (auto const& srcPair: _sourceList)
 	{
-		astAssert(!srcPair.second.isNull());
+		astAssert(!srcPair.second.is_null());
 		astAssert(member(srcPair.second,"nodeType") == "SourceUnit", "The 'nodeType' of the highest node must be 'SourceUnit'.");
 		m_sourceUnits[srcPair.first] = createSourceUnit(srcPair.second, srcPair.first);
 	}
@@ -266,11 +266,11 @@ ASTPointer<ASTNode> ASTJsonImporter::convertJsonToASTNode(Json const& _json)
 ASTPointer<SourceUnit> ASTJsonImporter::createSourceUnit(Json const& _node, std::string const& _srcName)
 {
 	std::optional<std::string> license;
-	if (_node.contains("license") && !_node["license"].isNull())
+	if (_node.contains("license") && !_node["license"].is_null())
 		license = _node["license"].asString();
 
 	bool experimentalSolidity = false;
-	if (_node.contains("experimentalSolidity") && !_node["experimentalSolidity"].isNull())
+	if (_node.contains("experimentalSolidity") && !_node["experimentalSolidity"].is_null())
 		experimentalSolidity = _node["experimentalSolidity"].asBool();
 
 	std::vector<ASTPointer<ASTNode>> nodes;
@@ -303,11 +303,11 @@ ASTPointer<ImportDirective> ASTJsonImporter::createImportDirective(Json const& _
 
 	for (auto& tuple: member(_node, "symbolAliases"))
 	{
-		astAssert(tuple["local"].isNull() || tuple["local"].isString(), "expected 'local' to be a string or null!");
+		astAssert(tuple["local"].is_null() || tuple["local"].isString(), "expected 'local' to be a string or null!");
 
 		symbolAliases.push_back({
 			createIdentifier(tuple["foreign"]),
-			tuple["local"].isNull() ? nullptr : std::make_shared<ASTString>(tuple["local"].asString()),
+			tuple["local"].is_null() ? nullptr : std::make_shared<ASTString>(tuple["local"].asString()),
 			createSourceLocation(tuple["foreign"])}
 		);
 	}
@@ -343,7 +343,7 @@ ASTPointer<ContractDefinition> ASTJsonImporter::createContractDefinition(Json co
 		_node,
 		std::make_shared<ASTString>(_node["name"].asString()),
 		createNameSourceLocation(_node),
-		_node["documentation"].isNull() ? nullptr : createDocumentation(member(_node, "documentation")),
+		_node["documentation"].is_null() ? nullptr : createDocumentation(member(_node, "documentation")),
 		baseContracts,
 		subNodes,
 		contractKind(_node),
@@ -393,7 +393,7 @@ ASTPointer<InheritanceSpecifier> ASTJsonImporter::createInheritanceSpecifier(Jso
 	return createASTNode<InheritanceSpecifier>(
 		_node,
 		createIdentifierPath(member(_node, "baseName")),
-		member(_node, "arguments").isNull() ? nullptr : std::make_unique<std::vector<ASTPointer<Expression>>>(arguments)
+		member(_node, "arguments").is_null() ? nullptr : std::make_unique<std::vector<ASTPointer<Expression>>>(arguments)
 	);
 }
 
@@ -437,7 +437,7 @@ ASTPointer<UsingForDirective> ASTJsonImporter::createUsingForDirective(Json cons
 		std::move(functions),
 		std::move(operators),
 		!_node.contains("libraryName"),
-		_node["typeName"].isNull() ? nullptr  : convertJsonToASTNode<TypeName>(_node["typeName"]),
+		_node["typeName"].is_null() ? nullptr  : convertJsonToASTNode<TypeName>(_node["typeName"]),
 		memberAsBool(_node, "global")
 	);
 }
@@ -452,7 +452,7 @@ ASTPointer<ASTNode> ASTJsonImporter::createStructDefinition(Json const& _node)
 		memberAsASTString(_node, "name"),
 		createNameSourceLocation(_node),
 		members,
-		_node["documentation"].isNull() ? nullptr : createDocumentation(member(_node, "documentation"))
+		_node["documentation"].is_null() ? nullptr : createDocumentation(member(_node, "documentation"))
 	);
 }
 
@@ -466,7 +466,7 @@ ASTPointer<EnumDefinition> ASTJsonImporter::createEnumDefinition(Json const& _no
 		memberAsASTString(_node, "name"),
 		createNameSourceLocation(_node),
 		members,
-		_node["documentation"].isNull() ? nullptr : createDocumentation(member(_node, "documentation"))
+		_node["documentation"].is_null() ? nullptr : createDocumentation(member(_node, "documentation"))
 	);
 }
 
@@ -555,8 +555,8 @@ ASTPointer<FunctionDefinition> ASTJsonImporter::createFunctionDefinition(Json co
 		freeFunction,
 		kind,
 		memberAsBool(_node, "virtual"),
-		_node["overrides"].isNull() ? nullptr : createOverrideSpecifier(member(_node, "overrides")),
-		_node["documentation"].isNull() ? nullptr : createDocumentation(member(_node, "documentation")),
+		_node["overrides"].is_null() ? nullptr : createOverrideSpecifier(member(_node, "overrides")),
+		_node["documentation"].is_null() ? nullptr : createDocumentation(member(_node, "documentation")),
 		createParameterList(member(_node, "parameters")),
 		modifiers,
 		createParameterList(member(_node, "returnParameters")),
@@ -594,10 +594,10 @@ ASTPointer<VariableDeclaration> ASTJsonImporter::createVariableDeclaration(Json 
 		createNameSourceLocation(_node),
 		nullOrCast<Expression>(member(_node, "value")),
 		visibility(_node),
-		_node["documentation"].isNull() ? nullptr : createDocumentation(member(_node, "documentation")),
+		_node["documentation"].is_null() ? nullptr : createDocumentation(member(_node, "documentation")),
 		_node.contains("indexed") ? memberAsBool(_node, "indexed") : false,
 		mutability,
-		_node["overrides"].isNull() ? nullptr : createOverrideSpecifier(member(_node, "overrides")),
+		_node["overrides"].is_null() ? nullptr : createOverrideSpecifier(member(_node, "overrides")),
 		location(_node)
 	);
 }
@@ -608,11 +608,11 @@ ASTPointer<ModifierDefinition> ASTJsonImporter::createModifierDefinition(Json co
 		_node,
 		memberAsASTString(_node, "name"),
 		createNameSourceLocation(_node),
-		_node["documentation"].isNull() ? nullptr : createDocumentation(member(_node, "documentation")),
+		_node["documentation"].is_null() ? nullptr : createDocumentation(member(_node, "documentation")),
 		createParameterList(member(_node, "parameters")),
 		memberAsBool(_node, "virtual"),
-		_node["overrides"].isNull() ? nullptr : createOverrideSpecifier(member(_node, "overrides")),
-		_node["body"].isNull() ? nullptr: createBlock(member(_node, "body"), false)
+		_node["overrides"].is_null() ? nullptr : createOverrideSpecifier(member(_node, "overrides")),
+		_node["body"].is_null() ? nullptr: createBlock(member(_node, "body"), false)
 	);
 }
 
@@ -624,7 +624,7 @@ ASTPointer<ModifierInvocation> ASTJsonImporter::createModifierInvocation(Json co
 	return createASTNode<ModifierInvocation>(
 		_node,
 		createIdentifierPath(member(_node, "modifierName")),
-		member(_node, "arguments").isNull() ? nullptr : std::make_unique<std::vector<ASTPointer<Expression>>>(arguments)
+		member(_node, "arguments").is_null() ? nullptr : std::make_unique<std::vector<ASTPointer<Expression>>>(arguments)
 	);
 }
 
@@ -634,7 +634,7 @@ ASTPointer<EventDefinition> ASTJsonImporter::createEventDefinition(Json const&  
 		_node,
 		memberAsASTString(_node, "name"),
 		createNameSourceLocation(_node),
-		_node["documentation"].isNull() ? nullptr : createDocumentation(member(_node, "documentation")),
+		_node["documentation"].is_null() ? nullptr : createDocumentation(member(_node, "documentation")),
 		createParameterList(member(_node, "parameters")),
 		memberAsBool(_node, "anonymous")
 	);
@@ -646,7 +646,7 @@ ASTPointer<ErrorDefinition> ASTJsonImporter::createErrorDefinition(Json const&  
 		_node,
 		memberAsASTString(_node, "name"),
 		createNameSourceLocation(_node),
-		_node["documentation"].isNull() ? nullptr : createDocumentation(member(_node, "documentation")),
+		_node["documentation"].is_null() ? nullptr : createDocumentation(member(_node, "documentation")),
 		createParameterList(member(_node, "parameters"))
 	);
 }
@@ -876,7 +876,7 @@ ASTPointer<VariableDeclarationStatement> ASTJsonImporter::createVariableDeclarat
 {
 	std::vector<ASTPointer<VariableDeclaration>> variables;
 	for (auto& var: member(_node, "declarations"))
-		variables.push_back(var.isNull() ? nullptr : createVariableDeclaration(var)); //unnamed components are empty pointers
+		variables.push_back(var.is_null() ? nullptr : createVariableDeclaration(var)); //unnamed components are empty pointers
 	return createASTNode<VariableDeclarationStatement>(
 		_node,
 		nullOrASTString(_node, "documentation"),
@@ -1060,7 +1060,7 @@ ASTPointer<ASTNode> ASTJsonImporter::createLiteral(Json const&  _node)
 		_node,
 		literalTokenKind(_node),
 		value,
-		member(_node, "subdenomination").isNull() ? Literal::SubDenomination::None : subdenomination(_node)
+		member(_node, "subdenomination").is_null() ? Literal::SubDenomination::None : subdenomination(_node)
 	);
 }
 
@@ -1118,7 +1118,7 @@ bool ASTJsonImporter::memberAsBool(Json const& _node, std::string const& _name)
 ContractKind ASTJsonImporter::contractKind(Json const& _node)
 {
 	ContractKind kind;
-	astAssert(!member(_node, "contractKind").isNull(), "'Contract-kind' can not be null.");
+	astAssert(!member(_node, "contractKind").is_null(), "'Contract-kind' can not be null.");
 	if (_node["contractKind"].asString() == "interface")
 		kind = ContractKind::Interface;
 	else if (_node["contractKind"].asString() == "contract")
@@ -1199,7 +1199,7 @@ Literal::SubDenomination ASTJsonImporter::subdenomination(Json const& _node)
 {
 	Json subDen = member(_node, "subdenomination");
 
-	if (subDen.isNull())
+	if (subDen.is_null())
 		return Literal::SubDenomination::None;
 
 	astAssert(subDen.isString(), "'subDenomination' expected to be string.");

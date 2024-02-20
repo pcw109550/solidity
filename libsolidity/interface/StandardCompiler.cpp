@@ -644,7 +644,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 
 	Json const& sources = _input["sources"];
 
-	if (!sources.isObject() && !sources.isNull())
+	if (!sources.isObject() && !sources.is_null())
 		return formatFatalError(Error::Type::JSONError, "\"sources\" is not a JSON object.");
 
 	if (sources.empty())
@@ -998,7 +998,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 	if (modelCheckerSettings.contains("contracts"))
 	{
 		auto const& sources = modelCheckerSettings["contracts"];
-		if (!sources.isObject() && !sources.isNull())
+		if (!sources.isObject() && !sources.is_null())
 			return formatFatalError(Error::Type::JSONError, "settings.modelChecker.contracts is not a JSON object.");
 
 		std::map<std::string, std::set<std::string>> sourceContracts;
