@@ -355,8 +355,8 @@ Json formatImmutableReferences(std::map<u256, std::pair<std::string, std::vector
 		for (size_t byteOffset: byteOffsets)
 		{
 			Json byteRange{Json::object()};
-			byteRange["start"] = Json::UInt(byteOffset);
-			byteRange["length"] = Json::UInt(32); // immutable references are currently always 32 bytes wide
+			byteRange["start"] = byteOffset;
+			byteRange["length"] = 32; // immutable references are currently always 32 bytes wide
 			array.push_back(byteRange);
 		}
 		ret[identifier] = array;
@@ -1817,15 +1817,15 @@ Json StandardCompiler::formatFunctionDebugData(
 	{
 		Json fun;
 		if (info.sourceID)
-			fun["id"] = Json::UInt64(*info.sourceID);
+			fun["id"] = *info.sourceID;
 		else
 			fun["id"] = Json{};
 		if (info.bytecodeOffset)
-			fun["entryPoint"] = Json::UInt64(*info.bytecodeOffset);
+			fun["entryPoint"] = *info.bytecodeOffset;
 		else
 			fun["entryPoint"] = Json{};
-		fun["parameterSlots"] = Json::UInt64(info.params);
-		fun["returnSlots"] = Json::UInt64(info.returns);
+		fun["parameterSlots"] = info.params;
+		fun["returnSlots"] = info.returns;
 		ret[name] = std::move(fun);
 	}
 

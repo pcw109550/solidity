@@ -53,13 +53,13 @@ BOOST_AUTO_TEST_CASE(json_types)
 	check(Json{}, "null");
 	check(Json::object(), "{}");
 	check(Json::array(), "[]");
-	check(Json::UInt(1), "1");
-	check(Json::UInt(-1), "4294967295");
-	check(Json::UInt64(1), "1");
-	check(Json::UInt64(-1), "18446744073709551615");
-	check(Json::LargestUInt(1), "1");
-	check(Json::LargestUInt(-1), "18446744073709551615");
-	check(Json::LargestUInt(0xffffffff), "4294967295");
+	check(1, "1");
+	check(-1, "4294967295");
+	check(1, "1");
+	check(-1, "18446744073709551615");
+	check(1, "1");
+	check(-1, "18446744073709551615");
+	check(0xffffffff, "4294967295");
 	check(Json("test"), "\"test\"");
 	check("test", "\"test\"");
 	check(true, "true");
@@ -196,20 +196,20 @@ BOOST_AUTO_TEST_CASE(json_isOfType)
 	BOOST_CHECK(isOfType<float>(json["float"]));
 	BOOST_CHECK(isOfType<double>(json["double"]));
 	BOOST_CHECK(isOfType<int>(json["int"]));
-	BOOST_CHECK(isOfType<Json::Int>(json["int"]));
-	BOOST_CHECK(isOfType<Json::UInt>(json["int"]));
-	BOOST_CHECK(isOfType<Json::Int64>(json["int"]));
-	BOOST_CHECK(isOfType<Json::Int64>(json["int64"]));
-	BOOST_CHECK(isOfType<Json::UInt64>(json["int64"]));
+	BOOST_CHECK(isOfType<int>(json["int"]));
+	BOOST_CHECK(isOfType<unsigned>(json["int"]));
+	BOOST_CHECK(isOfType<int>(json["int"]));
+	BOOST_CHECK(isOfType<int64_t>(json["int64"]));
+	BOOST_CHECK(isOfType<uint64_t >(json["int64"]));
 	BOOST_CHECK(isOfType<std::string>(json["string"]));
-	BOOST_CHECK(!isOfType<Json::Int>(json["int64"]));
+	BOOST_CHECK(!isOfType<int>(json["int64"]));
 	BOOST_CHECK(!isOfType<int>(json["double"]));
 	BOOST_CHECK(!isOfType<float>(json["string"]));
 	BOOST_CHECK(!isOfType<double>(json["string"]));
-	BOOST_CHECK(!isOfType<Json::Int>(json["string"]));
-	BOOST_CHECK(!isOfType<Json::Int64>(json["string"]));
-	BOOST_CHECK(!isOfType<Json::UInt>(json["string"]));
-	BOOST_CHECK(!isOfType<Json::UInt64>(json["string"]));
+	BOOST_CHECK(!isOfType<int>(json["string"]));
+	BOOST_CHECK(!isOfType<int64_t>(json["string"]));
+	BOOST_CHECK(!isOfType<unsigned >(json["string"]));
+	BOOST_CHECK(!isOfType<uint64_t >(json["string"]));
 }
 
 BOOST_AUTO_TEST_CASE(json_isisOfTypeIfExists)
@@ -219,27 +219,27 @@ BOOST_AUTO_TEST_CASE(json_isisOfTypeIfExists)
 	json["float"] = 3.1f;
 	json["double"] = 3.1;
 	json["int"] = 2;
-	json["int64"] = Json::Int64{0x4000000000000000};
+	json["int64"] = 0x4000000000000000;
 	json["string"] = "Hello World!";
 
 	BOOST_CHECK(isOfTypeIfExists<float>(json, "float"));
 	BOOST_CHECK(isOfTypeIfExists<double>(json, "double"));
 	BOOST_CHECK(isOfTypeIfExists<int>(json, "int"));
-	BOOST_CHECK(isOfTypeIfExists<Json::Int>(json, "int"));
-	BOOST_CHECK(isOfTypeIfExists<Json::UInt>(json, "int"));
-	BOOST_CHECK(isOfTypeIfExists<Json::Int64>(json, "int"));
-	BOOST_CHECK(isOfTypeIfExists<Json::Int64>(json, "int64"));
-	BOOST_CHECK(isOfTypeIfExists<Json::UInt64>(json, "int64"));
+	BOOST_CHECK(isOfTypeIfExists<int>(json, "int"));
+	BOOST_CHECK(isOfTypeIfExists<unsigned>(json, "int"));
+	BOOST_CHECK(isOfTypeIfExists<int64_t>(json, "int"));
+	BOOST_CHECK(isOfTypeIfExists<int64_t >(json, "int64"));
+	BOOST_CHECK(isOfTypeIfExists<uint64_t>(json, "int64"));
 	BOOST_CHECK(isOfTypeIfExists<std::string>(json, "string"));
-	BOOST_CHECK(!isOfTypeIfExists<Json::Int>(json, "int64"));
+	BOOST_CHECK(!isOfTypeIfExists<int>(json, "int64"));
 	BOOST_CHECK(!isOfTypeIfExists<int>(json, "double"));
 	BOOST_CHECK(!isOfTypeIfExists<float>(json, "string"));
 	BOOST_CHECK(!isOfTypeIfExists<double>(json, "string"));
-	BOOST_CHECK(!isOfTypeIfExists<Json::Int>(json, "string"));
-	BOOST_CHECK(!isOfTypeIfExists<Json::Int64>(json, "string"));
-	BOOST_CHECK(!isOfTypeIfExists<Json::UInt>(json, "string"));
-	BOOST_CHECK(!isOfTypeIfExists<Json::UInt64>(json, "string"));
-	BOOST_CHECK(isOfTypeIfExists<Json::UInt64>(json, "NOT_EXISTING"));
+	BOOST_CHECK(!isOfTypeIfExists<int>(json, "string"));
+	BOOST_CHECK(!isOfTypeIfExists<int64_t>(json, "string"));
+	BOOST_CHECK(!isOfTypeIfExists<unsigned>(json, "string"));
+	BOOST_CHECK(!isOfTypeIfExists<uint64_t>(json, "string"));
+	BOOST_CHECK(isOfTypeIfExists<uint64_t>(json, "NOT_EXISTING"));
 }
 
 BOOST_AUTO_TEST_CASE(json_getOrDefault)
@@ -249,8 +249,8 @@ BOOST_AUTO_TEST_CASE(json_getOrDefault)
 	json["float"] = 3.1f;
 	json["double"] = 3.1;
 	json["int"] = 2;
-	json["int64"] = Json::Int64{0x4000000000000000};
-	json["uint64"] = Json::UInt64{0x5000000000000000};
+	json["int64"] = 0x4000000000000000;
+	json["uint64"] = 0x5000000000000000;
 	json["string"] = "Hello World!";
 
 	BOOST_CHECK(getOrDefault<float>(json["float"]) == 3.1f);
@@ -262,24 +262,24 @@ BOOST_AUTO_TEST_CASE(json_getOrDefault)
 	BOOST_CHECK(getOrDefault<int>(json["int"]) == 2);
 	BOOST_CHECK(getOrDefault<int>(json["int"], -1) == 2);
 	BOOST_CHECK(getOrDefault<int>(json["no_int"], -1) == -1);
-	BOOST_CHECK(getOrDefault<Json::Int>(json["int"]) == 2);
-	BOOST_CHECK(getOrDefault<Json::Int>(json["int"], -1) == 2);
-	BOOST_CHECK(getOrDefault<Json::Int>(json["no_int"], -1) == -1);
-	BOOST_CHECK(getOrDefault<Json::UInt>(json["int"]) == 2);
-	BOOST_CHECK(getOrDefault<Json::UInt>(json["int"], 1) == 2);
-	BOOST_CHECK(getOrDefault<Json::UInt>(json["no_int"], 1) == 1);
-	BOOST_CHECK(getOrDefault<Json::Int64>(json["int"]) == 2);
-	BOOST_CHECK(getOrDefault<Json::Int64>(json["int"], -1) == 2);
-	BOOST_CHECK(getOrDefault<Json::Int64>(json["no_int"], -1) == -1);
-	BOOST_CHECK(getOrDefault<Json::Int64>(json["int64"]) == 0x4000000000000000);
-	BOOST_CHECK(getOrDefault<Json::Int64>(json["int64"], -1) == 0x4000000000000000);
-	BOOST_CHECK(getOrDefault<Json::Int64>(json["no_int64"], -1) == -1);
-	BOOST_CHECK(getOrDefault<Json::UInt64>(json["int64"]) == 0x4000000000000000);
-	BOOST_CHECK(getOrDefault<Json::UInt64>(json["int64"], 1) == 0x4000000000000000);
-	BOOST_CHECK(getOrDefault<Json::UInt64>(json["no_int64"], 1) == 1);
-	BOOST_CHECK(getOrDefault<Json::UInt64>(json["uint64"]) == 0x5000000000000000);
-	BOOST_CHECK(getOrDefault<Json::UInt64>(json["uint64"], 1) == 0x5000000000000000);
-	BOOST_CHECK(getOrDefault<Json::UInt64>(json["no_uint64"], 1) == 1);
+	BOOST_CHECK(getOrDefault<int>(json["int"]) == 2);
+	BOOST_CHECK(getOrDefault<int>(json["int"], -1) == 2);
+	BOOST_CHECK(getOrDefault<int>(json["no_int"], -1) == -1);
+	BOOST_CHECK(getOrDefault<unsigned>(json["int"]) == 2);
+	BOOST_CHECK(getOrDefault<unsigned>(json["int"], 1) == 2);
+	BOOST_CHECK(getOrDefault<unsigned>(json["no_int"], 1) == 1);
+	BOOST_CHECK(getOrDefault<int64_t>(json["int"]) == 2);
+	BOOST_CHECK(getOrDefault<int64_t>(json["int"], -1) == 2);
+	BOOST_CHECK(getOrDefault<int64_t>(json["no_int"], -1) == -1);
+	BOOST_CHECK(getOrDefault<int64_t>(json["int64"]) == 0x4000000000000000);
+	BOOST_CHECK(getOrDefault<int64_t>(json["int64"], -1) == 0x4000000000000000);
+	BOOST_CHECK(getOrDefault<int64_t>(json["no_int64"], -1) == -1);
+	BOOST_CHECK(getOrDefault<uint64_t>(json["int64"]) == 0x4000000000000000);
+	BOOST_CHECK(getOrDefault<uint64_t>(json["int64"], 1) == 0x4000000000000000);
+	BOOST_CHECK(getOrDefault<uint64_t>(json["no_int64"], 1) == 1);
+	BOOST_CHECK(getOrDefault<uint64_t>(json["uint64"]) == 0x5000000000000000);
+	BOOST_CHECK(getOrDefault<uint64_t>(json["uint64"], 1) == 0x5000000000000000);
+	BOOST_CHECK(getOrDefault<uint64_t>(json["no_uint64"], 1) == 1);
 	BOOST_CHECK(getOrDefault<std::string>(json["string"], "ERROR") == "Hello World!");
 	BOOST_CHECK(getOrDefault<std::string>(json["no_string"]).empty());
 	BOOST_CHECK(getOrDefault<std::string>(json["no_string"], "ERROR") == "ERROR");
@@ -292,19 +292,19 @@ BOOST_AUTO_TEST_CASE(json_get)
 	json["float"] = 3.1f;
 	json["double"] = 3.1;
 	json["int"] = 2;
-	json["int64"] = Json::Int64{0x4000000000000000};
-	json["uint64"] = Json::UInt64{0x5000000000000000};
+	json["int64"] = 0x4000000000000000;
+	json["uint64"] = 0x5000000000000000;
 	json["string"] = "Hello World!";
 
 	BOOST_CHECK(get<float>(json["float"]) == 3.1f);
 	BOOST_CHECK(get<double>(json["double"]) == 3.1);
 	BOOST_CHECK(get<int>(json["int"]) == 2);
-	BOOST_CHECK(get<Json::Int>(json["int"]) == 2);
-	BOOST_CHECK(get<Json::UInt>(json["int"]) == 2);
-	BOOST_CHECK(get<Json::Int64>(json["int"]) == 2);
-	BOOST_CHECK(get<Json::Int64>(json["int64"]) == 0x4000000000000000);
-	BOOST_CHECK(get<Json::UInt64>(json["int64"]) == 0x4000000000000000);
-	BOOST_CHECK(get<Json::UInt64>(json["uint64"]) == 0x5000000000000000);
+	BOOST_CHECK(get<int>(json["int"]) == 2);
+	BOOST_CHECK(get<unsigned>(json["int"]) == 2);
+	BOOST_CHECK(get<int64_t>(json["int"]) == 2);
+	BOOST_CHECK(get<int64_t>(json["int64"]) == 0x4000000000000000);
+	BOOST_CHECK(get<uint64_t>(json["int64"]) == 0x4000000000000000);
+	BOOST_CHECK(get<uint64_t>(json["uint64"]) == 0x5000000000000000);
 	BOOST_CHECK(get<std::string>(json["string"]) == "Hello World!");
 }
 

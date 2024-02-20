@@ -290,7 +290,7 @@ void LanguageServer::compileAndUpdateDiagnostics()
 		Json jsonDiag;
 		jsonDiag["source"] = "solc";
 		jsonDiag["severity"] = toDiagnosticSeverity(error->type());
-		jsonDiag["code"] = Json::UInt64{error->errorId().error};
+		jsonDiag["code"] = error->errorId().error;
 		std::string message = Error::formatErrorType(error->type()) + ":";
 		if (std::string const* comment = error->comment())
 			message += " " + *comment;
@@ -312,7 +312,7 @@ void LanguageServer::compileAndUpdateDiagnostics()
 	if (m_client.traceValue() != TraceValue::Off)
 	{
 		Json extra;
-		extra["openFileCount"] = Json::UInt64(diagnosticsBySourceUnit.size());
+		extra["openFileCount"] = diagnosticsBySourceUnit.size();
 		m_client.trace("Number of currently open files: " + std::to_string(diagnosticsBySourceUnit.size()), extra);
 	}
 
