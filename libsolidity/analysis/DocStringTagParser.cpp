@@ -176,7 +176,7 @@ bool DocStringTagParser::visit(InlineAssembly const& _assembly)
 		SecondarySourceLocation ssl;
 		for (auto const& error: errors)
 			if (error->comment())
-				ssl.push_back(
+				ssl.append(
 					*error->comment(),
 					_assembly.location()
 				);
