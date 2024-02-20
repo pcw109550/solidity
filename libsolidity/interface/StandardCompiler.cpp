@@ -69,7 +69,7 @@ Json formatError(
 	error["severity"] = Error::formatErrorSeverityLowercase(Error::errorSeverity(_type));
 	error["message"] = _message;
 	error["formattedMessage"] = (_formattedMessage.length() > 0) ? _formattedMessage : _message;
-	if (_sourceLocation.isObject())
+	if (_sourceLocation.is_object())
 		error["sourceLocation"] = _sourceLocation;
 	if (_secondarySourceLocation.isArray())
 		error["secondarySourceLocations"] = _secondarySourceLocation;
@@ -213,11 +213,11 @@ bool isArtifactRequested(Json const& _outputSelection, std::string const& _artif
 ///
 bool isArtifactRequested(Json const& _outputSelection, std::string const& _file, std::string const& _contract, std::string const& _artifact, bool _wildcardMatchesExperimental)
 {
-	if (!_outputSelection.isObject())
+	if (!_outputSelection.is_object())
 		return false;
 
 	for (auto const& file: { _file, std::string("*") })
-		if (_outputSelection.contains(file) && _outputSelection[file].isObject())
+		if (_outputSelection.contains(file) && _outputSelection[file].is_object())
 		{
 			/// For SourceUnit-level targets (such as AST) only allow empty name, otherwise
 			/// for Contract-level targets try both contract name and wildcard
@@ -257,7 +257,7 @@ std::vector<std::string> evmObjectComponents(std::string const& _objectKind)
 /// @returns true if any binary was requested, i.e. we actually have to perform compilation.
 bool isBinaryRequested(Json const& _outputSelection)
 {
-	if (!_outputSelection.isObject())
+	if (!_outputSelection.is_object())
 		return false;
 
 	// This does not include "evm.methodIdentifiers" on purpose!
@@ -278,7 +278,7 @@ bool isBinaryRequested(Json const& _outputSelection)
 /// @returns true if EVM bytecode was requested, i.e. we have to run the old code generator.
 bool isEvmBytecodeRequested(Json const& _outputSelection)
 {
-	if (!_outputSelection.isObject())
+	if (!_outputSelection.is_object())
 		return false;
 
 	static std::vector<std::string> const outputsThatRequireEvmBinaries = std::vector<std::string>{
@@ -298,7 +298,7 @@ bool isEvmBytecodeRequested(Json const& _outputSelection)
 /// yet match "ir", "irAst", "irOptimized" or "irOptimizedAst"
 bool isIRRequested(Json const& _outputSelection)
 {
-	if (!_outputSelection.isObject())
+	if (!_outputSelection.is_object())
 		return false;
 
 	for (auto const& fileRequests: _outputSelection)
@@ -394,7 +394,7 @@ Json collectEVMObject(
 
 std::optional<Json> checkKeys(Json const& _input, std::set<std::string> const& _keys, std::string const& _name)
 {
-	if (!!_input && !_input.isObject())
+	if (!!_input && !_input.is_object())
 		return formatFatalError(Error::Type::JSONError, "\"" + _name + "\" must be an object");
 
 	for (auto const& member: _input.getMemberNames())
@@ -496,7 +496,7 @@ std::optional<Json> checkOptimizerDetailSteps(Json const& _details, std::string 
 
 std::optional<Json> checkMetadataKeys(Json const& _input)
 {
-	if (_input.isObject())
+	if (_input.is_object())
 	{
 		if (_input.contains("appendCBOR") && !_input["appendCBOR"].isBool())
 			return formatFatalError(Error::Type::JSONError, "\"settings.metadata.appendCBOR\" must be Boolean");
@@ -513,14 +513,14 @@ std::optional<Json> checkMetadataKeys(Json const& _input)
 
 std::optional<Json> checkOutputSelection(Json const& _outputSelection)
 {
-	if (!!_outputSelection && !_outputSelection.isObject())
+	if (!!_outputSelection && !_outputSelection.is_object())
 		return formatFatalError(Error::Type::JSONError, "\"settings.outputSelection\" must be an object");
 
 	for (auto const& sourceName: _outputSelection.getMemberNames())
 	{
 		auto const& sourceVal = _outputSelection[sourceName];
 
-		if (!sourceVal.isObject())
+		if (!sourceVal.is_object())
 			return formatFatalError(
 				Error::Type::JSONError,
 				"\"settings.outputSelection." + sourceName + "\" must be an object"
@@ -634,7 +634,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 {
 	InputsAndSettings ret;
 
-	if (!_input.isObject())
+	if (!_input.is_object())
 		return formatFatalError(Error::Type::JSONError, "Input is not a JSON object.");
 
 	if (auto result = checkRootKeys(_input))
@@ -644,7 +644,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 
 	Json const& sources = _input["sources"];
 
-	if (!sources.isObject() && !sources.is_null())
+	if (!sources.is_object() && !sources.is_null())
 		return formatFatalError(Error::Type::JSONError, "\"sources\" is not a JSON object.");
 
 	if (sources.empty())
@@ -738,7 +738,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 			solAssert(sources.contains(sourceName));
 			if (
 				!sources[sourceName].contains("assemblyJson") ||
-				!sources[sourceName]["assemblyJson"].isObject() ||
+				!sources[sourceName]["assemblyJson"].is_object() ||
 				sources[sourceName].size() != 1
 			)
 				return formatFatalError(
@@ -764,7 +764,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 		Json const& smtlib2Responses = auxInputs["smtlib2responses"];
 		if (!!smtlib2Responses)
 		{
-			if (!smtlib2Responses.isObject())
+			if (!smtlib2Responses.is_object())
 				return formatFatalError(Error::Type::JSONError, "\"auxiliaryInput.smtlib2responses\" must be an object.");
 
 			for (auto const& hashString: smtlib2Responses.getMemberNames())
@@ -908,12 +908,12 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 	}
 
 	Json jsonLibraries = settings.get("libraries", Json(Json::object()));
-	if (!jsonLibraries.isObject())
+	if (!jsonLibraries.is_object())
 		return formatFatalError(Error::Type::JSONError, "\"libraries\" is not a JSON object.");
 	for (auto const& sourceName: jsonLibraries.getMemberNames())
 	{
 		auto const& jsonSourceName = jsonLibraries[sourceName];
-		if (!jsonSourceName.isObject())
+		if (!jsonSourceName.is_object())
 			return formatFatalError(Error::Type::JSONError, "Library entry is not a JSON object.");
 		for (auto const& library: jsonSourceName.getMemberNames())
 		{
@@ -998,7 +998,7 @@ std::variant<StandardCompiler::InputsAndSettings, Json> StandardCompiler::parseI
 	if (modelCheckerSettings.contains("contracts"))
 	{
 		auto const& sources = modelCheckerSettings["contracts"];
-		if (!sources.isObject() && !sources.is_null())
+		if (!sources.is_object() && !sources.is_null())
 			return formatFatalError(Error::Type::JSONError, "settings.modelChecker.contracts is not a JSON object.");
 
 		std::map<std::string, std::set<std::string>> sourceContracts;

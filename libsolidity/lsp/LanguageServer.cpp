@@ -408,7 +408,7 @@ void LanguageServer::handleInitialize(MessageID _id, Json const& _args)
 		setTrace(_args["trace"]);
 
 	m_fileRepository = FileRepository(rootPath, {});
-	if (_args["initializationOptions"].isObject())
+	if (_args["initializationOptions"].is_object())
 		changeConfiguration(_args["initializationOptions"]);
 
 	Json replyArgs;
@@ -454,7 +454,7 @@ void LanguageServer::handleWorkspaceDidChangeConfiguration(Json const& _args)
 {
 	requireServerInitialized();
 
-	if (_args["settings"].isObject())
+	if (_args["settings"].is_object())
 		changeConfiguration(_args["settings"]);
 }
 
@@ -499,7 +499,7 @@ void LanguageServer::handleTextDocumentDidChange(Json const& _args)
 	for (Json jsonContentChange: _args["contentChanges"])
 	{
 		lspRequire(
-			jsonContentChange.isObject(),
+			jsonContentChange.is_object(),
 			ErrorCode::RequestFailed,
 			"Invalid content reference."
 		);
@@ -512,7 +512,7 @@ void LanguageServer::handleTextDocumentDidChange(Json const& _args)
 		);
 
 		std::string text = jsonContentChange["text"].get<std::string>();
-		if (jsonContentChange["range"].isObject()) // otherwise full content update
+		if (jsonContentChange["range"].is_object()) // otherwise full content update
 		{
 			std::optional<SourceLocation> change = parseRange(m_fileRepository, sourceUnitName, jsonContentChange["range"]);
 			lspRequire(

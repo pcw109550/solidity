@@ -33,7 +33,7 @@ using namespace langutil;
 
 std::optional<LineColumn> parseLineColumn(Json const& _lineColumn)
 {
-	if (_lineColumn.isObject() && _lineColumn["line"].isInt() && _lineColumn["character"].isInt())
+	if (_lineColumn.is_object() && _lineColumn["line"].isInt() && _lineColumn["character"].isInt())
 		return LineColumn{_lineColumn["line"].asInt(), _lineColumn["character"].asInt()};
 	else
 		return std::nullopt;
@@ -103,7 +103,7 @@ std::optional<SourceLocation> parsePosition(
 
 std::optional<SourceLocation> parseRange(FileRepository const& _fileRepository, std::string const& _sourceUnitName, Json const& _range)
 {
-	if (!_range.isObject())
+	if (!_range.is_object())
 		return std::nullopt;
 	std::optional<SourceLocation> start = parsePosition(_fileRepository, _sourceUnitName, _range["start"]);
 	std::optional<SourceLocation> end = parsePosition(_fileRepository, _sourceUnitName, _range["end"]);

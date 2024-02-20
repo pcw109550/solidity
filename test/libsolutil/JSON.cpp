@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE(parse_json_strict)
 	BOOST_CHECK(jsonParseStrict("[]", json, &errors));
 	BOOST_CHECK(json.isArray());
 	BOOST_CHECK(jsonParseStrict("{}", json, &errors));
-	BOOST_CHECK(json.isObject());
+	BOOST_CHECK(json.is_object());
 	BOOST_CHECK(!jsonParseStrict("1", json, &errors));
 	// BOOST_CHECK(json.isNumeric());
 	BOOST_CHECK(!jsonParseStrict("\"hello\"", json, &errors));

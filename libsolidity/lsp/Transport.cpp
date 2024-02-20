@@ -60,7 +60,7 @@ std::optional<Json> Transport::receive()
 	Json jsonMessage;
 	std::string jsonParsingErrors;
 	solidity::util::jsonParseStrict(data, jsonMessage, &jsonParsingErrors);
-	if (!jsonParsingErrors.empty() || !jsonMessage || !jsonMessage.isObject())
+	if (!jsonParsingErrors.empty() || !jsonMessage || !jsonMessage.is_object())
 	{
 		error({}, ErrorCode::ParseError, "Could not parse RPC JSON payload. " + jsonParsingErrors);
 		return std::nullopt;
@@ -74,7 +74,7 @@ void Transport::trace(std::string _message, Json _extra)
 	if (m_logTrace != TraceValue::Off)
 	{
 		Json params;
-		if (_extra.isObject())
+		if (_extra.is_object())
 			params = std::move(_extra);
 		params["message"] = std::move(_message);
 		notify("$/logTrace", std::move(params));
@@ -128,7 +128,7 @@ void Transport::error(MessageID _id, ErrorCode _code, std::string _message)
 
 void Transport::send(Json _json, MessageID _id)
 {
-	solAssert(_json.isObject());
+	solAssert(_json.is_object());
 	_json["jsonrpc"] = "2.0";
 	if (_id != Json{})
 		_json["id"] = _id;

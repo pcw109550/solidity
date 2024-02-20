@@ -43,7 +43,7 @@ bool containsError(Json const& _compilerResult, std::string const& _type, std::s
 
 	for (auto const& error: _compilerResult["errors"])
 	{
-		BOOST_REQUIRE(error.isObject());
+		BOOST_REQUIRE(error.is_object());
 		BOOST_REQUIRE(error["type"].is_string());
 		BOOST_REQUIRE(error["message"].is_string());
 		if ((error["type"].get<std::string>() == _type) && (error["message"].get<std::string>() == _message))
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(standard_compilation)
 	}
 	)";
 	Json result = compile(input);
-	BOOST_REQUIRE(result.isObject());
+	BOOST_REQUIRE(result.is_object());
 
 	// Only tests some assumptions. The StandardCompiler is tested properly in another suite.
 	BOOST_CHECK(result.contains("sources"));
@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(missing_callback)
 	}
 	)";
 	Json result = compile(input);
-	BOOST_REQUIRE(result.isObject());
+	BOOST_REQUIRE(result.is_object());
 
 	BOOST_CHECK(containsError(result, "ParserError", "Source \"missing.sol\" not found: File not supplied initially."));
 }
@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE(with_callback)
 	};
 
 	Json result = compile(input, callback);
-	BOOST_REQUIRE(result.isObject());
+	BOOST_REQUIRE(result.is_object());
 
 	// This ensures that "found.sol" was properly loaded which triggered the second import statement.
 	BOOST_CHECK(containsError(result, "ParserError", "Source \"missing.sol\" not found: Missing file."));

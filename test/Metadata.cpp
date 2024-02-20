@@ -182,7 +182,7 @@ bool isValidMetadata(std::string const& _serialisedMetadata)
 bool isValidMetadata(Json const& _metadata)
 {
 	if (
-		!_metadata.isObject() ||
+		!_metadata.is_object() ||
 		!_metadata.contains("version") ||
 		!_metadata.contains("language") ||
 		!_metadata.contains("compiler") ||

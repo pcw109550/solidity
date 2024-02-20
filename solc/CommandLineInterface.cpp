@@ -470,7 +470,7 @@ void CommandLineInterface::handleGasEstimation(std::string const& _contract)
 	Json estimates = m_compiler->gasEstimates(_contract);
 	sout() << "Gas estimation:" << std::endl;
 
-	if (estimates["creation"].isObject())
+	if (estimates["creation"].is_object())
 	{
 		Json creation = estimates["creation"];
 		sout() << "construction:" << std::endl;
@@ -479,7 +479,7 @@ void CommandLineInterface::handleGasEstimation(std::string const& _contract)
 		sout() << " = " << creation["totalCost"].get<std::string>() << std::endl;
 	}
 
-	if (estimates["external"].isObject())
+	if (estimates["external"].is_object())
 	{
 		Json externalFunctions = estimates["external"];
 		sout() << "external:" << std::endl;
@@ -493,7 +493,7 @@ void CommandLineInterface::handleGasEstimation(std::string const& _contract)
 		}
 	}
 
-	if (estimates["internal"].isObject())
+	if (estimates["internal"].is_object())
 	{
 		Json internalFunctions = estimates["internal"];
 		sout() << "internal:" << std::endl;

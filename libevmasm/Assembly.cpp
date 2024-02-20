@@ -100,7 +100,7 @@ void Assembly::importAssemblyItemsFromJSON(Json const& _code, std::vector<std::s
 
 AssemblyItem Assembly::createAssemblyItemFromJSON(Json const& _json, std::vector<std::string> const& _sourceList)
 {
-	solRequire(_json.isObject(), AssemblyImportException, "Supplied JSON is not an object.");
+	solRequire(_json.is_object(), AssemblyImportException, "Supplied JSON is not an object.");
 	static std::set<std::string> const validMembers{"name", "begin", "end", "source", "value", "modifierDepth", "jumpType"};
 	for (std::string const& member: _json.getMemberNames())
 		solRequire(
@@ -509,7 +509,7 @@ std::pair<std::shared_ptr<Assembly>, std::vector<std::string>> Assembly::fromJSO
 	size_t _level
 )
 {
-	solRequire(_json.isObject(), AssemblyImportException, "Supplied JSON is not an object.");
+	solRequire(_json.is_object(), AssemblyImportException, "Supplied JSON is not an object.");
 	static std::set<std::string> const validMembers{".code", ".data", ".auxdata", "sourceList"};
 	for (std::string const& attribute: _json.getMemberNames())
 		solRequire(validMembers.count(attribute), AssemblyImportException, "Unknown attribute '" + attribute + "'.");
@@ -550,7 +550,7 @@ std::pair<std::shared_ptr<Assembly>, std::vector<std::string>> Assembly::fromJSO
 	solRequire(_json.contains(".code"), AssemblyImportException, "Member '.code' is missing.");
 	solRequire(_json[".code"].isArray(), AssemblyImportException, "Member '.code' is not an array.");
 	for (Json const& codeItem: _json[".code"])
-		solRequire(codeItem.isObject(), AssemblyImportException, "The '.code' array contains an item that is not an object.");
+		solRequire(codeItem.is_object(), AssemblyImportException, "The '.code' array contains an item that is not an object.");
 
 	result->importAssemblyItemsFromJSON(_json[".code"], _level == 0 ? parsedSourceList : _sourceList);
 
@@ -563,7 +563,7 @@ std::pair<std::shared_ptr<Assembly>, std::vector<std::string>> Assembly::fromJSO
 
 	if (_json.contains(".data"))
 	{
-		solRequire(_json[".data"].isObject(), AssemblyImportException, "Optional member '.data' is not an object.");
+		solRequire(_json[".data"].is_object(), AssemblyImportException, "Optional member '.data' is not an object.");
 		Json const& data = _json[".data"];
 		std::map<size_t, std::shared_ptr<Assembly>> subAssemblies;
 		for (JsonConstIterator dataIter = data.begin(); dataIter != data.end(); dataIter++)
@@ -580,7 +580,7 @@ std::pair<std::shared_ptr<Assembly>, std::vector<std::string>> Assembly::fromJSO
 				);
 				result->m_data[h256(fromHex(dataItemID))] = fromHex(dataItem.get<std::string>());
 			}
-			else if (dataItem.isObject())
+			else if (dataItem.is_object())
 			{
 				size_t index{};
 				try
