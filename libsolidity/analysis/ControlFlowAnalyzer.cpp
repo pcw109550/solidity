@@ -155,7 +155,7 @@ void ControlFlowAnalyzer::checkUninitializedAccess(CFGNode const* _entry, CFGNod
 
 			SecondarySourceLocation ssl;
 			if (variableOccurrence->occurrence())
-				ssl.push_back("The variable was declared here.", varDecl.location());
+				ssl.append("The variable was declared here.", varDecl.location());
 
 			bool isStorage = varDecl.type()->dataStoredIn(DataLocation::Storage);
 			bool isCalldata = varDecl.type()->dataStoredIn(DataLocation::CallData);
