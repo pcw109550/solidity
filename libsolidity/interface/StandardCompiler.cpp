@@ -329,11 +329,11 @@ Json formatLinkReferences(std::map<size_t, std::string> const& linkReferences)
 		std::string file = (colon != std::string::npos ? fullname.substr(0, colon) : "");
 		std::string name = (colon != std::string::npos ? fullname.substr(colon + 1) : fullname);
 
-		Json fileObject = ret.get(file, Json::object());
-		Json libraryArray = fileObject.get(name, Json::array());
+		Json& fileObject = ret[file];
+		Json& libraryArray = fileObject[name];
 
 		Json entry{Json::object()};
-		entry["start"] = Json::UInt(ref.first);
+		entry["start"] = ref.first;
 		entry["length"] = 20;
 
 		libraryArray.push_back(entry);
