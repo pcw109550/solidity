@@ -63,7 +63,7 @@ T AsmJsonImporter::createAsmNode(Json const& _node)
 
 Json AsmJsonImporter::member(Json const& _node, std::string const& _name)
 {
-	if (!_node.isMember(_name))
+	if (!_node.contains(_name))
 		return Json::nullValue;
 	return _node[_name];
 }
@@ -165,7 +165,7 @@ Literal AsmJsonImporter::createLiteral(Json const& _node)
 	std::string kind = member(_node, "kind").asString();
 
 	solAssert(member(_node, "hexValue").isString() || member(_node, "value").isString(), "");
-	if (_node.isMember("hexValue"))
+	if (_node.contains("hexValue"))
 		lit.value = YulString{util::asString(util::fromHex(member(_node, "hexValue").asString()))};
 	else
 		lit.value = YulString{member(_node, "value").asString()};
@@ -223,7 +223,7 @@ Assignment AsmJsonImporter::createAssignment(Json const& _node)
 {
 	auto assignment = createAsmNode<Assignment>(_node);
 
-	if (_node.isMember("variableNames"))
+	if (_node.contains("variableNames"))
 		for (auto const& var: member(_node, "variableNames"))
 			assignment.variableNames.emplace_back(createIdentifier(var));
 
@@ -256,7 +256,7 @@ VariableDeclaration AsmJsonImporter::createVariableDeclaration(Json const& _node
 	for (auto const& var: member(_node, "variables"))
 		varDec.variables.emplace_back(createTypedName(var));
 
-	if (_node.isMember("value"))
+	if (_node.contains("value"))
 		varDec.value = std::make_unique<Expression>(createExpression(member(_node, "value")));
 
 	return varDec;
@@ -267,11 +267,11 @@ FunctionDefinition AsmJsonImporter::createFunctionDefinition(Json const& _node)
 	auto funcDef = createAsmNode<FunctionDefinition>(_node);
 	funcDef.name = YulString{member(_node, "name").asString()};
 
-	if (_node.isMember("parameters"))
+	if (_node.contains("parameters"))
 		for (auto const& var: member(_node, "parameters"))
 			funcDef.parameters.emplace_back(createTypedName(var));
 
-	if (_node.isMember("returnVariables"))
+	if (_node.contains("returnVariables"))
 		for (auto const& var: member(_node, "returnVariables"))
 			funcDef.returnVariables.emplace_back(createTypedName(var));
 

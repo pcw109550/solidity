@@ -127,7 +127,7 @@ bool isOfType(Json const& _input)
 template<typename T>
 bool isOfTypeIfExists(Json const& _input, std::string const& _name)
 {
-	if (_input.isMember(_name))
+	if (_input.contains(_name))
 		return isOfType<T>(_input[_name]);
 	return true;
 }

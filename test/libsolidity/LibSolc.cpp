@@ -38,7 +38,7 @@ namespace
 /// Helper to match a specific error type and message
 bool containsError(Json const& _compilerResult, std::string const& _type, std::string const& _message)
 {
-	if (!_compilerResult.isMember("errors"))
+	if (!_compilerResult.contains("errors"))
 		return false;
 
 	for (auto const& error: _compilerResult["errors"])
@@ -104,10 +104,10 @@ BOOST_AUTO_TEST_CASE(standard_compilation)
 	BOOST_REQUIRE(result.isObject());
 
 	// Only tests some assumptions. The StandardCompiler is tested properly in another suite.
-	BOOST_CHECK(result.isMember("sources"));
+	BOOST_CHECK(result.contains("sources"));
 	// This used to test that it is a member, but we did not actually request any output,
 	// so there should not be a contract member.
-	BOOST_CHECK(!result.isMember("contracts"));
+	BOOST_CHECK(!result.contains("contracts"));
 }
 
 BOOST_AUTO_TEST_CASE(missing_callback)

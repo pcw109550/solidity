@@ -150,7 +150,7 @@ void ASTPropertyTest::extractTestsFromAST(Json const& _astJson)
 					);
 					m_tests[testId].property = testedProperty;
 
-					soltestAssert(node.isMember("nodeType"));
+					soltestAssert(node.contains("nodeType"));
 					std::optional<Json> propertyNode = jsonValueByPath(node, testedProperty);
 					soltestAssert(
 						propertyNode.has_value(),

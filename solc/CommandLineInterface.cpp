@@ -358,14 +358,14 @@ void CommandLineInterface::handleSignatureHashes(std::string const& _contract)
 	for (auto const& name: interfaceSymbols["methods"].getMemberNames())
 		out += interfaceSymbols["methods"][name].asString() + ": " + name + "\n";
 
-	if (interfaceSymbols.isMember("errors"))
+	if (interfaceSymbols.contains("errors"))
 	{
 		out += "\nError signatures:\n";
 		for (auto const& name: interfaceSymbols["errors"].getMemberNames())
 			out += interfaceSymbols["errors"][name].asString() + ": " + name + "\n";
 	}
 
-	if (interfaceSymbols.isMember("events"))
+	if (interfaceSymbols.contains("events"))
 	{
 		out += "\nEvent signatures:\n";
 		for (auto const& name: interfaceSymbols["events"].getMemberNames())
@@ -624,13 +624,13 @@ std::map<std::string, Json> CommandLineInterface::parseAstFromInput()
 	{
 		Json ast;
 		astAssert(jsonParseStrict(sourceCode, ast), "Input file could not be parsed to JSON");
-		astAssert(ast.isMember("sources"), "Invalid Format for import-JSON: Must have 'sources'-object");
+		astAssert(ast.contains("sources"), "Invalid Format for import-JSON: Must have 'sources'-object");
 
 		for (auto& src: ast["sources"].getMemberNames())
 		{
-			std::string astKey = ast["sources"][src].isMember("ast") ? "ast" : "AST";
+			std::string astKey = ast["sources"][src].contains("ast") ? "ast" : "AST";
 
-			astAssert(ast["sources"][src].isMember(astKey), "astkey is not member");
+			astAssert(ast["sources"][src].contains(astKey), "astkey is not member");
 			astAssert(ast["sources"][src][astKey]["nodeType"].asString() == "SourceUnit",  "Top-level node should be a 'SourceUnit'");
 			astAssert(sourceJsons.count(src) == 0, "All sources must have unique names");
 			sourceJsons.emplace(src, std::move(ast["sources"][src][astKey]));

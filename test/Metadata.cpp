@@ -183,15 +183,15 @@ bool isValidMetadata(Json const& _metadata)
 {
 	if (
 		!_metadata.isObject() ||
-		!_metadata.isMember("version") ||
-		!_metadata.isMember("language") ||
-		!_metadata.isMember("compiler") ||
-		!_metadata.isMember("settings") ||
-		!_metadata.isMember("sources") ||
-		!_metadata.isMember("output") ||
-		!_metadata["settings"].isMember("evmVersion") ||
-		!_metadata["settings"].isMember("metadata") ||
-		!_metadata["settings"]["metadata"].isMember("bytecodeHash")
+		!_metadata.contains("version") ||
+		!_metadata.contains("language") ||
+		!_metadata.contains("compiler") ||
+		!_metadata.contains("settings") ||
+		!_metadata.contains("sources") ||
+		!_metadata.contains("output") ||
+		!_metadata["settings"].contains("evmVersion") ||
+		!_metadata["settings"].contains("metadata") ||
+		!_metadata["settings"]["metadata"].contains("bytecodeHash")
 	)
 		return false;
 

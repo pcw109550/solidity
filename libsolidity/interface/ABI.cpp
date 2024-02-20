@@ -191,7 +191,7 @@ Json ABI::formatType(
 				*dynamic_cast<ArrayType const&>(_solidityType).baseType(),
 				_forLibrary
 			);
-			if (subtype.isMember("components"))
+			if (subtype.contains("components"))
 			{
 				ret["type"] = subtype["type"].asString() + suffix;
 				ret["components"] = subtype["components"];

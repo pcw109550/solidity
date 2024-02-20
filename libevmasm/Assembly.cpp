@@ -516,7 +516,7 @@ std::pair<std::shared_ptr<Assembly>, std::vector<std::string>> Assembly::fromJSO
 
 	if (_level == 0)
 	{
-		if (_json.isMember("sourceList"))
+		if (_json.contains("sourceList"))
 		{
 			solRequire(_json["sourceList"].isArray(), AssemblyImportException, "Optional member 'sourceList' is not an array.");
 			for (Json const& sourceName: _json["sourceList"])
@@ -525,14 +525,14 @@ std::pair<std::shared_ptr<Assembly>, std::vector<std::string>> Assembly::fromJSO
 	}
 	else
 		solRequire(
-			!_json.isMember("sourceList"),
+			!_json.contains("sourceList"),
 			AssemblyImportException,
 			"Member 'sourceList' may only be present in the root JSON object."
 		);
 
 	auto result = std::make_shared<Assembly>(EVMVersion{}, _level == 0 /* _creation */, "" /* _name */);
 	std::vector<std::string> parsedSourceList;
-	if (_json.isMember("sourceList"))
+	if (_json.contains("sourceList"))
 	{
 		solAssert(_level == 0);
 		solAssert(_sourceList.empty());
@@ -547,21 +547,21 @@ std::pair<std::shared_ptr<Assembly>, std::vector<std::string>> Assembly::fromJSO
 		}
 	}
 
-	solRequire(_json.isMember(".code"), AssemblyImportException, "Member '.code' is missing.");
+	solRequire(_json.contains(".code"), AssemblyImportException, "Member '.code' is missing.");
 	solRequire(_json[".code"].isArray(), AssemblyImportException, "Member '.code' is not an array.");
 	for (Json const& codeItem: _json[".code"])
 		solRequire(codeItem.isObject(), AssemblyImportException, "The '.code' array contains an item that is not an object.");
 
 	result->importAssemblyItemsFromJSON(_json[".code"], _level == 0 ? parsedSourceList : _sourceList);
 
-	if (_json.isMember(".auxdata"))
+	if (_json.contains(".auxdata"))
 	{
 		solRequire(_json[".auxdata"].isString(), AssemblyImportException, "Optional member '.auxdata' is not a string.");
 		result->m_auxiliaryData = fromHex(_json[".auxdata"].asString());
 		solRequire(!result->m_auxiliaryData.empty(), AssemblyImportException, "Optional member '.auxdata' is not a valid hexadecimal string.");
 	}
 
-	if (_json.isMember(".data"))
+	if (_json.contains(".data"))
 	{
 		solRequire(_json[".data"].isObject(), AssemblyImportException, "Optional member '.data' is not an object.");
 		Json const& data = _json[".data"];

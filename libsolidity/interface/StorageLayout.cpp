@@ -63,7 +63,7 @@ Json StorageLayout::generate(VariableDeclaration const& _var, u256 const& _slot,
 
 void StorageLayout::generate(Type const* _type)
 {
-	if (m_types.isMember(typeKeyName(_type)))
+	if (m_types.contains(typeKeyName(_type)))
 		return;
 
 	// Register it now to cut recursive visits.
@@ -108,7 +108,7 @@ void StorageLayout::generate(Type const* _type)
 		typeInfo["encoding"] = "inplace";
 	}
 
-	solAssert(typeInfo.isMember("encoding"), "");
+	solAssert(typeInfo.contains("encoding"), "");
 }
 
 std::string StorageLayout::typeKeyName(Type const* _type)
