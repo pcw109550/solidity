@@ -66,7 +66,7 @@ SourceUnitName ImportRemapper::apply(ImportPath const& _path, std::string const&
 		bestMatchTarget = util::sanitizePath(redir.target);
 	}
 	std::string path = bestMatchTarget;
-	path.push_back(_path.begin() + static_cast<std::string::difference_type>(longestPrefix), _path.end());
+	path.append(_path.begin() + static_cast<std::string::difference_type>(longestPrefix), _path.end());
 	return path;
 }
 
